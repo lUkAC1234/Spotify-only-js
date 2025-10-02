@@ -3,736 +3,621 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Music — Professional Demo</title>
+<title>Enzora - demo music</title>
+<meta name="description" content="Слушайте любимую музыку онлайн с удобным плеером и современным интерфейсом. Наслаждайтесь качественным звуком и плейлистами без ограничений.">
+<meta name="keywords" content="музыка онлайн, spotify клон, аудиоплеер, плейлист, онлайн плеер, mp3, музыка бесплатно, стриминг">
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
 <link rel="icon" sizes="32x32" type="image/png" href="./logo.png">
-<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
-  *, *::before, *::after { box-sizing: border-box; }
-  html, body { height:100%; width:100%; margin:0; padding:0; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale; }
-  body { font-family: Montserrat, serif, "Inter",system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial; background: linear-gradient(180deg,#051017 0%, #071018 70%); color:#EAF6F0; -webkit-tap-highlight-color:transparent; }
-  img { display:block; max-width:100%; height:auto; }
-  button { font: inherit; background: none; border: none; cursor: pointer; }
-  input, button, select, textarea { font-family: inherit; }
-  html, body { overflow-x:hidden; }
-  :root{ --bg:#071018; --panel:#0b1417; --muted:rgba(255,255,255,0.72); --muted-2:rgba(255,255,255,0.52); --accent:#1DB954; --glass: rgba(255,255,255,0.02); }
-  .app { display:grid; grid-template-columns: 260px 1fr; min-height:100vh; gap:0; width:100%; align-items:start; }
-  .app, .app > * { min-width:0; } 
-  @media (max-width:1280px) { .app { grid-template-columns: 220px 1fr; } }
-  @media (max-width:960px) { .app { grid-template-columns: 72px 1fr; } }
-  @media (max-width:640px) { .app { grid-template-columns: 1fr; } }
-  .sidebar { background: linear-gradient(180deg,#071018,#061216); border-right:1px solid rgba(255,255,255,0.04); padding:22px; display:flex; flex-direction:column; gap:18px; width:100%; box-sizing:border-box; }
-  .logo { width:52px; height:52px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-weight:800; color:#000; background:var(--accent); box-shadow:0 10px 30px rgba(29,185,84,0.12); flex-shrink:0; }
-  .nav-item { display:flex; align-items:center; gap:12px; padding:10px 12px; border-radius:10px; cursor:pointer; transition:all .14s ease; color:var(--muted); font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-  .nav-item svg { width:20px; height:20px; flex-shrink:0; }
-  .nav-item:hover { transform:translateX(6px); background: rgba(255,255,255,0.02); color:#fff; }
-  .section-title { color:var(--muted-2); font-size:12px; font-weight:600; margin-bottom:8px; }
-  header { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:18px 22px; border-bottom:1px solid rgba(255,255,255,0.04); background:linear-gradient(180deg, rgba(255,255,255,0.01), transparent); position:relative; }
-  .header-left { display:flex; gap:12px; align-items:center; min-width:0; }
-  .header-center { display:flex; gap:12px; align-items:center; justify-content:center; flex:1; min-width:0; }
-  .header-right { display:flex; gap:8px; align-items:center; justify-content:flex-end; min-width:0; }
-  .search { display:flex; gap:8px; align-items:center; width:520px; max-width:calc(100% - 220px); min-width:0; transition: width .18s ease; }
-  .search input { flex:1; min-width:0; padding:10px 12px; border-radius:999px; background:#071019; border:1px solid rgba(255,255,255,0.05); color:var(--muted); font-weight:500; outline:none; font-size:14px; }
-  .btn { padding:10px 12px; border-radius:999px; cursor:pointer; font-weight:700; display:inline-flex; align-items:center; justify-content:center; min-height:40px; }
-  .btn-primary { background:var(--accent); color:#000; }
-  .btn-ghost { background:transparent; border:1px solid rgba(255,255,255,0.06); color:var(--muted); }
-  .btn .btn-text { display:inline-block; }
-  .icon-btn { width:44px; height:44px; border-radius:10px; display:flex; align-items:center; justify-content:center; background:rgba(255,255,255,0.02); }
-  @media (max-width:1100px) { header { padding:12px 16px; } .search { width:260px; } .btn .btn-text { display:none; } .btn-ghost { padding:8px; border-radius:10px; width:40px; height:40px; display:flex; align-items:center; justify-content:center; } .btn-primary { padding:8px; width:40px; height:40px; border-radius:10px; display:flex; align-items:center; justify-content:center; } .app-title { max-width:160px; } }
-  @media (max-width:640px) { header { padding:10px 12px; } .search { display:none; } .mobile-toggle { display:flex; } .icon-btn { width:40px; height:40px; } }
-  .mobile-search-overlay { position:fixed; inset:0; display:none; z-index:120; align-items:flex-start; padding:12px; box-sizing:border-box; background: linear-gradient(180deg, rgba(0,0,0,0.6), rgba(0,0,0,0.9)); }
-  .mobile-search-card { width:100%; max-width:900px; margin: 12px auto 0; display:flex; gap:8px; align-items:center; }
-  main { padding:24px; box-sizing:border-box; min-width:0; }
-  @media (max-width:640px) { main { padding:16px 12px 120px 12px; } }
-  .hero { display:grid; grid-template-columns: 1fr 320px; gap:18px; background: linear-gradient(90deg, rgba(29,185,84,0.03), rgba(0,0,0,0)), var(--panel); padding:18px; border-radius:12px; border:1px solid rgba(255,255,255,0.02); box-sizing:border-box; }
-  .hero h1 { font-size:28px; margin:0; line-height:1.05; word-break:break-word; }
-  .hero p { color:var(--muted-2); margin-top:8px; }
-  @media (max-width:920px) { .hero { grid-template-columns:1fr; } .hero img { width:100%; height:auto; } }
-  .artists-row { display:flex; gap:12px; overflow-x:auto; padding:8px 2px; margin-top:12px; -webkit-overflow-scrolling:touch; }
-  .artist-card { min-width:220px; display:flex; gap:12px; align-items:center; padding:12px; border-radius:12px; background:linear-gradient(180deg, rgba(255,255,255,0.01), transparent); border:1px solid rgba(255,255,255,0.02); cursor:pointer; flex-shrink:0; min-width:0; box-sizing:border-box; }
-  .artist-avatar { width:72px; height:72px; border-radius:12px; overflow:hidden; flex-shrink:0; }
-  .artist-card img { width:100%; height:100%; object-fit:cover; display:block; }
-  @media (max-width:640px) { .artist-card { min-width:160px; padding:10px; } .artist-avatar { width:56px; height:56px; } }
-  .tracks-grid { display:grid; grid-template-columns: repeat(6, minmax(0,1fr)); gap:16px; margin-top:18px; align-items:start; min-width:0; }
-  @media (max-width:1400px) { .tracks-grid { grid-template-columns: repeat(5, minmax(0,1fr)); } }
-  @media (max-width:1100px) { .tracks-grid { grid-template-columns: repeat(4, minmax(0,1fr)); } }
-  @media (max-width:900px) { .tracks-grid { grid-template-columns: repeat(2, minmax(0,1fr)); } }
-  @media (max-width:640px) { .tracks-grid { grid-template-columns: repeat(1, minmax(0,1fr)); gap:12px; } }
-  .track { background: linear-gradient(180deg,#071018,#061017); border-radius:12px; overflow:hidden; border:1px solid rgba(255,255,255,0.02); transition: transform .16s ease, box-shadow .16s ease; cursor:pointer; display:flex; flex-direction:column; min-width:0; box-sizing:border-box; }
-  .track:hover { transform: translateY(-6px); box-shadow: 0 22px 44px rgba(0,0,0,0.6); }
-  .track .cover { width:100%; height:200px; object-fit:cover; display:block; }
-  .track .meta { padding:12px; display:flex; flex-direction:column; gap:6px; box-sizing:border-box; min-width:0; }
-  .track .title { font-weight:700; font-size:14px; word-break:break-word; }
-  .track .sub { color:var(--muted-2); font-size:13px; margin-top:6px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-  @media (max-width:640px) { .track .cover { height:140px; } .track .meta { padding:10px; } .track .title { font-size:15px; } }
-  .player { position:fixed; inset:auto 0 0 0; z-index:70; background:linear-gradient(180deg, rgba(0,0,0,0.45), rgba(0,0,0,0.78)); padding:12px 20px; border-top:1px solid rgba(255,255,255,0.04); display:flex; gap:18px; align-items:center; justify-content:center; box-sizing:border-box; width:100%; left:0; }
-  .player { padding-bottom: calc(env(safe-area-inset-bottom) + 12px); }
-  .player .left { display:flex; gap:12px; align-items:center; min-width:240px; flex:0 0 auto; }
-  .player .cover { width:62px; height:62px; border-radius:10px; overflow:hidden; flex-shrink:0; }
-  .player .controls { display:flex; gap:10px; align-items:center; }
-  .player .time { font-weight:700; color: #EAF6F0; font-size:13px; min-width:44px; text-align:center; }
-  .player .time.muted { color:var(--muted-2); font-weight:600; }
-  .player .seek-row { display:flex; align-items:center; gap:8px; width:100%; min-width:0; }
-  .player .seek-row input[type="range"] { -webkit-appearance:none; height:6px; border-radius:6px; background: rgba(255,255,255,0.06); flex:1; }
-  .player .volume { display:flex; align-items:center; gap:8px; min-width:120px; }
-  .player .volume .icon { width:20px; height:20px; display:flex; align-items:center; justify-content:center; opacity:0.95; }
-  @media (max-width:640px) { .player { flex-direction:column; align-items:stretch; padding:10px; gap:8px; } .player .left { width:100%; order:1; } .player .controls { order:2; justify-content:center; width:100%; } .player .seek-row { order:3; width:100%; } .player .volume { order:4; width:100%; justify-content:flex-end; } .player .cover { width:56px; height:56px; } }
-  .modal-backdrop { position:fixed; inset:0; display:flex; align-items:center; justify-content:center; background: rgba(0,0,0,0.65); z-index:90; }
-  .modal { background:linear-gradient(180deg,#0b1315,#071016); padding:18px; border-radius:12px; width:100%; max-width:920px; border:1px solid rgba(255,255,255,0.04); box-shadow:0 28px 60px rgba(0,0,0,0.7); color:#EAF6F0; box-sizing:border-box; }
-  @media (max-width:640px) { .modal { margin:12px; max-width:calc(100% - 24px); height:calc(100% - 160px); overflow:auto; padding:12px; } }
-  .tiny { font-size:12px; color:var(--muted-2); }
-  .pill { padding:8px 12px; border-radius:999px; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.03); }
-  .nice-scroll::-webkit-scrollbar { height:8px; width:8px; } .nice-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.06); border-radius:8px; }
-  .mobile-menu { position: fixed; inset: auto 12px 84px 12px; z-index:115; background: linear-gradient(180deg,#071018,#061017); border-radius:12px; padding:10px; box-shadow: 0 12px 40px rgba(0,0,0,0.6); display:none; gap:8px; }
-  .mobile-menu .menu-row { display:flex; gap:8px; align-items:center; }
-  .mobile-menu .menu-row button { width:100%; text-align:left; padding:10px; border-radius:8px; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.03); }
-  .truncate { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+:root{ --base:16; --accent:#1DB954; --bg:#071018; --panel:#0b1417; --muted:rgba(255,255,255,0.86); --muted-2:rgba(255,255,255,0.62); --glass:rgba(255,255,255,0.02); }
+html{font-size:clamp(14px, calc(12px + 0.6vw), 16px);}
+body{font-family:Montserrat, Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; margin:0; min-height:100%; background:linear-gradient(180deg,#051017 0%, #071018 70%); color:var(--muted); -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale; -webkit-tap-highlight-color:transparent}
+h1,h2,h3,h4,h5{color:#EAF6F0;margin:0}
+a{color:inherit}
+img{display:block;max-width:100%;height:auto}
+button{font:inherit;background:none;border:0;cursor:pointer;padding:0}
+input,button,select,textarea{font-family:inherit}
+.app{display:grid;grid-template-columns:260px 1fr;min-height:100vh;align-items:start;gap:0;}
+.app, .app > * {min-width:0}
+@media screen and (max-width:1280px){ .app{grid-template-columns:220px 1fr} }
+@media screen and (max-width:960px){ .app{grid-template-columns:80px 1fr} }
+@media screen and (max-width:640px){ .app{grid-template-columns:1fr} }
+.sidebar{ background:linear-gradient(180deg,#071018,#061216); border-right:1px solid rgba(255,255,255,0.04); padding:20px; display:flex; flex-direction:column; gap:14px; width:100%; box-sizing:border-box; min-height:0; overflow:auto; position:relative; z-index:10; box-shadow: 0 6px 20px rgba(0,0,0,0.45); }
+@media screen and (max-width:640px){ .sidebar{ display:none } }
+.logo{width:52px;height:52px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-weight:800;color:#000;background:var(--accent);box-shadow:0 10px 30px rgba(29,185,84,0.12);flex-shrink:0}
+.section-title{color:var(--muted-2);font-size:0.8rem;font-weight:700;margin-bottom:6px}
+.nav-item{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:10px;cursor:pointer;transition:all .14s ease;color:var(--muted);font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.nav-item i{width:22px;height:22px;flex-shrink:0;color:#fff;opacity:0.98}
+.nav-item div{color:inherit}
+.nav-item:hover{transform:translateX(6px);background:rgba(255,255,255,0.02);color:#fff}
+header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 18px;border-bottom:1px solid rgba(255,255,255,0.04);background:linear-gradient(180deg, rgba(255,255,255,0.01), transparent);position:relative;z-index:6;min-width:0}
+.header-left{display:flex;gap:12px;align-items:center;min-width:0}
+.header-center{display:flex;gap:12px;align-items:center;justify-content:center;flex:1;min-width:0}
+.header-right{display:flex;gap:8px;align-items:center;justify-content:flex-end;min-width:0}
+.app-title{font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:320px;color:#fff;font-size:clamp(0.95rem,1.6vw,1.05rem)}
+.search{display:flex;gap:8px;align-items:center;width:520px;max-width:calc(100% - 220px);min-width:0;transition:width .18s ease}
+.search input{flex:1;min-width:0;padding:10px 12px;border-radius:999px;background:#071019;border:1px solid rgba(255,255,255,0.05);color:var(--muted);font-weight:600;outline:none;font-size:0.95rem}
+.search .search-icon-btn{display:none;width:44px;height:44px;border-radius:10px;align-items:center;justify-content:center;background:rgba(255,255,255,0.02);color:#fff}
+.search .search-icon-btn i{font-size:16px}
+.btn{padding:9px 12px;border-radius:999px;cursor:pointer;font-weight:800;display:inline-flex;align-items:center;justify-content:center;min-height:40px}
+.btn i{color:#fff;margin-right:8px}
+.btn .btn-text{display:inline-block;color:#fff;font-size:0.95rem}
+.btn-primary{background:var(--accent);color:#000}
+.btn-ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted)}
+.icon-btn{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,0.02);color:#fff}
+@media screen and (max-width:1500px){ .search{width:100%;max-width:none; justify-content: end;} .search input{display:none} .search .search-icon-btn{display:flex} .search .btn.btn-primary{display:none} }
+@media screen and (max-width:1100px){ header{padding:10px 14px} .search{width:260px} }
+@media screen and (max-width:900px){ .btn .btn-text{display:none} .btn-ghost{padding:8px;border-radius:10px;width:40px;height:40px;display:flex;align-items:center;justify-content:center} .btn-primary{padding:8px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center} .app-title{max-width:180px} }
+@media screen and (max-width:640px){ header{padding:8px 12px} .mobile-toggle{display:flex} .icon-btn{width:40px;height:40px} .header-left .logo{width:40px;height:40px;font-size:14px;border-radius:10px} }
+#searchOverlay{position:fixed;inset:0;display:none;z-index:125;align-items:flex-start;justify-content:center;padding:18px;box-sizing:border-box;background:linear-gradient(180deg, rgba(0,0,0,0.48), rgba(0,0,0,0.85));}
+#searchOverlay.open{display:flex}
+#searchOverlay .card{width:100%;max-width:920px;margin-top:18px;display:flex;gap:10px;align-items:center;background:linear-gradient(180deg,#071018,#061017);padding:14px;border-radius:12px;box-sizing:border-box;border:1px solid rgba(255,255,255,0.04)}
+#searchOverlay input{flex:1;padding:10px 12px;border-radius:10px;background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted);outline:none}
+main{padding:20px;box-sizing:border-box;min-width:0}
+@media screen and (max-width:640px){ main{padding:14px 12px 120px 12px} }
+.hero{display:grid;grid-template-columns:1fr 320px;gap:18px;background:linear-gradient(90deg, rgba(29,185,84,0.03), rgba(0,0,0,0)),var(--panel);padding:18px;border-radius:12px;border:1px solid rgba(255,255,255,0.02);box-sizing:border-box}
+.hero h1{font-size:clamp(1.4rem,3.1vw,2.8rem);margin:0;line-height:1.05;word-break:break-word}
+.hero p{color:var(--muted-2);margin-top:8px}
+@media screen and (max-width:920px){ .hero{grid-template-columns:1fr} .hero img{width:100%;height:auto} }
+.artists-row{display:flex;gap:12px;overflow-x:auto;padding:8px 2px;margin-top:12px;-webkit-overflow-scrolling:touch}
+.artist-card{min-width:220px;display:flex;gap:12px;align-items:center;padding:12px;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.01), transparent);border:1px solid rgba(255,255,255,0.02);cursor:pointer;flex-shrink:0;min-width:0;box-sizing:border-box}
+.artist-avatar{width:72px;height:72px;border-radius:12px;overflow:hidden;flex-shrink:0}
+.artist-card img{width:100%;height:100%;object-fit:cover;display:block}
+@media screen and (max-width:640px){ .artist-card{min-width:150px;padding:10px} .artist-avatar{width:56px;height:56px} }
+.tracks-grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:16px;margin-top:18px;align-items:start;min-width:0}
+@media screen and (max-width:1400px){ .tracks-grid{grid-template-columns:repeat(5,minmax(0,1fr))} }
+@media screen and (max-width:1100px){ .tracks-grid{grid-template-columns:repeat(4,minmax(0,1fr))} }
+@media screen and (max-width:900px){ .tracks-grid{grid-template-columns:repeat(2,minmax(0,1fr))} }
+@media screen and (max-width:640px){ .tracks-grid{grid-template-columns:repeat(1,minmax(0,1fr));gap:12px} }
+.track{background:linear-gradient(180deg,#071018,#061017);border-radius:12px;overflow:hidden;border:1px solid rgba(255,255,255,0.02);transition:transform .16s ease,box-shadow .16s ease;cursor:pointer;display:flex;flex-direction:column;min-width:0;box-sizing:border-box}
+.track:hover{transform:translateY(-6px);box-shadow:0 22px 44px rgba(0,0,0,0.6)}
+.track .cover{width:100%;height:200px;object-fit:cover;display:block}
+.track .meta{padding:12px;display:flex;flex-direction:column;gap:8px;box-sizing:border-box;min-width:0}
+.track .title{font-weight:800;font-size:0.95rem;word-break:break-word;color:#fff}
+.track .sub{color:var(--muted-2);font-size:0.9rem;margin-top:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.track .meta .actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.track .meta .actions button{padding:8px 10px;border-radius:8px;min-height:36px}
+@media screen and (max-width:640px){ .track .cover{height:140px} .track .meta{padding:10px} .track .title{font-size:1rem} .track .meta .actions button{padding:6px 8px;min-height:34px} }
+.player{ position:fixed; inset:auto 0 0 0; z-index:70; background:linear-gradient(180deg, rgba(0,0,0,0.45), rgba(0,0,0,0.78)); padding:10px 18px; border-top:1px solid rgba(255,255,255,0.04); display:flex; gap:14px; align-items:center; justify-content:center; box-sizing:border-box; width:100%; left:0;}
+.player{padding-bottom:calc(env(safe-area-inset-bottom) + 10px)}
+.player .left{display:flex;gap:12px;align-items:center;min-width:200px;flex:0 0 auto}
+.player .cover{width:62px;height:62px;border-radius:10px;overflow:hidden;flex-shrink:0}
+.player .controls{display:flex;gap:8px;align-items:center}
+.player .time{font-weight:800;color:#EAF6F0;font-size:0.9rem;min-width:44px;text-align:center}
+.player .seek-row{display:flex;align-items:center;gap:8px;width:100%;min-width:0}
+.player .seek-row input[type="range"] { -webkit-appearance: none; height: 6px; border-radius: 6px; flex: 1; background: linear-gradient(   to right,   #1DB954 0%,   #1DB954 var(--seek-progress, 0%),   rgba(255,255,255,0.06) var(--seek-progress, 0%),   rgba(255,255,255,0.06) 100% ); outline: none;}
+.player .seek-row input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 14px; height: 14px; border-radius: 50%; background: #fff; cursor: pointer; position: relative; z-index: 2; }
+.player .seek-row input[type="range"]::-moz-range-thumb { width: 14px; height: 14px; border-radius: 50%; background: #fff; border: none; cursor: pointer; }
+.player .seek-row input[type="range"]::-moz-range-progress { background: #1DB954; height: 6px; border-radius: 6px;}
+.player .volume{display:flex;align-items:center;gap:8px;min-width:120px}
+@media screen and (max-width:640px){ .player{padding:8px 12px; gap:10px; justify-content:space-between} .player{display:grid; grid-template-columns: auto 1fr auto; align-items:center} .player .left{order:0; min-width:0} .player .controls{justify-self:center} .player .cover{width:48px;height:48px} .player .controls .btn{padding:6px;min-width:36px;min-height:36px;border-radius:8px} .player .controls .btn.btn-primary{width:40px;height:40px} .player .seek-row{display:none} .player .volume{justify-self:end} }
+.modal-backdrop{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.65);z-index:90}
+.modal{background:linear-gradient(180deg,#0b1315,#071016);padding:18px;border-radius:12px;width:100%;max-width:920px;border:1px solid rgba(255,255,255,0.04);box-shadow:0 28px 60px rgba(0,0,0,0.7);color:#EAF6F0;box-sizing:border-box}
+@media screen and (max-width:640px){ .modal{margin:12px;max-width:calc(100% - 24px);height:calc(100% - 160px);overflow:auto;padding:12px} .artist-wrap-container {flex-flow: column; } #artistTracks > div { flex-wrap: wrap; gap: 16px; } }
+.mobile-menu-backdrop{position:fixed;inset:0;display:none;z-index:130;background:rgba(0,0,0,0.6);transition:opacity .22s ease}
+.mobile-menu-backdrop.open{display:block;opacity:1}
+.mobile-menu{ position:fixed; top:0; left:0; bottom:0; width:320px; max-width:85vw; background:linear-gradient(180deg,#071018,#061017); box-shadow: 20px 0 50px rgba(0,0,0,0.6); transform:translateX(-110%); transition:transform .28s cubic-bezier(.2,.9,.3,1); z-index:135; padding:20px; display:flex; flex-direction:column; gap:12px; overflow:auto; }
+@media screen and (max-width: 550px) { .player { grid-template-columns: 1fr; } .player .volume {justify-self: start; } .player .left { order: 1; }}
+.mobile-menu.open{transform:translateX(0)}
+.mobile-menu .menu-row button{width:100%;text-align:left;padding:12px;border-radius:10px;background:transparent;border:1px solid rgba(255,255,255,0.03);color:var(--muted);display:flex;align-items:center;gap:10px}
+.mobile-menu .menu-row button i{color:#fff}
+.tiny{font-size:0.85rem;color:var(--muted-2)}
+.pill{padding:8px 12px;border-radius:999px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.03)}
+.nice-scroll::-webkit-scrollbar{height:8px;width:8px}
+.nice-scroll::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.06);border-radius:8px}
+.truncate{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fa-solid, .fa-regular, .fa-brands { color:#fff !important; opacity:0.98; }
 </style>
 </head>
 <body>
 <div class="app" id="appRoot">
   <aside class="sidebar" aria-label="Sidebar">
-    <div style="display:flex;gap:12px;align-items:center;">
-      <div class="logo" aria-hidden="true">M</div>
-      <div style="min-width:0;">
-        <div style="font-weight:800;" class="app-title truncate">Music</div>
-        <div class="tiny muted">Professional Demo</div>
-      </div>
-    </div>
     <div>
       <div class="section-title">Навигация</div>
-      <div id="btnHome" class="nav-item" title="Главная"><svg viewBox="0 0 24 24" fill="none"><path d="M3 9.5L12 3l9 6.5V21a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1V9.5z" stroke="currentColor" stroke-width="1.2"/></svg><div>Главная</div></div>
-      <div id="btnForYou" class="nav-item" title="Для вас"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3v18" stroke="currentColor" stroke-width="1.2"/></svg><div>Для вас</div></div>
-      <div id="btnNew" class="nav-item" title="Новинки"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18z" stroke="currentColor" stroke-width="1.2"/></svg><div>Новинки</div></div>
-      <div id="btnSearchNav" class="nav-item" title="Поиск"><svg viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="6" stroke="currentColor" stroke-width="1.2"/><path d="M21 21l-4.35-4.35" stroke="currentColor" stroke-width="1.2"/></svg><div>Поиск</div></div>
+      <div id="btnHome" class="nav-item" title="Главная"><i class="fa-solid fa-house"></i><div>Главная</div></div>
+      <div id="btnForYou" class="nav-item" title="Для вас"><i class="fa-solid fa-compass"></i><div>Для вас</div></div>
+      <div id="btnNew" class="nav-item" title="Новинки"><i class="fa-solid fa-bolt"></i><div>Новинки</div></div>
+      <div id="btnSearchNav" class="nav-item" title="Поиск"><i class="fa-solid fa-magnifying-glass"></i><div>Поиск</div></div>
     </div>
     <div>
       <div class="section-title">Управление</div>
-      <div id="btnPlaylists" class="nav-item"><svg viewBox="0 0 24 24" fill="none"><path d="M4 6h16M4 12h16M4 18h16" stroke="currentColor" stroke-width="1.2"/></svg><div>Плейлисты</div></div>
-      <div id="btnFavorites" class="nav-item"><svg viewBox="0 0 24 24" fill="none"><path d="M12 21l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 6 4 4 6.5 4c1.74 0 3.41.81 4.5 2.09C12.09 4.81 13.76 4 15.5 4 18 4 20 6 20 8.5c0 3.78-3.4 6.86-8.55 11.18L12 21z" stroke="currentColor" stroke-width="1.2"/></svg><div>Избранное</div></div>
-    </div>
-    <div style="margin-top:auto">
-      <div class="section-title">Профиль</div>
-      <div style="display:flex;gap:12px;align-items:center;">
-        <div style="width:48px;height:48px;border-radius:10px;background:linear-gradient(180deg,#0f1720,#081019);display:flex;align-items:center;justify-content:center;">G</div>
-        <div>
-          <div style="font-weight:700;">Гость</div>
-          <div class="tiny muted">Войти</div>
-        </div>
-      </div>
+      <div id="btnPlaylists" class="nav-item"><i class="fa-solid fa-music"></i><div>Плейлисты</div></div>
+      <div id="btnFavorites" class="nav-item"><i class="fa-solid fa-heart"></i><div>Избранное</div></div>
     </div>
   </aside>
   <div style="display:flex;flex-direction:column;min-height:100vh;">
     <header role="banner">
       <div class="header-left">
-        <button id="mobileMenuBtn" class="mobile-toggle" aria-label="Открыть меню" title="Меню" style="display:none;">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M3 6h18M3 12h18M3 18h18" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
-        </button>
-        <div style="display:flex;gap:10px;align-items:center;min-width:0;">
-          <div class="logo" aria-hidden="true" style="width:40px;height:40px;font-size:14px;">M</div>
-          <div class="app-title truncate">Music — Professional Demo</div>
+        <button id="mobileMenuBtn" class="mobile-toggle" aria-label="Открыть меню" title="Меню" style="display:none"><i class="fa-solid fa-bars"></i></button>
+        <div style="display:flex;gap:10px;align-items:center;min-width:0">
+          <div class="logo" aria-hidden="true" style="width:40px;height:40px;font-size:14px;border-radius:10px;color:#000;background:var(--accent);display:flex;align-items:center;justify-content:center">M</div>
+          <div class="app-title truncate">Enzora — Demo Music</div>
         </div>
       </div>
       <div class="header-center" aria-hidden="false">
         <div class="search" role="search" aria-label="Site search">
           <input id="searchInput" placeholder="Найти треки, артистов или альбомы..." aria-label="Поиск" />
-          <button id="clearSearch" style="display:none;" class="btn" aria-label="Очистить поиск"><span class="btn-text">✕</span></button>
-          <button id="searchBtn" class="btn btn-primary" aria-label="Поиск"><span class="btn-text">Поиск</span><svg style="display:none;" width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="6" stroke="currentColor" stroke-width="1.2"/><path d="M21 21l-4.35-4.35" stroke="currentColor" stroke-width="1.2"/></svg></button>
+          <button id="clearSearch" style="display:none" class="btn" aria-label="Очистить поиск"><i class="fa-solid fa-xmark"></i><span class="btn-text">✕</span></button>
+          <button id="searchBtn" class="btn btn-primary" aria-label="Поиск"><i class="fa-solid fa-magnifying-glass"></i><span class="btn-text">Поиск</span></button>
+          <button id="searchIconBtn" class="search-icon-btn" title="Поиск"><i class="fa-solid fa-magnifying-glass"></i></button>
         </div>
       </div>
       <div class="header-right">
-        <button id="mobileSearchBtn" class="icon-btn" aria-label="Поиск (моб.)" title="Поиск" style="display:none;">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="6" stroke="currentColor" stroke-width="1.4"/><path d="M21 21l-4.35-4.35" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
-        </button>
-        <button id="loginBtn" class="btn btn-ghost" aria-label="Войти"><span class="btn-text">Войти</span><svg style="display:none;" width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M16 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke="currentColor" stroke-width="1.2"/><circle cx="12" cy="7" r="4" stroke="currentColor" stroke-width="1.2"/></svg></button>
-        <button id="registerBtn" class="btn btn-ghost" aria-label="Регистрация"><span class="btn-text">Регистрация</span><svg style="display:none;" width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M16 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" stroke="currentColor" stroke-width="1.2"/><circle cx="12" cy="7" r="4" stroke="currentColor" stroke-width="1.2"/></svg></button>
+        <button id="loginBtn" class="btn btn-ghost" aria-label="Войти"><i class="fa-solid fa-right-to-bracket"></i><span class="btn-text">Войти</span></button>
+        <button id="registerBtn" class="btn btn-ghost" aria-label="Регистрация"><i class="fa-solid fa-user-plus"></i><span class="btn-text">Регистрация</span></button>
       </div>
     </header>
-    <div id="mobileSearchOverlay" class="mobile-search-overlay" aria-hidden="true">
-      <div class="mobile-search-card">
-        <input id="mobileSearchInput" placeholder="Найти треки, артистов или альбомы..." aria-label="Мобильный поиск"/>
-        <button id="mobileSearchClear" class="btn" aria-label="Очистить">✕</button>
-        <button id="mobileSearchGo" class="btn btn-primary" aria-label="Поиск">Поиск</button>
+    <div id="searchOverlay" aria-hidden="true">
+      <div class="card" role="dialog">
+        <input id="overlaySearchInput" placeholder="Найти треки, артистов или альбомы..." aria-label="Поиск в оверлей" />
+        <button id="overlayClear" class="btn" aria-label="Очистить поиск"><i class="fa-solid fa-xmark"></i></button>
+        <button id="overlaySearchGo" class="btn btn-primary" aria-label="Поиск"><i class="fa-solid fa-magnifying-glass"></i><span class="btn-text">Поиск</span></button>
       </div>
     </div>
-    <div id="mobileMenu" class="mobile-menu" aria-hidden="true" role="menu">
-      <div class="menu-row"><button id="m-btnPlaylists">Плейлисты</button></div>
-      <div class="menu-row"><button id="m-btnFavorites">Избранное</button></div>
-      <div class="menu-row"><button id="m-btnLogin">Войти</button></div>
-      <div class="menu-row"><button id="m-btnRegister">Регистрация</button></div>
-    </div>
+    <div id="mobileMenuBackdrop" class="mobile-menu-backdrop" aria-hidden="true"></div>
+    <nav id="mobileMenu" class="mobile-menu" aria-hidden="true" role="menu">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div style="display:flex;gap:10px;align-items:center">
+          <div class="logo" style="width:40px;height:40px;border-radius:10px;color:#000;background:var(--accent);display:flex;align-items:center;justify-content:center">E</div>
+          <div style="font-weight:800;color:#fff">Меню</div>
+        </div>
+        <button id="mobileMenuClose" class="btn btn-ghost" aria-label="Закрыть меню"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div style="margin-top:12px">
+        <div class="menu-row"><button id="m-btnHome"><i class="fa-solid fa-house"></i> Главная</button></div>
+        <div class="menu-row"><button id="m-btnForYou"><i class="fa-solid fa-compass"></i> Для вас</button></div>
+        <div class="menu-row"><button id="m-btnNew"><i class="fa-solid fa-bolt"></i> Новинки</button></div>
+        <div style="margin-top:10px;border-top:1px solid rgba(255,255,255,0.04);padding-top:10px">
+          <div class="menu-row"><button id="m-btnPlaylists"><i class="fa-solid fa-music"></i> Плейлисты</button></div>
+          <div class="menu-row"><button id="m-btnFavorites"><i class="fa-solid fa-heart"></i> Избранное</button></div>
+        </div>
+        <div style="margin-top:14px;border-top:1px solid rgba(255,255,255,0.04);padding-top:12px">
+          <div class="tiny muted">Аккаунт</div>
+          <div style="margin-top:8px"><button id="m-btnLogin" class="btn btn-ghost" style="width:100%"><i class="fa-solid fa-right-to-bracket"></i> Войти</button></div>
+          <div style="margin-top:8px"><button id="m-btnRegister" class="btn btn-ghost" style="width:100%"><i class="fa-solid fa-user-plus"></i> Регистрация</button></div>
+        </div>
+      </div>
+    </nav>
     <main>
       <section class="hero" aria-label="Hero">
         <div>
-          <h1 style="font-size: 48px; width: min(100%, 900px); font-weight: 800;">Музыка, сконструированная профессионально</h1>
+          <h1>Музыка, сконструированная профессионально</h1>
           <p>Минималистичный интерфейс, чёткая сетка и быстрая интерактивность — дизайн и UX продуманы до мелочей.</p>
-          <div style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap;">
-            <button id="ctaPlay" class="btn btn-primary"><span class="btn-text">Воспроизвести</span></button>
-            <button id="ctaLearn" class="btn btn-ghost"><span class="btn-text">Подробнее</span></button>
+          <div style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap">
+            <button id="ctaPlay" class="btn btn-primary" title="Воспроизвести"><i class="fa-solid fa-play"></i><span class="btn-text" style="display:inline-block">Воспроизвести</span></button>
+            <button id="ctaLearn" class="btn btn-ghost" title="Подробнее"><i class="fa-solid fa-circle-info"></i><span class="btn-text">Подробнее</span></button>
           </div>
         </div>
-        <div style="display:flex;flex-direction:column;gap:10px;align-items:flex-end;">
+        <div style="display:flex;flex-direction:column;gap:10px;align-items:flex-end">
           <div class="pill tiny">Рекомендация</div>
-          <img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?q=80&w=800&auto=format&fit=crop" alt="hero" style="width:320px;height:180px;object-fit:cover;border-radius:10px;" />
+          <img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?q=80&w=800&auto=format&fit=crop" alt="hero" style="width:320px;height:180px;object-fit:cover;border-radius:10px" />
         </div>
       </section>
-      <section style="margin-top:22px;">
-        <div style="display:flex;justify-content:space-between;align-items:center;">
-          <div style="min-width:0;">
-            <h3 style="margin:0;font-weight:700;">Артисты</h3>
+      <section style="margin-top:22px">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div style="min-width:0">
+            <h3 style="margin:0;font-weight:800">Артисты</h3>
             <div class="tiny muted">Кликните по артисту — откроется список его треков</div>
           </div>
           <div class="tiny muted" id="artistsCount">—</div>
         </div>
         <div id="artistsRow" class="artists-row"></div>
       </section>
-      <section style="margin-top:24px;">
-        <div style="display:flex;justify-content:space-between;align-items:center;">
-          <div style="min-width:0;">
-            <h3 style="margin:0;font-weight:700;">Треки</h3>
+      <section style="margin-top:24px">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div style="min-width:0">
+            <h3 style="margin:0;font-weight:800">Треки</h3>
             <div class="tiny muted">Результаты поиска и популярные треки</div>
           </div>
-          <div style="display:flex;gap:8px;align-items:center;">
+          <div style="display:flex;gap:8px;align-items:center">
             <div class="tiny muted" id="tracksCount">—</div>
-            <button id="refreshBtn" class="btn btn-ghost tiny"><span class="btn-text">Обновить</span></button>
+            <button id="refreshBtn" class="btn btn-ghost tiny"><i class="fa-solid fa-arrows-rotate"></i><span class="btn-text">Обновить</span></button>
           </div>
         </div>
         <div id="tracksGrid" class="tracks-grid" aria-live="polite"></div>
-        <div style="display:flex;justify-content:center;margin-top:18px;">
-          <button id="loadMoreBtn" class="btn btn-ghost"><span class="btn-text">Загрузить ещё</span></button>
+        <div style="display:flex;justify-content:center;margin-top:18px">
+          <button id="loadMoreBtn" class="btn btn-ghost"><i class="fa-solid fa-plus"></i><span class="btn-text">Загрузить ещё</span></button>
         </div>
       </section>
     </main>
   </div>
 </div>
 <div id="player" class="player" role="region" aria-label="Audio player">
-  <div class="left" style="display:flex;align-items:center;gap:12px;">
-    <div class="cover"><img id="playerCover" src="" alt="cover" style="width:62px;height:62px;object-fit:cover;border-radius:8px;" /></div>
-    <div style="min-width:0;">
-      <div id="playerTitle" style="font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">—</div>
-      <div id="playerArtist" class="tiny muted" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">—</div>
+  <div class="left" style="display:flex;align-items:center;gap:12px">
+    <div class="cover"><img id="playerCover" src="" alt="cover" style="width:62px;height:62px;object-fit:cover;border-radius:8px" /></div>
+    <div style="min-width:0">
+      <div id="playerTitle" style="font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">—</div>
+      <div id="playerArtist" class="tiny muted" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">—</div>
     </div>
   </div>
-  <div style="flex:1;display:flex;flex-direction:column;gap:8px;min-width:0;">
-    <div style="display:flex;align-items:center;justify-content:center;gap:14px;">
+  <div style="flex:1;display:flex;flex-direction:column;gap:8px;min-width:0">
+    <div style="display:flex;align-items:center;justify-content:center;gap:12px">
       <div class="controls">
-        <button id="prevBtn" class="btn btn-ghost" aria-label="Предыдущий">⏮</button>
-        <button id="playBtn" class="btn btn-primary" style="width:48px;height:48px;" aria-label="Воспроизвести">⏵</button>
-        <button id="nextBtn" class="btn btn-ghost" aria-label="Следующий">⏭</button>
+        <button id="prevBtn" class="btn btn-ghost" aria-label="Предыдущий"><i class="fa-solid fa-backward-step"></i></button>
+        <button id="playBtn" class="btn btn-primary" style="width:48px;height:48px" aria-label="Воспроизвести"><i class="fa-solid fa-play"></i></button>
+        <button id="nextBtn" class="btn btn-ghost" aria-label="Следующий"><i class="fa-solid fa-forward-step"></i></button>
       </div>
     </div>
-    <div class="seek-row" style="display:flex;align-items:center;gap:8px;">
-      <div id="curTime" class="time" aria-live="polite" style="font-weight:800;">0:00</div>
+    <div class="seek-row" style="display:flex;align-items:center;gap:8px">
+      <div id="curTime" class="time" aria-live="polite" style="font-weight:800">0:00</div>
       <input id="seekBar" type="range" min="0" max="100" value="0" aria-label="Перемотка" />
-      <div id="durTime" class="time muted" aria-live="polite" style="opacity:0.85;">0:00</div>
+      <div id="durTime" class="time muted" aria-live="polite" style="opacity:0.85">0:00</div>
     </div>
   </div>
-  <div class="volume" style="display:flex;align-items:center;gap:8px;">
-    <div class="icon" aria-hidden="true">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M5 9v6h4l5 4V5L9 9H5z" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-    </div>
+  <div class="volume" style="display:flex;align-items:center;gap:8px">
+    <div class="icon" aria-hidden="true"><i class="fa-solid fa-volume-high"></i></div>
     <input id="volumeBar" type="range" min="0" max="1" step="0.01" value="0.85" aria-label="Громкость" />
-    <button id="openFavoritesBtn" class="btn btn-ghost" aria-label="Открыть избранное"><span class="btn-text">Избранное</span></button>
+    <button id="openFavoritesBtn" class="btn btn-ghost" aria-label="Открыть избранное"><i class="fa-solid fa-heart"></i><span class="btn-text">Избранное</span></button>
   </div>
   <audio id="audio" preload="metadata"></audio>
 </div>
-<div id="artistModal" style="display:none;" class="modal-backdrop" aria-hidden="true">
+<div id="artistModal" style="display:none" class="modal-backdrop" aria-hidden="true">
   <div class="modal" role="dialog" aria-modal="true" aria-labelledby="artistModalTitle">
-    <div style="display:flex;gap:16px;flex-wrap:wrap;">
-      <img id="artistAvatar" src="" alt="artist" style="width:144px;height:144px;object-fit:cover;border-radius:12px;" />
-      <div style="flex:1;min-width:0;">
-        <div style="display:flex;justify-content:space-between;align-items:center;">
+    <div class="artist-wrap-container" style="display:flex;gap:16px;flex-wrap:wrap">
+      <img id="artistAvatar" src="" alt="artist" style="width:144px;height:144px;object-fit:cover;border-radius:12px" />
+      <div style="flex:1;min-width:0">
+        <div style="display:flex;justify-content:space-between;align-items:center">
           <div>
             <h3 id="artistModalTitle">Артист</h3>
             <div id="artistGenre" class="tiny muted">Жанр</div>
           </div>
-          <div style="display:flex;gap:8px;">
-            <button id="artistClose" class="btn btn-ghost">Закрыть</button>
+          <div style="display:flex;gap:8px">
+            <button id="artistClose" class="btn btn-ghost"><i class="fa-solid fa-xmark"></i><span class="btn-text">Закрыть</span></button>
           </div>
         </div>
-        <div style="margin-top:12px;display:flex;gap:8px;">
-          <input id="artistSearch" placeholder="Поиск среди треков артиста..." class="pill" style="flex:1;padding:10px;" />
+        <div style="margin-top:12px;display:flex;gap:8px">
+          <input id="artistSearch" placeholder="Поиск среди треков артиста..." class="pill" style="flex:1;padding:10px" />
           <button id="artistSearchBtn" class="btn btn-primary">Найти</button>
         </div>
-        <div id="artistTracks" style="margin-top:14px;max-height:360px;overflow:auto;" class="nice-scroll"></div>
+        <div id="artistTracks" style="margin-top:14px;max-height:450px;overflow:auto" class="nice-scroll"></div>
       </div>
     </div>
   </div>
 </div>
-<div id="playlistsModal" style="display:none;" class="modal-backdrop" aria-hidden="true">
+<div id="playlistsModal" style="display:none" class="modal-backdrop" aria-hidden="true">
   <div class="modal" role="dialog" aria-modal="true">
-    <div style="display:flex;justify-content:space-between;align-items:center;">
+    <div style="display:flex;justify-content:space-between;align-items:center">
       <h3>Плейлисты</h3>
-      <div style="display:flex;gap:8px;">
-        <button id="playlistsClose" class="btn btn-ghost">Закрыть</button>
-        <button id="createPlaylistBtn" class="btn btn-primary">Создать</button>
+      <div style="display:flex;gap:8px">
+        <button id="playlistsClose" class="btn btn-ghost"><i class="fa-solid fa-xmark"></i><span class="btn-text">Закрыть</span></button>
+        <button id="createPlaylistBtn" class="btn btn-primary"><i class="fa-solid fa-plus"></i><span class="btn-text">Создать</span></button>
       </div>
     </div>
-    <div id="playlistsContainer" style="margin-top:12px;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;"></div>
-    <div id="playlistEditor" style="margin-top:16px;display:none;">
+    <div id="playlistsContainer" style="margin-top:12px;display:grid;grid-template-columns:1fr;gap:12px"></div>
+    <div id="playlistEditor" style="margin-top:16px;display:none">
       <h4 id="editorHeader">Редактирование</h4>
-      <div id="editorTracks" style="max-height:300px;overflow:auto;margin-top:10px;" class="nice-scroll"></div>
-      <div style="display:flex;gap:8px;margin-top:12px;">
-        <button id="playPlaylistBtn" class="btn btn-primary">Воспроизвести</button>
-        <button id="closeEditorBtn" class="btn btn-ghost">Закрыть</button>
+      <div id="editorTracks" style="max-height:300px;overflow:auto;margin-top:10px" class="nice-scroll"></div>
+      <div style="display:flex;gap:8px;margin-top:12px">
+        <button id="playPlaylistBtn" class="btn btn-primary"><i class="fa-solid fa-play"></i><span class="btn-text">Воспроизвести</span></button>
+        <button id="closeEditorBtn" class="btn btn-ghost"><i class="fa-solid fa-xmark"></i><span class="btn-text">Закрыть</span></button>
       </div>
     </div>
   </div>
 </div>
-<div id="favoritesModal" style="display:none;" class="modal-backdrop" aria-hidden="true">
+<div id="favoritesModal" style="display:none" class="modal-backdrop" aria-hidden="true">
   <div class="modal" role="dialog" aria-modal="true">
-    <div style="display:flex;justify-content:space-between;align-items:center;">
+    <div style="display:flex;justify-content:space-between;align-items:center">
       <h3>Избранное</h3>
-      <div style="display:flex;gap:8px;">
-        <button id="favoritesClose" class="btn btn-ghost">Закрыть</button>
-        <button id="clearFavoritesBtn" class="btn btn-ghost">Очистить</button>
+      <div style="display:flex;gap:8px">
+        <button id="favoritesClose" class="btn btn-ghost"><i class="fa-solid fa-xmark"></i><span class="btn-text">Закрыть</span></button>
+        <button id="clearFavoritesBtn" class="btn btn-ghost"><i class="fa-solid fa-trash"></i><span class="btn-text">Очистить</span></button>
       </div>
     </div>
-    <div id="favoritesList" style="margin-top:12px;max-height:380px;overflow:auto;" class="nice-scroll"></div>
+    <div id="favoritesList" style="margin-top:12px;max-height:380px;overflow:auto" class="nice-scroll"></div>
   </div>
 </div>
-<div id="addToPlaylistModal" style="display:none;" class="modal-backdrop" aria-hidden="true">
+<div id="addToPlaylistModal" style="display:none" class="modal-backdrop" aria-hidden="true">
   <div class="modal" role="dialog">
-    <div style="display:flex;justify-content:space-between;align-items:center;">
+    <div style="display:flex;justify-content:space-between;align-items:center">
       <h3>Добавить в плейлист</h3>
-      <button id="closeAddToPlaylist" class="btn btn-ghost">Закрыть</button>
+      <button id="closeAddToPlaylist" class="btn btn-ghost"><i class="fa-solid fa-xmark"></i><span class="btn-text">Закрыть</span></button>
     </div>
-    <div style="margin-top:12px;display:flex;gap:12px;flex-wrap:wrap;">
-      <div style="flex:1;min-width:240px;">
+    <div style="margin-top:12px;display:flex;gap:12px;flex-wrap:wrap">
+      <div style="flex:1;min-width:240px">
         <div class="tiny muted">Существующие плейлисты</div>
-        <div id="existingPlaylists" style="margin-top:10px;display:flex;flex-direction:column;gap:8px;max-height:220px;overflow:auto;" class="nice-scroll"></div>
+        <div id="existingPlaylists" style="margin-top:10px;display:flex;flex-direction:column;gap:8px;max-height:220px;overflow:auto" class="nice-scroll"></div>
       </div>
-      <div style="width:320px;min-width:200px;">
+      <div style="width:320px;min-width:200px">
         <div class="tiny muted">Создать новый</div>
-        <input id="newPlaylistName" placeholder="Название плейлиста" class="pill" style="width:100%;margin-top:8px;padding:10px;" />
-        <button id="createAndAddBtn" class="btn btn-primary" style="margin-top:10px;width:100%;">Создать и добавить</button>
+        <input id="newPlaylistName" placeholder="Название плейлиста" class="pill" style="width:94%;margin-top:8px;padding:10px; color: #fff;" />
+        <button id="createAndAddBtn" class="btn btn-primary" style="margin-top:10px;width:100%">Создать и добавить</button>
       </div>
     </div>
   </div>
 </div>
-<div id="devModal" style="display:none;" class="modal-backdrop" aria-hidden="true">
+<div id="devModal" style="display:none" class="modal-backdrop" aria-hidden="true">
   <div class="modal" role="dialog">
-    <div style="display:flex;justify-content:space-between;align-items:center;">
+    <div style="display:flex;justify-content:space-between;align-items:center">
       <div>
         <h3>Функция в разработке</h3>
-        <div class="muted" style="margin-top:8px;">Эта функция ещё не доступна в демо. Мы активно работаем над расширением функционала — скоро появится. Спасибо за понимание.</div>
+        <div class="muted" style="margin-top:8px">Эта функция ещё не доступна в демо. Мы работаем над расширением функционала — скоро появится. Спасибо за понимание.</div>
       </div>
-      <button id="devCloseX" class="btn btn-ghost">✕</button>
+      <button id="devCloseX" class="btn btn-ghost"><i class="fa-solid fa-xmark"></i></button>
     </div>
-    <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:16px;">
-      <button id="devClose" class="btn btn-ghost">Закрыть</button>
-      <button id="devContinueBtn" class="btn btn-primary">Продолжить</button>
+    <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:16px">
+      <button id="devClose" class="btn btn-ghost"><i class="fa-solid fa-xmark"></i><span class="btn-text">Закрыть</span></button>
+      <button id="devContinueBtn" class="btn btn-primary"><i class="fa-solid fa-check"></i><span class="btn-text">Продолжить</span></button>
     </div>
   </div>
 </div>
 <script>
-(function(){
-  const mobileMenuBtn = document.getElementById('mobileMenuBtn');
-  const mobileMenu = document.getElementById('mobileMenu');
-  const mobileSearchBtn = document.getElementById('mobileSearchBtn');
-  const mobileSearchOverlay = document.getElementById('mobileSearchOverlay');
-  const mobileSearchInput = document.getElementById('mobileSearchInput');
-  const mobileSearchGo = document.getElementById('mobileSearchGo');
-  const mobileSearchClear = document.getElementById('mobileSearchClear');
-  const loginBtn = document.getElementById('loginBtn');
-  const registerBtn = document.getElementById('registerBtn');
-  const queueBtn = document.getElementById('queueBtn');
-  const openFavoritesBtn = document.getElementById('openFavoritesBtn');
-  const searchBtn = document.getElementById('searchBtn');
-  function adaptHeaderControls(){
-    const w = window.innerWidth;
-    const mobileToggles = document.querySelectorAll('.mobile-toggle, .icon-btn');
-    if(w <= 640){
-      mobileToggles.forEach(n => n.style.display = 'flex');
-    } else {
-      mobileToggles.forEach(n => n.style.display = 'none');
-    }
-    if(w <= 1100 && w > 640){
-    }
+(() => {
+  const API = 'https://itunes.apple.com', LIMIT = 24;
+  const $ = id => document.getElementById(id);
+  const nodes = {
+    mobileMenuBtn: $('mobileMenuBtn'),
+    mobileMenu: $('mobileMenu'),
+    mobileMenuBackdrop: $('mobileMenuBackdrop'),
+    mobileMenuClose: $('mobileMenuClose'),
+    searchOverlay: $('searchOverlay'),
+    overlayCard: $('searchOverlay').querySelector('.card'),
+    searchIconBtn: $('searchIconBtn'),
+    searchBtn: $('searchBtn'),
+    searchInput: $('searchInput'),
+    overlaySearchInput: $('overlaySearchInput'),
+    overlaySearchGo: $('overlaySearchGo'),
+    overlayClear: $('overlayClear'),
+    clearSearch: $('clearSearch'),
+    artistsRow: $('artistsRow'),
+    artistsCount: $('artistsCount'),
+    tracksGrid: $('tracksGrid'),
+    tracksCount: $('tracksCount'),
+    loadMoreBtn: $('loadMoreBtn'),
+    refreshBtn: $('refreshBtn'),
+    audio: $('audio'),
+    playerCover: $('playerCover'),
+    playerTitle: $('playerTitle'),
+    playerArtist: $('playerArtist'),
+    playBtn: $('playBtn'),
+    prevBtn: $('prevBtn'),
+    nextBtn: $('nextBtn'),
+    seekBar: $('seekBar'),
+    curTime: $('curTime'),
+    durTime: $('durTime'),
+    volBar: $('volumeBar'),
+    artistModal: $('artistModal'),
+    artistAvatar: $('artistAvatar'),
+    artistModalTitle: $('artistModalTitle'),
+    artistGenre: $('artistGenre'),
+    artistTracks: $('artistTracks'),
+    artistClose: $('artistClose'),
+    artistSearch: $('artistSearch'),
+    artistSearchBtn: $('artistSearchBtn'),
+    playlistsModal: $('playlistsModal'),
+    playlistsContainer: $('playlistsContainer'),
+    playlistsClose: $('playlistsClose'),
+    createPlaylistBtn: $('createPlaylistBtn'),
+    playlistsEditor: $('playlistEditor'),
+    editorHeader: $('editorHeader'),
+    editorTracks: $('editorTracks'),
+    playPlaylistBtn: $('playPlaylistBtn'),
+    closeEditorBtn: $('closeEditorBtn'),
+    addToPlaylistModal: $('addToPlaylistModal'),
+    existingPlaylists: $('existingPlaylists'),
+    newPlaylistName: $('newPlaylistName'),
+    createAndAddBtn: $('createAndAddBtn'),
+    btnPlaylists: $('btnPlaylists'),
+    btnFavorites: $('btnFavorites'),
+    favoritesModal: $('favoritesModal'),
+    favoritesList: $('favoritesList'),
+    favoritesClose: $('favoritesClose'),
+    clearFavoritesBtn: $('clearFavoritesBtn'),
+    openFavoritesBtn: $('openFavoritesBtn'),
+    devModal: $('devModal'),
+    devClose: $('devClose'),
+    devCloseX: $('devCloseX'),
+    devContinueBtn: $('devContinueBtn'),
+    ctaPlay: $('ctaPlay'),
+    ctaLearn: $('ctaLearn'),
+    btnHome: $('btnHome'),
+    btnSearchNav: $('btnSearchNav')
+  };
+  let tracks = [], artists = [], favorites = JSON.parse(localStorage.getItem('demo_favs_v4')||'[]'), playlists = JSON.parse(localStorage.getItem('demo_pls_v4')||'[]'), currentIndex = -1, isPlaying=false, addingTrack=null, currentArtistTracks = [], lastQuery='top hits', extra=0;
+  const el = (t,c='')=>{const e=document.createElement(t); if(c) e.className=c; return e;};
+  const fmt = s => { if(!s||isNaN(s)) return '0:00'; const m=Math.floor(s/60); const sec=Math.floor(s%60).toString().padStart(2,'0'); return `${m}:${sec}`; };
+  const art = (url,size=400) => url ? url.replace(/100x100bb.jpg/, `${size}x${size}bb.jpg`) : '';
+  const seedImg = s => `https://picsum.photos/seed/${encodeURIComponent(s)}/600/600`;
+  const saveFavs = ()=> localStorage.setItem('demo_favs_v4', JSON.stringify(favorites));
+  const savePls = ()=> localStorage.setItem('demo_pls_v4', JSON.stringify(playlists));
+  function updateSeekUI() {
+    const max = Number(nodes.seekBar.max) || 0;
+    const val = Number(nodes.seekBar.value) || 0;
+    const percent = max ? (val / max) * 100 + '%' : '0%';
+    nodes.seekBar.style.setProperty('--seek-progress', percent);
   }
-  function closeAllMobileWidgets(){
-    if(mobileMenu) mobileMenu.style.display = 'none', mobileMenu.setAttribute('aria-hidden','true');
-    if(mobileSearchOverlay) mobileSearchOverlay.style.display = 'none', mobileSearchOverlay.setAttribute('aria-hidden','true');
+  function updateSeekBar() {
+    nodes.audio.currentTime = Number(nodes.seekBar.value);
+    updateSeekUI();
   }
-  if(mobileMenuBtn){
-    mobileMenuBtn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      if(mobileMenu.style.display === 'flex' || mobileMenu.style.display === 'block'){ mobileMenu.style.display = 'none'; mobileMenu.setAttribute('aria-hidden','true'); }
-      else { mobileMenu.style.display = 'flex'; mobileMenu.style.flexDirection = 'column'; mobileMenu.setAttribute('aria-hidden','false'); }
+  nodes.seekBar.addEventListener('input', updateSeekBar);
+  nodes.audio.addEventListener('timeupdate', () => {
+    nodes.seekBar.value = Math.max(0, nodes.audio.currentTime - 0.5);
+    updateSeekUI();
+  });
+  updateSeekUI();
+  let ticking=false;
+  nodes.audio.addEventListener('timeupdate', () => {
+    if(!ticking){ ticking=true; requestAnimationFrame(()=>{ const c=Math.floor(nodes.audio.currentTime||0), m=Math.floor(nodes.audio.duration||nodes.seekBar.max||0); nodes.curTime.textContent = fmt(c); nodes.durTime.textContent = fmt(m); ticking=false; }); }
+  });
+  nodes.volBar.addEventListener('input', e => nodes.audio.volume = Number(e.target.value));
+  nodes.audio.volume = Number(nodes.volBar.value||0.85);
+  nodes.playBtn.addEventListener('click', ()=> isPlaying? (nodes.audio.pause(), isPlaying=false, nodes.playBtn.innerHTML='<i class="fa-solid fa-play"></i>') : nodes.audio.play().then(()=>{ isPlaying=true; nodes.playBtn.innerHTML = '<i class="fa-solid fa-pause"></i>'; }).catch(()=>{}));
+  nodes.prevBtn.addEventListener('click', ()=> { if(!tracks.length) return; currentIndex = (currentIndex-1+tracks.length)%tracks.length; loadByIndex(currentIndex); play(); });
+  nodes.nextBtn.addEventListener('click', ()=> { if(!tracks.length) return; currentIndex = (currentIndex+1)%tracks.length; loadByIndex(currentIndex); play(); });
+  nodes.audio.addEventListener('loadedmetadata', ()=> { nodes.seekBar.max = Math.floor(nodes.audio.duration||0); nodes.durTime.textContent = fmt(Math.floor(nodes.audio.duration||0)); });
+  nodes.audio.addEventListener('ended', ()=> nodes.nextBtn.click());
+  function play(){ if(!nodes.audio.src){ if(tracks.length) loadByIndex(0); else { nodes.devModal.style.display='flex'; return; } } nodes.audio.play().then(()=>{ isPlaying=true; nodes.playBtn.innerHTML = '<i class="fa-solid fa-pause"></i>'; }).catch(()=>{}); }
+  function loadByIndex(i){ currentIndex = i; const t = tracks[i]; if(!t) return; nodes.audio.src = t.previewUrl; nodes.audio.load(); nodes.playerCover.src = art(t.artworkUrl100,400); nodes.playerTitle.textContent = t.trackName; nodes.playerArtist.textContent = t.artistName; }
+  async function searchAll(term, limit=LIMIT){
+    try{
+      const q=encodeURIComponent(term);
+      const [sResp,aResp] = await Promise.all([fetch(`${API}/search?term=${q}&entity=song&limit=${limit}`), fetch(`${API}/search?term=${q}&entity=musicArtist&limit=12`)]);
+      const sJ=await sResp.json(), aJ=await aResp.json();
+      return { songs:(sJ.results||[]).filter(x=>x.previewUrl), arts:(aJ.results||[]) };
+    }catch(e){ console.warn(e); return { songs:[], arts:[] }; }
+  }
+  async function getArtistTracks(artistId){
+    try{ const r=await fetch(`${API}/lookup?id=${artistId}&entity=song&limit=200`); const j=await r.json(); return (j.results||[]).filter(r=> r.wrapperType==='track' && r.previewUrl); }catch(e){ console.warn(e); return []; }
+  }
+  function renderArtists(list){
+    const root = nodes.artistsRow; root.innerHTML=''; if(!list.length){ root.innerHTML='<div class="tiny muted">Артисты не найдены</div>'; nodes.artistsCount.textContent='0'; return; }
+    const frag = document.createDocumentFragment();
+    list.forEach(a=>{ const card=el('div','artist-card'); const av=el('div','artist-avatar'); const img=el('img'); img.src = seedImg(a.artistId||a.artistName); img.style.width='100%'; img.style.height='100%'; img.style.objectFit='cover'; av.appendChild(img); const txt=el('div'); const nm=el('div'); nm.style.fontWeight='800'; nm.textContent=a.artistName; const gen=el('div'); gen.className='tiny muted'; gen.textContent=a.primaryGenreName||'—'; txt.appendChild(nm); txt.appendChild(gen); card.appendChild(av); card.appendChild(txt); card.addEventListener('click', ()=> openArtistModal(a)); frag.appendChild(card); });
+    root.appendChild(frag); nodes.artistsCount.textContent=`${list.length}`;
+  }
+  function renderTracks(list){
+    const root = nodes.tracksGrid; root.innerHTML=''; if(!list.length){ root.innerHTML='<div class="tiny muted">Треки не найдены</div>'; nodes.tracksCount.textContent='0'; return; }
+    const frag = document.createDocumentFragment();
+    list.forEach(t=>{ const card=el('div','track'); card.dataset.id=t.trackId; const img=el('img'); img.className='cover'; img.src=art(t.artworkUrl100,600); const meta=el('div','meta'); const title=el('div','title'); title.textContent=t.trackName; const sub=el('div','sub'); sub.textContent = `${t.artistName}${t.collectionName? ' — ' + t.collectionName : ''}`; const actions=el('div'); actions.className='actions'; const playBtnE=el('button'); playBtnE.className='btn btn-ghost tiny'; playBtnE.innerHTML='<i class="fa-solid fa-play"></i><span class="btn-text">Play</span>'; playBtnE.addEventListener('click', e=>{ e.stopPropagation(); ensureInTracksAndPlay(t); }); const favBtn=el('button'); favBtn.className='btn btn-ghost tiny'; favBtn.textContent = favorites.some(f=> f.trackId===t.trackId) ? '♥' : '♡'; favBtn.addEventListener('click', e=>{ e.stopPropagation(); toggleFav(t, favBtn); }); const addBtn=el('button'); addBtn.className='btn btn-ghost tiny'; addBtn.innerHTML='<i class="fa-solid fa-plus"></i><span class="btn-text">Добавить</span>'; addBtn.addEventListener('click', e=>{ e.stopPropagation(); openAddToPlaylist(t); }); actions.appendChild(playBtnE); actions.appendChild(favBtn); actions.appendChild(addBtn); meta.appendChild(title); meta.appendChild(sub); meta.appendChild(actions); card.appendChild(img); card.appendChild(meta); card.addEventListener('click', ()=> { ensureInTracksAndPlay(t); }); frag.appendChild(card); });
+    root.appendChild(frag); nodes.tracksCount.textContent=`${list.length}`;
+  }
+  function toggleFav(track, btnEl){
+    const idx = favorites.findIndex(f=> f.trackId===track.trackId);
+    if(idx>=0){ favorites.splice(idx,1); if(btnEl) btnEl.textContent='♡'; } else { favorites.unshift({ trackId:track.trackId, trackName:track.trackName, artistName:track.artistName, previewUrl:track.previewUrl, artworkUrl100:track.artworkUrl100, collectionName:track.collectionName||'' }); if(btnEl) btnEl.textContent='♥'; }
+    saveFavs(); renderFavoritesList(); renderTracks(tracks);
+  }
+  function renderFavoritesList(){
+    const root = nodes.favoritesList; root.innerHTML=''; if(!favorites.length){ root.innerHTML='<div class="tiny muted">Пусто</div>'; return; }
+    const frag = document.createDocumentFragment();
+    favorites.forEach((t,i)=>{ const row=el('div'); row.style.display='flex'; row.style.justifyContent='space-between'; row.style.alignItems='center'; row.style.padding='8px'; const left=el('div'); left.style.display='flex'; left.style.gap='12px'; left.style.alignItems='center'; const img=el('img'); img.src = art(t.artworkUrl100,200); img.style.width='56px'; img.style.height='56px'; img.style.objectFit='cover'; img.style.borderRadius='8px'; const txt=el('div'); const name=el('div'); name.style.fontWeight='800'; name.textContent=t.trackName; const artist=el('div'); artist.className='tiny muted'; artist.textContent=t.artistName; txt.appendChild(name); txt.appendChild(artist); left.appendChild(img); left.appendChild(txt); const actions=el('div'); actions.style.display='flex'; actions.style.gap='8px'; const play=el('button'); play.className='btn btn-ghost tiny'; play.innerHTML='<i class="fa-solid fa-play"></i>'; play.addEventListener('click', ()=> ensureInTracksAndPlay(t)); const remove=el('button'); remove.className='btn btn-ghost tiny'; remove.innerHTML='<i class="fa-solid fa-trash"></i>'; remove.addEventListener('click', ()=> { favorites.splice(i,1); saveFavs(); renderFavoritesList(); renderTracks(tracks); }); actions.appendChild(play); actions.appendChild(remove); row.appendChild(left); row.appendChild(actions); frag.appendChild(row); });
+    root.appendChild(frag);
+  }
+  function ensureInTracksAndPlay(t){
+    let idx = tracks.findIndex(x=> x.trackId === t.trackId);
+    if(idx===-1){ tracks.unshift(t); renderTracks(tracks); idx=0; }
+    loadByIndex(idx); play();
+  }
+  async function openArtistModal(artist){
+    nodes.artistModal.style.display='flex';
+    nodes.artistAvatar.src = seedImg(artist.artistId||artist.artistName);
+    nodes.artistModalTitle.textContent = artist.artistName;
+    nodes.artistGenre.textContent = artist.primaryGenreName||'—';
+    nodes.artistTracks.innerHTML = '<div class="tiny muted">Загрузка...</div>';
+    currentArtistTracks = await getArtistTracks(artist.artistId);
+    renderArtistTracks(currentArtistTracks);
+  }
+  function closeArtistModal(){ nodes.artistModal.style.display='none'; nodes.artistTracks.innerHTML=''; nodes.artistSearch.value=''; }
+  nodes.artistClose.addEventListener('click', closeArtistModal);
+  nodes.artistSearchBtn.addEventListener('click', ()=> {
+    const q = (nodes.artistSearch.value||'').trim().toLowerCase();
+    if(!q) return renderArtistTracks(currentArtistTracks);
+    const f = currentArtistTracks.filter(t => (t.trackName||'').toLowerCase().includes(q) || (t.collectionName||'').toLowerCase().includes(q));
+    renderArtistTracks(f);
+  });
+  nodes.artistSearch.addEventListener('keydown', e=> { if(e.key==='Enter') nodes.artistSearchBtn.click(); });
+  function renderArtistTracks(list){
+    const root = nodes.artistTracks; root.innerHTML=''; if(!list.length){ root.innerHTML='<div class="tiny muted">Треки не найдены</div>'; return; }
+    const frag = document.createDocumentFragment();
+    list.forEach(t=>{ const row=el('div'); row.style.display='flex'; row.style.justifyContent='space-between'; row.style.alignItems='center'; row.style.padding='10px'; const left=el('div'); left.style.display='flex'; left.style.gap='12px'; left.style.alignItems='center'; const img=el('img'); img.src = art(t.artworkUrl100,200); img.style.width='64px'; img.style.height='64px'; img.style.objectFit='cover'; img.style.borderRadius='8px'; const txt=el('div'); const title=el('div'); title.style.fontWeight='800'; title.textContent=t.trackName; const meta=el('div'); meta.className='tiny muted'; meta.textContent = t.collectionName||''; txt.appendChild(title); txt.appendChild(meta); left.appendChild(img); left.appendChild(txt); const actions=el('div'); actions.style.display='flex'; actions.style.gap='8px'; const play=el('button'); play.className='btn btn-ghost tiny'; play.innerHTML='<i class="fa-solid fa-play"></i>'; play.addEventListener('click', ()=> ensureInTracksAndPlay(t)); const fav=el('button'); fav.className='btn btn-ghost tiny'; fav.textContent = favorites.some(f=> f.trackId===t.trackId) ? '♥' : '♡'; fav.addEventListener('click', ()=> { toggleFav(t, fav); }); const add=el('button'); add.className='btn btn-ghost tiny'; add.innerHTML='<i class="fa-solid fa-plus"></i>'; add.addEventListener('click', ()=> openAddToPlaylist(t)); actions.appendChild(play); actions.appendChild(fav); actions.appendChild(add); row.appendChild(left); row.appendChild(actions); frag.appendChild(row); });
+    root.appendChild(frag);
+  }
+  function renderPlaylists(){
+    const root = nodes.playlistsContainer; root.innerHTML=''; if(!playlists.length) root.innerHTML = '<div class="tiny muted">Плейлистов нет</div>';
+    playlists.forEach(pl => {
+      const card = el('div'); card.style.padding='12px'; card.style.borderRadius='10px'; card.style.background='linear-gradient(180deg,#071018,#061017)';
+      const name = el('div'); name.style.fontWeight='800'; name.textContent = pl.name;
+      const info = el('div'); info.className='tiny muted'; info.textContent = `${pl.tracks.length} треков`;
+      const actions = el('div'); actions.style.display='flex'; actions.style.flexWrap='wrap'; actions.style.gap='8px'; actions.style.marginTop='10px';
+      const open = el('button'); open.className='btn tiny'; open.textContent='Открыть'; open.addEventListener('click', ()=> openPlaylistEditor(pl.id));
+      const rename = el('button'); rename.className='btn tiny'; rename.textContent='Переименовать'; rename.addEventListener('click', ()=> { const nn=prompt('Новое имя',pl.name); if(nn){ pl.name = nn.trim(); savePls(); renderPlaylists(); } });
+      const del = el('button'); del.className='btn tiny'; del.textContent='Удалить'; del.addEventListener('click', ()=> { if(confirm('Удалить плейлист?')){ playlists = playlists.filter(x=>x.id!==pl.id); savePls(); renderPlaylists(); } });
+      actions.appendChild(open); actions.appendChild(rename); actions.appendChild(del);
+      card.appendChild(name); card.appendChild(info); card.appendChild(actions);
+      root.appendChild(card);
     });
-    document.addEventListener('click', (e) => {
-      if(mobileMenu && !mobileMenu.contains(e.target) && e.target !== mobileMenuBtn) { closeAllMobileWidgets(); }
-    });
   }
-  const mPlaylists = document.getElementById('m-btnPlaylists');
-  const mFavorites = document.getElementById('m-btnFavorites');
-  const mLogin = document.getElementById('m-btnLogin');
-  const mRegister = document.getElementById('m-btnRegister');
-  if(mPlaylists){ mPlaylists.addEventListener('click', ()=>{ document.getElementById('btnPlaylists').click(); mobileMenu.style.display='none'; }); }
-  if(mFavorites){ mFavorites.addEventListener('click', ()=>{ document.getElementById('btnFavorites').click(); mobileMenu.style.display='none'; }); }
-  if(mLogin){ mLogin.addEventListener('click', ()=>{ document.getElementById('loginBtn').click(); mobileMenu.style.display='none'; }); }
-  if(mRegister){ mRegister.addEventListener('click', ()=>{ document.getElementById('registerBtn').click(); mobileMenu.style.display='none'; }); }
-  if(mobileSearchBtn){
-    mobileSearchBtn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      if(mobileSearchOverlay.style.display === 'flex'){ mobileSearchOverlay.style.display = 'none'; mobileSearchOverlay.setAttribute('aria-hidden','true'); }
-      else { mobileSearchOverlay.style.display = 'flex'; mobileSearchOverlay.setAttribute('aria-hidden','false'); mobileSearchInput.focus(); }
-    });
-    mobileSearchOverlay.addEventListener('click', (e) => {
-      if(e.target === mobileSearchOverlay){ mobileSearchOverlay.style.display = 'none'; mobileSearchOverlay.setAttribute('aria-hidden','true'); }
-    });
-    mobileSearchGo.addEventListener('click', () => {
-      const q = (mobileSearchInput.value || '').trim();
-      const mainInput = document.getElementById('searchInput');
-      if(mainInput){
-        mainInput.value = q;
-        document.getElementById('searchBtn').click();
-      }
-      mobileSearchOverlay.style.display = 'none';
-    });
-    mobileSearchClear.addEventListener('click', ()=> { mobileSearchInput.value=''; mobileSearchInput.focus(); });
+  nodes.createPlaylistBtn.addEventListener('click', ()=> { const name = prompt('Имя плейлиста'); if(!name) return; playlists.unshift({ id: Date.now().toString(36), name: name.trim(), tracks: [] }); savePls(); renderPlaylists(); });
+  nodes.btnPlaylists && nodes.btnPlaylists.addEventListener('click', ()=> { nodes.playlistsModal.style.display='flex'; renderPlaylists(); });
+  function openPlaylistEditor(id){
+    const pl = playlists.find(p=>p.id===id); if(!pl) return;
+    nodes.playlistsEditor.style.display='block';
+    nodes.editorHeader.textContent = `Плейлист: ${pl.name}`;
+    nodes.editorTracks.innerHTML='';
+    if(!pl.tracks.length) nodes.editorTracks.innerHTML = '<div class="tiny muted">Плейлист пуст</div>';
+    pl.tracks.forEach((t,i)=>{ const row=el('div'); row.style.display='flex'; row.style.justifyContent='space-between'; row.style.alignItems='center'; row.style.padding='8px'; const left=el('div'); left.style.display='flex'; left.style.alignItems='center'; left.style.gap='12px'; const img=el('img'); img.src=art(t.artworkUrl100,200); img.style.width='56px'; img.style.height='56px'; img.style.objectFit='cover'; img.style.borderRadius='8px'; const txt=el('div'); const title=el('div'); title.style.fontWeight='800'; title.textContent=t.trackName; const artist=el('div'); artist.className='tiny muted'; artist.textContent=t.artistName; txt.appendChild(title); txt.appendChild(artist); left.appendChild(img); left.appendChild(txt); const actions=el('div'); actions.style.display='flex'; actions.style.gap='8px'; const play=el('button'); play.className='btn btn-ghost tiny'; play.innerHTML='<i class="fa-solid fa-play"></i>'; play.addEventListener('click', ()=> ensureInTracksAndPlay(t)); const rem=el('button'); rem.className='btn btn-ghost tiny'; rem.innerHTML='<i class="fa-solid fa-trash"></i>'; rem.addEventListener('click', ()=> { pl.tracks.splice(i,1); savePls(); openPlaylistEditor(id); renderPlaylists(); }); actions.appendChild(play); actions.appendChild(rem); row.appendChild(left); row.appendChild(actions); nodes.editorTracks.appendChild(row); });
+    nodes.playPlaylistBtn.onclick = ()=> { if(!pl.tracks.length) return alert('Плейлист пуст'); pl.tracks.forEach(t=>{ if(!tracks.some(x=>x.trackId===t.trackId)) tracks.unshift(t); }); renderTracks(tracks); loadByIndex(0); play(); };
+    nodes.closeEditorBtn.onclick = ()=> { nodes.playlistsEditor.style.display='none'; };
   }
-
-  adaptHeaderControls();
-  window.addEventListener('resize', adaptHeaderControls);
-})();
-</script>
-<script>
-const API = 'https://itunes.apple.com';
-const LIMIT = 24;
-let tracks = [];         
-let artists = [];       
-let favorites = JSON.parse(localStorage.getItem('demo_favs_v4') || '[]');
-let playlists = JSON.parse(localStorage.getItem('demo_pls_v4') || '[]');
-let currentIndex = -1;
-let isPlaying = false;
-let addingTrack = null;
-const el = (t,c='') => { const e=document.createElement(t); if(c) e.className=c; return e; };
-const fmt = s => { if(!s||isNaN(s)) return '0:00'; const m=Math.floor(s/60); const sec=Math.floor(s%60).toString().padStart(2,'0'); return `${m}:${sec}`; };
-const art = (url,size=400) => url ? url.replace(/100x100bb.jpg/, `${size}x${size}bb.jpg`) : '';
-const seedImg = s => `https://picsum.photos/seed/${encodeURIComponent(s)}/600/600`;
-const searchInput = document.getElementById('searchInput');
-const searchBtn = document.getElementById('searchBtn');
-const clearSearchBtn = document.getElementById('clearSearch');
-const artistsRow = document.getElementById('artistsRow');
-const artistsCountEl = document.getElementById('artistsCount');
-const tracksGrid = document.getElementById('tracksGrid');
-const tracksCountEl = document.getElementById('tracksCount');
-const loadMoreBtn = document.getElementById('loadMoreBtn');
-const refreshBtn = document.getElementById('refreshBtn');
-const audio = document.getElementById('audio');
-const playerCover = document.getElementById('playerCover');
-const playerTitle = document.getElementById('playerTitle');
-const playerArtist = document.getElementById('playerArtist');
-const playBtn = document.getElementById('playBtn');
-const prevBtn = document.getElementById('prevBtn');
-const nextBtn = document.getElementById('nextBtn');
-const seekBar = document.getElementById('seekBar');
-const curTimeEl = document.getElementById('curTime');
-const durTimeEl = document.getElementById('durTime');
-const volBar = document.getElementById('volumeBar');
-const artistModal = document.getElementById('artistModal');
-const artistAvatar = document.getElementById('artistAvatar');
-const artistModalTitle = document.getElementById('artistModalTitle');
-const artistGenre = document.getElementById('artistGenre');
-const artistTracksEl = document.getElementById('artistTracks');
-const artistSearchInput = document.getElementById('artistSearch');
-const artistSearchBtn = document.getElementById('artistSearchBtn');
-const artistCloseBtn = document.getElementById('artistClose');
-const playlistsModal = document.getElementById('playlistsModal');
-const playlistsContainer = document.getElementById('playlistsContainer');
-const createPlaylistBtn = document.getElementById('createPlaylistBtn');
-const playlistsCloseBtn = document.getElementById('playlistsClose');
-const playlistEditorSection = document.getElementById('playlistEditor');
-const editorHeader = document.getElementById('editorHeader');
-const editorTracks = document.getElementById('editorTracks');
-const playPlaylistBtn = document.getElementById('playPlaylistBtn');
-const closeEditorBtn = document.getElementById('closeEditorBtn');
-const favoritesModal = document.getElementById('favoritesModal');
-const favoritesList = document.getElementById('favoritesList');
-const favoritesClose = document.getElementById('favoritesClose');
-const clearFavoritesBtn = document.getElementById('clearFavoritesBtn');
-const addToPlaylistModal = document.getElementById('addToPlaylistModal');
-const existingPlaylistsEl = document.getElementById('existingPlaylists');
-const newPlaylistNameInput = document.getElementById('newPlaylistName');
-const createAndAddBtn = document.getElementById('createAndAddBtn');
-const closeAddToPlaylistBtn = document.getElementById('closeAddToPlaylist');
-const devModal = document.getElementById('devModal');
-const devClose = document.getElementById('devClose');
-const devContinue = document.getElementById('devContinueBtn');
-const devCloseX = document.getElementById('devCloseX');
-function saveFavs(){ localStorage.setItem('demo_favs_v4', JSON.stringify(favorites)); }
-function savePls(){ localStorage.setItem('demo_pls_v4', JSON.stringify(playlists)); }
-async function searchAll(term, limit=LIMIT){
-  try {
-    const q = encodeURIComponent(term);
-    const [songsResp, artistsResp] = await Promise.all([
-      fetch(`${API}/search?term=${q}&entity=song&limit=${limit}`),
-      fetch(`${API}/search?term=${q}&entity=musicArtist&limit=12`)
-    ]);
-    const songsJson = await songsResp.json();
-    const artistsJson = await artistsResp.json();
-    const songs = (songsJson.results || []).filter(s => s.previewUrl);
-    const arts = (artistsJson.results || []);
-    return { songs, arts };
-  } catch(e) {
-    console.error(e);
-    return { songs: [], arts: [] };
+  nodes.playlistsClose.addEventListener('click', ()=> nodes.playlistsModal.style.display='none');
+  function openAddToPlaylist(track){ addingTrack = track; nodes.addToPlaylistModal.style.display='flex'; renderExistingPlaylists(); nodes.newPlaylistName.value=''; }
+  function renderExistingPlaylists(){
+    const root = nodes.existingPlaylists; root.innerHTML=''; if(!playlists.length) root.innerHTML = '<div class="tiny muted">Нет плейлистов — создайте новый</div>';
+    playlists.forEach(pl=>{ const row=el('div'); row.style.display='flex'; row.style.justifyContent='space-between'; row.style.alignItems='center'; row.style.padding='8px'; const left=el('div'); left.textContent = pl.name + ` (${pl.tracks.length})`; const addBtn=el('button'); addBtn.className='btn tiny'; addBtn.textContent='Добавить'; addBtn.addEventListener('click', ()=> { if(pl.tracks.some(t=> t.trackId===addingTrack.trackId)){ alert('Трек уже в плейлисте'); return; } pl.tracks.unshift({ trackId: addingTrack.trackId, trackName: addingTrack.trackName, artistName: addingTrack.artistName, artworkUrl100: addingTrack.artworkUrl100, previewUrl: addingTrack.previewUrl, collectionName: addingTrack.collectionName||'' }); savePls(); alert(`Добавлено в "${pl.name}"`); nodes.addToPlaylistModal.style.display='none'; }); row.appendChild(left); row.appendChild(addBtn); root.appendChild(row); });
   }
-}
-async function getArtistTracks(artistId){
-  try {
-    const resp = await fetch(`${API}/lookup?id=${artistId}&entity=song&limit=200`);
-    const json = await resp.json();
-    const songs = (json.results || []).filter(r => r.wrapperType === 'track' && r.previewUrl);
-    return songs;
-  } catch(e) {
-    console.error(e);
-    return [];
+  nodes.createAndAddBtn.addEventListener('click', ()=> { const name = (nodes.newPlaylistName.value||'').trim(); if(!name) return alert('Введите имя плейлиста'); const pl = { id: Date.now().toString(36), name, tracks: [] }; pl.tracks.unshift({ trackId: addingTrack.trackId, trackName: addingTrack.trackName, artistName: addingTrack.artistName, artworkUrl100: addingTrack.artworkUrl100, previewUrl: addingTrack.previewUrl, collectionName: addingTrack.collectionName||'' }); playlists.unshift(pl); savePls(); alert(`Плейлист "${name}" создан и трек добавлен`); nodes.addToPlaylistModal.style.display='none'; });
+  nodes.btnFavorites && nodes.btnFavorites.addEventListener('click', ()=> { nodes.favoritesModal.style.display='flex'; renderFavoritesList(); });
+  nodes.openFavoritesBtn && nodes.openFavoritesBtn.addEventListener('click', ()=> { nodes.favoritesModal.style.display='flex'; renderFavoritesList(); });
+  nodes.favoritesClose.addEventListener('click', ()=> nodes.favoritesModal.style.display='none');
+  nodes.clearFavoritesBtn.addEventListener('click', ()=> { if(confirm('Очистить избранное?')){ favorites=[]; saveFavs(); renderFavoritesList(); renderTracks(tracks); nodes.favoritesModal.style.display='none'; } });
+  function openMobileMenu(){ nodes.mobileMenu.classList.add('open'); nodes.mobileMenuBackdrop.classList.add('open'); nodes.mobileMenu.setAttribute('aria-hidden','false'); nodes.mobileMenuBackdrop.setAttribute('aria-hidden','false'); document.body.style.overflow='hidden'; }
+  function closeMobileMenu(){ nodes.mobileMenu.classList.remove('open'); nodes.mobileMenuBackdrop.classList.remove('open'); nodes.mobileMenu.setAttribute('aria-hidden','true'); nodes.mobileMenuBackdrop.setAttribute('aria-hidden','true'); document.body.style.overflow=''; }
+  function openSearchOverlay(prefill=''){ nodes.overlaySearchInput.value = prefill || (nodes.searchInput? nodes.searchInput.value : ''); nodes.overlayClear.style.display = nodes.overlaySearchInput.value ? 'inline-flex' : 'none'; nodes.searchOverlay.classList.add('open'); nodes.searchOverlay.setAttribute('aria-hidden','false'); setTimeout(()=> nodes.overlaySearchInput.focus(),60); document.body.style.overflow='hidden'; }
+  function closeSearchOverlay(){ nodes.searchOverlay.classList.remove('open'); nodes.searchOverlay.setAttribute('aria-hidden','true'); document.body.style.overflow=''; }
+  nodes.overlayCard.addEventListener('click', e=> e.stopPropagation());
+  nodes.searchOverlay.addEventListener('click', e=> { if(e.target === nodes.searchOverlay) closeSearchOverlay(); });
+  nodes.searchIconBtn && nodes.searchIconBtn.addEventListener('click', e=> { e.stopPropagation(); openSearchOverlay(); });
+  nodes.overlaySearchInput.addEventListener('keydown', e=> { if(e.key === 'Enter') nodes.overlaySearchGo.click(); });
+  nodes.overlaySearchInput.addEventListener('input', ()=> nodes.overlayClear.style.display = nodes.overlaySearchInput.value ? 'inline-flex' : 'none');
+  nodes.overlaySearchGo.addEventListener('click', ()=> { if(nodes.searchInput) nodes.searchInput.value = nodes.overlaySearchInput.value || ''; doSearch((nodes.overlaySearchInput.value||'').trim()||'top hits'); closeSearchOverlay(); });
+  nodes.overlayClear.addEventListener('click', ()=> { nodes.overlaySearchInput.value=''; nodes.overlaySearchInput.focus(); nodes.overlayClear.style.display='none'; });
+  if(nodes.searchInput){ nodes.searchInput.addEventListener('keydown', e=> { if(e.key==='Enter') nodes.searchBtn.click(); }); nodes.searchInput.addEventListener('input', ()=> nodes.clearSearch.style.display = nodes.searchInput.value ? 'inline-flex' : 'none'); }
+  nodes.clearSearch && nodes.clearSearch.addEventListener('click', ()=> { if(nodes.searchInput) nodes.searchInput.value=''; nodes.clearSearch.style.display='none'; nodes.searchBtn.click(); });
+  let resizeT; function adaptHeaderControls(){ const w=window.innerWidth; document.querySelectorAll('.mobile-toggle').forEach(n=> n.style.display = w<=640 ? 'flex' : 'none'); if(w<=1500){ if(nodes.searchInput) nodes.searchInput.style.display='none'; document.querySelectorAll('.search-icon-btn').forEach(n=> n.style.display='flex'); } else { if(nodes.searchInput) nodes.searchInput.style.display='block'; document.querySelectorAll('.search-icon-btn').forEach(n=> n.style.display='none'); closeSearchOverlay(); } document.querySelectorAll('.btn .btn-text').forEach(n=> n.style.display = w<=900 ? 'none' : 'inline-block'); }
+  window.addEventListener('resize', ()=>{ clearTimeout(resizeT); resizeT = setTimeout(adaptHeaderControls,120); }); adaptHeaderControls();
+  nodes.mobileMenuBtn && nodes.mobileMenuBtn.addEventListener('click', e=> { e.stopPropagation(); openMobileMenu(); });
+  nodes.mobileMenuClose && nodes.mobileMenuClose.addEventListener('click', closeMobileMenu);
+  nodes.mobileMenuBackdrop.addEventListener('click', closeMobileMenu);
+  document.addEventListener('keydown', e=> { if(e.key==='Escape'){ closeSearchOverlay(); closeMobileMenu(); } if(e.code==='Space' && document.activeElement.tagName!=='INPUT' && document.activeElement.tagName!=='TEXTAREA'){ e.preventDefault(); if(isPlaying){ nodes.audio.pause(); isPlaying=false; nodes.playBtn.innerHTML='<i class="fa-solid fa-play"></i>' } else play(); } });
+  const mapBtns = [
+    {id:'m-btnHome', action: ()=> { if(nodes.searchInput) nodes.searchInput.value=''; nodes.searchBtn.click(); }},
+    {id:'m-btnForYou', action: ()=> nodes.devModal.style.display='flex'},
+    {id:'m-btnNew', action: ()=> nodes.devModal.style.display='flex'},
+    {id:'m-btnPlaylists', action: ()=> { nodes.playlistsModal.style.display='flex'; renderPlaylists(); }},
+    {id:'m-btnFavorites', action: ()=> { nodes.favoritesModal.style.display='flex'; renderFavoritesList(); }},
+    {id:'m-btnLogin', action: ()=> nodes.devModal.style.display='flex'},
+    {id:'m-btnRegister', action: ()=> nodes.devModal.style.display='flex'}
+  ];
+  mapBtns.forEach(entry=>{ const elm = $(entry.id); if(elm) elm.addEventListener('click', e=> { e.stopPropagation(); closeMobileMenu(); try{ entry.action(); }catch(err){ console.warn(err); nodes.devModal.style.display='flex'; } }); });
+  const sidebarMap = [
+    {id:'btnPlaylists', action: ()=> nodes.playlistsModal.style.display='flex' },
+    {id:'btnFavorites', action: ()=> nodes.favoritesModal.style.display='flex' },
+    {id:'btnSearchNav', action: ()=> openSearchOverlay() },
+    {id:'btnHome', action: ()=> { if(nodes.searchInput) nodes.searchInput.value=''; nodes.searchBtn.click(); } },
+    {id:'btnForYou', action: ()=> nodes.devModal.style.display='flex' },
+    {id:'btnNew', action: ()=> nodes.devModal.style.display='flex' }
+  ];
+  sidebarMap.forEach(entry=>{ const el = $(entry.id); if(el) el.addEventListener('click', e=> { e.stopPropagation(); try{ entry.action(); }catch(err){ nodes.devModal.style.display='flex'; } }); });
+  nodes.devClose && nodes.devClose.addEventListener('click', ()=> nodes.devModal.style.display='none');
+  nodes.devContinueBtn && nodes.devContinueBtn.addEventListener('click', ()=> nodes.devModal.style.display='none');
+  nodes.devCloseX && nodes.devCloseX.addEventListener('click', ()=> nodes.devModal.style.display='none');
+  document.querySelectorAll('.modal-backdrop').forEach(back => back.addEventListener('click', e=> { if(e.target===back) back.style.display='none'; }));
+  async function doSearch(q, limit = LIMIT){
+    if(!q) q='top hits';
+    lastQuery=q;
+    const sBtn = nodes.searchBtn; const old = sBtn.innerHTML;
+    sBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+    const { songs, arts } = await searchAll(q, limit + extra);
+    tracks = songs; artists = arts;
+    renderArtists(artists); renderTracks(tracks);
+    sBtn.innerHTML = '<i class="fa-solid fa-magnifying-glass"></i><span class="btn-text">Поиск</span>';
+    nodes.clearSearch.style.display = (q && q!=='top hits') ? 'inline-flex' : 'none';
+    nodes.searchOverlay.classList.remove('open'); nodes.searchOverlay.setAttribute('aria-hidden','true');
   }
-}
-function renderArtists(list){
-  artistsRow.innerHTML = '';
-  if(!list.length){ artistsRow.innerHTML = '<div class="tiny muted">Артисты не найдены</div>'; artistsCountEl.textContent='0'; return; }
-  list.forEach(a => {
-    const card = el('div','artist-card');
-    const avatar = el('div','artist-avatar'); const img = el('img'); img.src = seedImg(a.artistId || a.artistName); img.style.width='100%'; img.style.height='100%'; img.style.objectFit='cover'; avatar.appendChild(img);
-    const txt = el('div'); const nm = el('div'); nm.style.fontWeight='700'; nm.textContent = a.artistName; const gen = el('div'); gen.className='tiny muted'; gen.textContent = a.primaryGenreName || '—';
-    txt.appendChild(nm); txt.appendChild(gen);
-    card.appendChild(avatar); card.appendChild(txt);
-    card.addEventListener('click', ()=> openArtistModal(a));
-    artistsRow.appendChild(card);
-  });
-  artistsCountEl.textContent = `${list.length}`;
-}
-function renderTracks(list){
-  tracksGrid.innerHTML = '';
-  if(!list.length){ tracksGrid.innerHTML = '<div class="tiny muted">Треки не найдены</div>'; tracksCountEl.textContent='0'; return; }
-  list.forEach(t => {
-    const card = el('div','track');
-    card.dataset.id = t.trackId;
-    const img = el('img'); img.className='cover'; img.src = art(t.artworkUrl100,600);
-    const meta = el('div','meta');
-    const title = el('div','title'); title.textContent = t.trackName;
-    const sub = el('div','sub'); sub.textContent = `${t.artistName}${t.collectionName ? ' — ' + t.collectionName : ''}`;
-    meta.appendChild(title); meta.appendChild(sub);
-    const actions = el('div'); actions.style.display='flex'; actions.style.gap='8px'; actions.style.marginTop='10px';
-    const play = el('button'); play.className='btn btn-ghost tiny'; play.textContent='Play'; play.onclick = (e)=>{ e.stopPropagation(); loadById(t.trackId); playAudio(); };
-    const fav = el('button'); fav.className='btn btn-ghost tiny'; fav.textContent = favorites.some(f=> f.trackId===t.trackId) ? '♥' : '♡'; fav.onclick = (e)=>{ e.stopPropagation(); toggleFav(t, fav); };
-    const add = el('button'); add.className='btn btn-ghost tiny'; add.textContent='Добавить'; add.onclick = (e)=>{ e.stopPropagation(); openAddToPlaylist(t); };
-    actions.appendChild(play); actions.appendChild(fav); actions.appendChild(add);
-    meta.appendChild(actions);
-    card.appendChild(img); card.appendChild(meta);
-    card.onclick = ()=> { loadById(t.trackId); playAudio(); };
-    tracksGrid.appendChild(card);
-  });
-  tracksCountEl.textContent = `${list.length}`;
-}
-
-function toggleFav(track, btnEl){
-  const idx = favorites.findIndex(f=> f.trackId === track.trackId);
-  if(idx >= 0){ favorites.splice(idx,1); if(btnEl) btnEl.textContent='♡'; }
-  else { favorites.unshift({ trackId: track.trackId, trackName: track.trackName, artistName: track.artistName, previewUrl: track.previewUrl, artworkUrl100: track.artworkUrl100, collectionName: track.collectionName || '' }); if(btnEl) btnEl.textContent='♥'; }
-  saveFavs(); renderFavoritesList(); renderTracks(tracks);
-}
-function renderFavoritesList(){
-  favoritesList.innerHTML = '';
-  if(!favorites.length){ favoritesList.innerHTML = '<div class="tiny muted">Пусто</div>'; return; }
-  favorites.forEach((t,i)=>{
-    const row = el('div'); row.style.display='flex'; row.style.justifyContent='space-between'; row.style.alignItems='center'; row.style.padding='8px';
-    const left = el('div'); left.style.display='flex'; left.style.gap='12px'; left.style.alignItems='center';
-    const img = el('img'); img.src = art(t.artworkUrl100,200); img.style.width='56px'; img.style.height='56px'; img.style.objectFit='cover'; img.style.borderRadius='8px';
-    const txt = el('div'); const name = el('div'); name.style.fontWeight='700'; name.textContent = t.trackName; const artist = el('div'); artist.className='tiny muted'; artist.textContent = t.artistName;
-    txt.appendChild(name); txt.appendChild(artist); left.appendChild(img); left.appendChild(txt);
-    const actions = el('div'); actions.style.display='flex'; actions.style.gap='8px';
-    const play = el('button'); play.className='btn btn-ghost tiny'; play.textContent='Play'; play.onclick = ()=> { ensureInTracksAndPlay(t); };
-    const remove = el('button'); remove.className='btn btn-ghost tiny'; remove.textContent='Удалить'; remove.onclick = ()=> { favorites.splice(i,1); saveFavs(); renderFavoritesList(); renderTracks(tracks); };
-    actions.appendChild(play); actions.appendChild(remove);
-    row.appendChild(left); row.appendChild(actions);
-    favoritesList.appendChild(row);
-  });
-}
-function loadById(trackId){
-  const idx = tracks.findIndex(t=> Number(t.trackId) === Number(trackId));
-  if(idx === -1) return;
-  currentIndex = idx;
-  const t = tracks[idx];
-  audio.src = t.previewUrl;
-  audio.load();
-  playerCover.src = art(t.artworkUrl100,400);
-  playerTitle.textContent = t.trackName;
-  playerArtist.textContent = t.artistName;
-}
-function playAudio(){ if(!audio.src){ if(tracks.length) loadById(tracks[0].trackId); else return; } audio.play().then(()=>{ isPlaying=true; playBtn.textContent='⏸'; }).catch(()=>{}); }
-function pauseAudio(){ audio.pause(); isPlaying=false; playBtn.textContent='⏵'; }
-playBtn.addEventListener('click', ()=> { if(isPlaying) pauseAudio(); else playAudio(); });
-prevBtn.addEventListener('click', ()=> { if(!tracks.length) return; currentIndex = (currentIndex-1+tracks.length)%tracks.length; loadById(tracks[currentIndex].trackId); playAudio(); });
-nextBtn.addEventListener('click', ()=> { if(!tracks.length) return; currentIndex = (currentIndex+1)%tracks.length; loadById(tracks[currentIndex].trackId); playAudio(); });
-audio.addEventListener('loadedmetadata', ()=> { seekBar.max = Math.floor(audio.duration||0); durTimeEl.textContent = fmt(Math.floor(audio.duration||0)); });
-audio.addEventListener('timeupdate', ()=> { seekBar.value = Math.floor(audio.currentTime||0); curTimeEl.textContent = fmt(Math.floor(audio.currentTime||0)); });
-audio.addEventListener('ended', ()=> nextBtn.click());
-seekBar.addEventListener('input', (e)=> audio.currentTime = Number(e.target.value));
-volBar.addEventListener('input', e => audio.volume = Number(e.target.value));
-audio.volume = Number(volBar.value||0.85);
-let currentArtistTracks = [];
-async function openArtistModal(artist){
-  artistModal.style.display = 'flex';
-  artistAvatar.src = seedImg(artist.artistId || artist.artistName);
-  artistModalTitle.textContent = artist.artistName;
-  artistGenre.textContent = artist.primaryGenreName || '—';
-  artistTracksEl.innerHTML = '<div class="tiny muted">Загрузка...</div>';
-  currentArtistTracks = await getArtistTracks(artist.artistId);
-  renderArtistTracks(currentArtistTracks);
-}
-function closeArtistModal(){ artistModal.style.display='none'; artistTracksEl.innerHTML=''; artistSearchInput.value=''; }
-artistCloseBtn.addEventListener('click', closeArtistModal);
-artistSearchBtn.addEventListener('click', ()=> {
-  const q = (artistSearchInput.value||'').trim().toLowerCase();
-  if(!q) return renderArtistTracks(currentArtistTracks);
-  const filtered = currentArtistTracks.filter(t => (t.trackName||'').toLowerCase().includes(q) || (t.collectionName||'').toLowerCase().includes(q));
-  renderArtistTracks(filtered);
-});
-artistSearchInput.addEventListener('keydown',(e)=>{ if(e.key==='Enter') artistSearchBtn.click(); });
-function renderArtistTracks(list){
-  artistTracksEl.innerHTML = '';
-  if(!list.length){ artistTracksEl.innerHTML = '<div class="tiny muted">Треки не найдены</div>'; return; }
-  list.forEach(t => {
-    const row = el('div'); row.style.display='flex'; row.style.justifyContent='space-between'; row.style.alignItems='center'; row.style.padding='10px';
-    const left = el('div'); left.style.display='flex'; left.style.gap='12px'; left.style.alignItems='center';
-    const img = el('img'); img.src = art(t.artworkUrl100,200); img.style.width='64px'; img.style.height='64px'; img.style.objectFit='cover'; img.style.borderRadius='8px';
-    const txt = el('div'); const title = el('div'); title.style.fontWeight='700'; title.textContent = t.trackName; const meta = el('div'); meta.className='tiny muted'; meta.textContent = t.collectionName || '';
-    txt.appendChild(title); txt.appendChild(meta);
-    left.appendChild(img); left.appendChild(txt);
-    const actions = el('div'); actions.style.display='flex'; actions.style.gap='8px';
-    const play = el('button'); play.className='btn btn-ghost tiny'; play.textContent='Play'; play.onclick = ()=> { ensureInTracksAndPlay(t); };
-    const fav = el('button'); fav.className='btn btn-ghost tiny'; fav.textContent = favorites.some(f=> f.trackId===t.trackId) ? '♥' : '♡'; fav.onclick = ()=> { toggleFav(t, fav); };
-    const add = el('button'); add.className='btn btn-ghost tiny'; add.textContent='Add'; add.onclick = ()=> { openAddToPlaylist(t); };
-    actions.appendChild(play); actions.appendChild(fav); actions.appendChild(add);
-    row.appendChild(left); row.appendChild(actions);
-    artistTracksEl.appendChild(row);
-  });
-}
-function renderPlaylists(){
-  playlistsContainer.innerHTML = '';
-  if(!playlists.length) playlistsContainer.innerHTML = '<div class="tiny muted">Плейлистов нет</div>';
-  playlists.forEach(pl => {
-    const card = el('div'); card.style.padding='12px'; card.style.borderRadius='10px'; card.style.background='linear-gradient(180deg,#071018,#061017)';
-    const name = el('div'); name.style.fontWeight='700'; name.textContent = pl.name;
-    const info = el('div'); info.className='tiny muted'; info.textContent = `${pl.tracks.length} треков`;
-    const actions = el('div'); actions.style.display='flex'; actions.style.gap='8px'; actions.style.marginTop='10px';
-    const open = el('button'); open.className='btn btn-ghost tiny'; open.textContent='Открыть'; open.onclick = ()=> openPlaylistEditor(pl.id);
-    const rename = el('button'); rename.className='btn btn-ghost tiny'; rename.textContent='Переименовать'; rename.onclick = ()=> { const nn=prompt('Новое имя',pl.name); if(nn){ pl.name = nn.trim(); savePls(); renderPlaylists(); } };
-    const del = el('button'); del.className='btn btn-ghost tiny'; del.textContent='Удалить'; del.onclick = ()=> { if(confirm('Удалить плейлист?')){ playlists = playlists.filter(x=>x.id!==pl.id); savePls(); renderPlaylists(); } };
-    actions.appendChild(open); actions.appendChild(rename); actions.appendChild(del);
-    card.appendChild(name); card.appendChild(info); card.appendChild(actions);
-    playlistsContainer.appendChild(card);
-  });
-}
-createPlaylistBtn.addEventListener('click', ()=> {
-  const name = prompt('Имя плейлиста'); if(!name) return;
-  playlists.unshift({ id: Date.now().toString(36), name: name.trim(), tracks: [] }); savePls(); renderPlaylists();
-});
-document.getElementById('btnPlaylists').addEventListener('click', ()=> { playlistsModal.style.display='flex'; renderPlaylists(); });
-function openPlaylistEditor(id){
-  const pl = playlists.find(p=>p.id===id); if(!pl) return;
-  playlistEditorSection.style.display='block';
-  editorHeader.textContent = `Плейлист: ${pl.name}`;
-  editorTracks.innerHTML = ''; 
-  if(!pl.tracks.length) editorTracks.innerHTML = '<div class="tiny muted">Плейлист пуст</div>';
-  pl.tracks.forEach((t,i) => {
-    const row = el('div'); row.style.display='flex'; row.style.justifyContent='space-between'; row.style.alignItems='center'; row.style.padding='8px';
-    const left = el('div'); left.style.display='flex'; left.style.alignItems='center'; left.style.gap='12px';
-    const img = el('img'); img.src = art(t.artworkUrl100,200); img.style.width='56px'; img.style.height='56px'; img.style.objectFit='cover'; img.style.borderRadius='8px';
-    const txt = el('div'); const title = el('div'); title.style.fontWeight='700'; title.textContent = t.trackName; const artist = el('div'); artist.className='tiny muted'; artist.textContent = t.artistName;
-    txt.appendChild(title); txt.appendChild(artist); left.appendChild(img); left.appendChild(txt);
-    const actions = el('div'); actions.style.display='flex'; actions.style.gap='8px';
-    const play = el('button'); play.className='btn btn-ghost tiny'; play.textContent='Play'; play.onclick = ()=> ensureInTracksAndPlay(t);
-    const rem = el('button'); rem.className='btn btn-ghost tiny'; rem.textContent='Удалить'; rem.onclick = ()=> { pl.tracks.splice(i,1); savePls(); openPlaylistEditor(id); renderPlaylists(); };
-    actions.appendChild(play); actions.appendChild(rem);
-    row.appendChild(left); row.appendChild(actions);
-    editorTracks.appendChild(row);
-  });
-  playPlaylistBtn.onclick = ()=> { if(!pl.tracks.length) return alert('Плейлист пуст'); pl.tracks.forEach(t=>{ if(!tracks.some(x=>x.trackId===t.trackId)) tracks.unshift(t); }); renderTracks(tracks); loadById(pl.tracks[0].trackId); playAudio(); };
-  closeEditorBtn.onclick = ()=> { playlistEditorSection.style.display='none'; };
-}
-playlistsCloseBtn.addEventListener('click', ()=> playlistsModal.style.display='none');
-
-function openAddToPlaylist(track){
-  addingTrack = track;
-  addToPlaylistModal.style.display = 'flex';
-  renderExistingPlaylists();
-  newPlaylistNameInput.value = '';
-}
-function renderExistingPlaylists(){
-  existingPlaylistsEl.innerHTML = '';
-  if(!playlists.length) existingPlaylistsEl.innerHTML = '<div class="tiny muted">Нет плейлистов — создайте новый</div>';
-  playlists.forEach(pl => {
-    const row = el('div'); row.style.display='flex'; row.style.justifyContent='space-between'; row.style.alignItems='center'; row.style.padding='8px';
-    const left = el('div'); left.textContent = pl.name + ` (${pl.tracks.length})`;
-    const addBtn = el('button'); addBtn.className='btn btn-ghost tiny'; addBtn.textContent='Добавить';
-    addBtn.onclick = ()=> {
-      if(pl.tracks.some(t => t.trackId === addingTrack.trackId)) { alert('Трек уже в плейлисте'); return; }
-      pl.tracks.unshift({ trackId: addingTrack.trackId, trackName: addingTrack.trackName, artistName: addingTrack.artistName, artworkUrl100: addingTrack.artworkUrl100, previewUrl: addingTrack.previewUrl, collectionName: addingTrack.collectionName || '' });
-      savePls(); alert(`Добавлено в "${pl.name}"`); addToPlaylistModal.style.display='none';
-    };
-    row.appendChild(left); row.appendChild(addBtn);
-    existingPlaylistsEl.appendChild(row);
-  });
-}
-createAndAddBtn.addEventListener('click', ()=> {
-  const name = (newPlaylistNameInput.value || '').trim();
-  if(!name) return alert('Введите имя плейлиста');
-  const pl = { id: Date.now().toString(36), name, tracks: [] };
-  pl.tracks.unshift({ trackId: addingTrack.trackId, trackName: addingTrack.trackName, artistName: addingTrack.artistName, artworkUrl100: addingTrack.artworkUrl100, previewUrl: addingTrack.previewUrl, collectionName: addingTrack.collectionName || '' });
-  playlists.unshift(pl);
-  savePls();
-  alert(`Плейлист "${name}" создан и трек добавлен`);
-  addToPlaylistModal.style.display='none';
-});
-closeAddToPlaylistBtn.addEventListener('click', ()=> addToPlaylistModal.style.display='none');
-document.getElementById('btnFavorites').addEventListener('click', ()=> { favoritesModal.style.display='flex'; renderFavoritesList(); });
-document.getElementById('openFavoritesBtn').addEventListener('click', ()=> { favoritesModal.style.display='flex'; renderFavoritesList(); });
-favoritesClose.addEventListener('click', ()=> favoritesModal.style.display='none');
-clearFavoritesBtn.addEventListener('click', ()=> { if(confirm('Очистить избранное?')){ favorites=[]; saveFavs(); renderFavoritesList(); renderTracks(tracks); favoritesModal.style.display='none'; } });
-function ensureInTracksAndPlay(t){
-  let idx = tracks.findIndex(x=> x.trackId === t.trackId);
-  if(idx === -1){ tracks.unshift(t); renderTracks(tracks); idx = 0; }
-  loadById(tracks[idx].trackId); playAudio();
-}
-
-let lastQuery = 'top hits';
-let extra = 0;
-async function doSearch(q, limit=LIMIT){
-  if(!q) q='top hits';
-  lastQuery = q;
-  document.getElementById('searchBtn').textContent = 'Загрузка...';
-  const { songs, arts } = await searchAll(q, limit + extra);
-  tracks = songs; artists = arts;
-  renderArtists(artists);
-  renderTracks(tracks);
-  document.getElementById('searchBtn').textContent = 'Поиск';
-  clearSearchBtn.style.display = q ? 'inline-block' : 'none';
-}
-searchBtn.addEventListener('click', ()=> doSearch(searchInput.value.trim() || 'top hits'));
-searchInput.addEventListener('keydown', e=> { if(e.key==='Enter') searchBtn.click(); });
-clearSearchBtn.addEventListener('click', ()=> { searchInput.value=''; clearSearchBtn.style.display='none'; doSearch('top hits'); });
-loadMoreBtn.addEventListener('click', ()=> { extra += LIMIT; doSearch(lastQuery); });
-refreshBtn.addEventListener('click', ()=> doSearch(lastQuery));
-const devButtons = ['loginBtn', 'registerBtn', 'btnForYou','btnNew','ctaLearn'];
-devButtons.forEach(id => { const n=document.getElementById(id); if(n) n.addEventListener('click', ()=> { devModal.style.display='flex'; }); });
-devClose.addEventListener('click', ()=> devModal.style.display='none'); devContinue.addEventListener('click', ()=> devModal.style.display='none'); devCloseX.addEventListener('click', ()=> devModal.style.display='none');
-document.querySelectorAll('.modal-backdrop').forEach(back => back.addEventListener('click', e => { if(e.target === back) back.style.display = 'none'; }));
-document.addEventListener('keydown', e => {
-  if(e.key === 'Escape') document.querySelectorAll('.modal-backdrop').forEach(m => m.style.display='none');
-  if(e.code === 'Space' && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA'){ e.preventDefault(); if(isPlaying) pauseAudio(); else playAudio(); }
-});
-(async function init(){
-  await doSearch('top hits');
-  renderFavoritesList();
-  renderPlaylists();
-  if(tracks.length) loadById(tracks[0].trackId);
-  function adj(){ const p=document.getElementById('player'); document.querySelector('main').style.paddingBottom = (p.offsetHeight + 40) + 'px'; }
-  window.addEventListener('resize', adj); adj();
+  nodes.searchBtn.addEventListener('click', ()=> doSearch((nodes.searchInput.value||'').trim() || 'top hits'));
+  nodes.overlaySearchGo.addEventListener('click', ()=> { const v = (nodes.overlaySearchInput.value||'').trim(); if(nodes.searchInput) nodes.searchInput.value = v; doSearch(v||'top hits'); });
+  nodes.loadMoreBtn.addEventListener('click', ()=> { extra += LIMIT; doSearch(lastQuery); });
+  nodes.refreshBtn.addEventListener('click', ()=> doSearch(lastQuery));
+  const devButtons = ['loginBtn','registerBtn','btnForYou','btnNew','ctaLearn']; devButtons.forEach(id=>{ const n = $(id); if(n) n.addEventListener('click', ()=> nodes.devModal.style.display='flex'); });
+  document.addEventListener('keydown', e=> { if(e.key==='Escape') document.querySelectorAll('.modal-backdrop').forEach(m=> m.style.display='none'); });
+  (async function init(){
+    await doSearch('top hits');
+    renderFavoritesList(); renderPlaylists();
+    if(tracks.length) loadByIndex(0);
+    function adjust(){ const p = $('player'); document.querySelector('main').style.paddingBottom = (p.offsetHeight + 40) + 'px'; }
+    window.addEventListener('resize', ()=> { clearTimeout(resizeT); resizeT = setTimeout(adaptHeaderControls,120); adjust(); });
+    adjust();
+  })();
 })();
 </script>
 </body>
