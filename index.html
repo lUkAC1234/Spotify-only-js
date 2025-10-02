@@ -449,33 +449,69 @@ main{padding:20px;box-sizing:border-box;min-width:0}
   nodes.audio.addEventListener('ended', ()=> nodes.nextBtn.click());
   function play(){ if(!nodes.audio.src){ if(tracks.length) loadByIndex(0); else { nodes.devModal.style.display='flex'; return; } } nodes.audio.play().then(()=>{ isPlaying=true; nodes.playBtn.innerHTML = '<i class="fa-solid fa-pause"></i>'; }).catch(()=>{}); }
   function loadByIndex(i){ currentIndex = i; const t = tracks[i]; if(!t) return; nodes.audio.src = t.previewUrl; nodes.audio.load(); nodes.playerCover.src = art(t.artworkUrl100,400); nodes.playerTitle.textContent = t.trackName; nodes.playerArtist.textContent = t.artistName; }
-  async function searchAll(term, limit=LIMIT){
-    try{
-      const q = encodeURIComponent(term);
-      const proxy = url => 'https://api.allorigins.win/raw?url=' + encodeURIComponent(url);
+  async function searchAll(term, limit = LIMIT) {
+    const q = encodeURIComponent(term);
+    const proxyList = [
+      'https://api.allorigins.win/raw?url=',
+      'https://api.codetabs.com/v1/proxy?quest=' 
+    ];
+
+    async function fetchWithRetry(url) {
+      for (const base of proxyList) {
+        try {
+          const controller = new AbortController();
+          const timeout = setTimeout(() => controller.abort(), 15000); 
+          const res = await fetch(base + encodeURIComponent(url), { signal: controller.signal });
+          clearTimeout(timeout);
+          if (res.ok) return await res.json();
+        } catch (err) {
+          console.warn('Proxy failed:', base, err);
+        }
+      }
+      throw new Error('All proxies failed');
+    }
+    try {
       const songsUrl = `${API}/search?term=${q}&entity=song&limit=${limit}`;
       const artsUrl  = `${API}/search?term=${q}&entity=musicArtist&limit=12`;
-      const [sResp, aResp] = await Promise.all([
-        fetch(proxy(songsUrl)),
-        fetch(proxy(artsUrl))
+      const [sJ, aJ] = await Promise.all([
+        fetchWithRetry(songsUrl),
+        fetchWithRetry(artsUrl)
       ]);
-      const sJ = await sResp.json();
-      const aJ = await aResp.json();
-      return { songs: (sJ.results||[]).filter(x=>x.previewUrl), arts: (aJ.results||[]) };
-    }catch(e){
-      console.warn(e);
+      return {
+        songs: (sJ.results || []).filter(x => x.previewUrl),
+        arts : (aJ.results || [])
+      };
+    } catch (e) {
+      console.warn('searchAll error', e);
       return { songs: [], arts: [] };
     }
   }
-  async function getArtistTracks(artistId){
-    try{
-      const proxy = url => 'https://api.allorigins.win/raw?url=' + encodeURIComponent(url);
+
+  async function getArtistTracks(artistId) {
+    const proxyList = [
+      'https://api.allorigins.win/raw?url=',
+      'https://api.codetabs.com/v1/proxy?quest='
+    ];
+    async function fetchWithRetry(url) {
+      for (const base of proxyList) {
+        try {
+          const controller = new AbortController();
+          const timeout = setTimeout(() => controller.abort(), 15000);
+          const res = await fetch(base + encodeURIComponent(url), { signal: controller.signal });
+          clearTimeout(timeout);
+          if (res.ok) return await res.json();
+        } catch (err) {
+          console.warn('Proxy failed:', base, err);
+        }
+      }
+      throw new Error('All proxies failed');
+    }
+    try {
       const url = `${API}/lookup?id=${artistId}&entity=song&limit=200`;
-      const r = await fetch(proxy(url));
-      const j = await r.json();
-      return (j.results||[]).filter(r=> r.wrapperType==='track' && r.previewUrl);
-    }catch(e){
-      console.warn(e);
+      const j = await fetchWithRetry(url);
+      return (j.results || []).filter(r => r.wrapperType === 'track' && r.previewUrl);
+    } catch (e) {
+      console.warn('getArtistTracks error', e);
       return [];
     }
   }
