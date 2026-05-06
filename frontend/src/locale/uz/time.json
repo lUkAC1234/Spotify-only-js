@@ -1,0 +1,36 @@
+{
+    "dateMonths": [
+        "Yanvar",
+        "Fevral",
+        "Mart",
+        "Aprel",
+        "May",
+        "Iyun",
+        "Iyul",
+        "Avgust",
+        "Sentyabr",
+        "Oktyabr",
+        "Noyabr",
+        "Dekabr"
+    ],
+    "dateMonths2": [
+        "Yanvar",
+        "Fevral",
+        "Mart",
+        "Aprel",
+        "May",
+        "Iyun",
+        "Iyul",
+        "Avgust",
+        "Sentyabr",
+        "Oktyabr",
+        "Noyabr",
+        "Dekabr"
+    ],
+    "dateMonthsShort": ["Yan", "Fev", "Mart", "Apr", "May", "Iyun", "Iyul", "Avg", "Sen", "Okt", "Noy", "Dek"],
+    "weekdays": ["Yakshanba", "Dushanba", "Seshanba", "Chorshanba", "Payshanba", "Juma", "Shanba"],
+    "weekdaysShort": ["Ya", "Du", "Se", "Cho", "Pa", "Ju", "Sha"],
+    "weekdaysMin": ["Ya", "Du", "Se", "Cho", "Pa", "Ju", "Sha"],
+    "days": ["Ya", "Du", "Se", "Cho", "Pa", "Ju", "Sha"],
+    "months": ["Yan", "Fev", "Mart", "Apr", "May", "Iyun", "Iyul", "Avg", "Sen", "Okt", "Noy", "Dek"]
+}

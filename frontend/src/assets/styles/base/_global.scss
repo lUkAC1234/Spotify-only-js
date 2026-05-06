@@ -1,0 +1,45 @@
+@use "@/assets/styles/helpers/functions";
+@use "@/assets/styles/helpers/variables";
+@use "@/assets/styles/components/scrollbar";
+@use "sass:color";
+
+html {
+    height: 100%;
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+    -ms-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    -webkit-font-smoothing: antialiased;
+}
+
+.hide-scrollbar {
+    overflow-y: hidden !important;
+    touch-action: none;
+    overscroll-behavior: none;
+    -ms-touch-action: none;
+}
+
+body {
+    height: 100%;
+    font-feature-settings:
+        "pnum" on,
+        "lnum" on;
+    background-color: var(--container-bg);
+    transition: background-color 300ms ease-in-out;
+}
+
+hr {
+    position: relative;
+    border: none;
+    height: functions.rem(2);
+    z-index: var(--z-content);
+    background: var(--hr-border-color);
+}
+
+#app {
+    height: 100%;
+}
+
+* {
+    @extend .scrollbar;
+}

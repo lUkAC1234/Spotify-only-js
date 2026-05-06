@@ -1,0 +1,16 @@
+@use "@/assets/styles/helpers/functions";
+
+.home {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 100dvh;
+    padding: functions.rem(24);
+    background: var(--bg);
+}
+
+.title {
+    color: var(--text-color);
+    text-align: center;
+}

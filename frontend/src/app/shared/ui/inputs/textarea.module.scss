@@ -1,0 +1,45 @@
+@use "@/assets/styles/helpers/functions";
+
+.textarea {
+    transition: all 300ms ease-in-out;
+    outline: none;
+    background: var(--input-bg);
+    color: var(--text-color);
+    border-radius: var(--inner-radius);
+    border: functions.rem(2) solid transparent;
+    padding: var(--base-padding);
+    font-size: functions.rem(16);
+    resize: vertical;
+    min-height: functions.rem(100);
+    max-height: functions.rem(200);
+
+    @media screen and (max-width: 639px) {
+        font-size: functions.rem(20);
+    }
+
+    &--fullwidth {
+        width: 100%;
+    }
+
+    &--rounded {
+        border-radius: functions.rem(999);
+    }
+
+    &:focus {
+        border-color: var(--accent-color);
+    }
+
+    &::placeholder {
+        font-size: functions.rem(16);
+    }
+}
+
+:root[data-theme="dark"] {
+    .textarea {
+        border-color: var(--border-color);
+
+        &:focus {
+            border-color: var(--accent-color);
+        }
+    }
+}

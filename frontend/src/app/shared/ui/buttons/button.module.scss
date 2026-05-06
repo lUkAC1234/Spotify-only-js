@@ -1,0 +1,115 @@
+@use "@/assets/styles/helpers/functions";
+
+.button {
+    --x: 50%;
+    --y: 50%;
+    --ripple-color: rgba(255, 255, 255, 0.3);
+
+    position: relative;
+    overflow: hidden;
+
+    display: flex;
+    align-items: center;
+    color: var(--white);
+    gap: var(--base-gap);
+    border: functions.rem(2) solid transparent;
+    cursor: pointer;
+    padding: var(--base-padding) calc(var(--base-padding) * 2);
+    border-radius: var(--inner-radius);
+    transition: 300ms ease;
+    font-weight: var(--font-weight-medium);
+    outline: none;
+    user-select: none;
+
+    &:not(&--no-bg-effect) {
+        &::before {
+            content: "";
+            position: absolute;
+            left: var(--x);
+            top: var(--y);
+            width: 300%;
+            aspect-ratio: 1 / 1;
+            background-color: var(--ripple-color);
+            border-radius: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            z-index: 0;
+            pointer-events: none;
+            transition: all 400ms cubic-bezier(0.1, 0, 0.3, 1);
+        }
+
+        &:focus::before,
+        &:active::before {
+            transform: translate(-50%, -50%) scale(1);
+        }
+    }
+
+    &__text {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        align-items: center;
+        gap: inherit;
+        font-weight: inherit;
+    }
+
+    &--nowrap {
+        text-wrap: nowrap;
+
+        &__text {
+            text-wrap: nowrap;
+        }
+    }
+
+    &:disabled {
+        background: var(--secondary-color);
+        opacity: 0.4;
+        &::before {
+            display: none;
+        }
+    }
+
+    &--centered {
+        justify-content: center;
+    }
+
+    &--small {
+        padding: var(--base-padding);
+    }
+
+    &--fullwidth {
+        width: 100%;
+    }
+
+    &--rounded {
+        border-radius: functions.rem(999);
+    }
+
+    &--primary {
+        background: var(--accent-color);
+        --ripple-color: rgba(255, 255, 255, 0.25);
+
+        &:not(:disabled):hover {
+            background: var(--hover-color);
+        }
+    }
+
+    &--secondary {
+        background: var(--secondary-color);
+        color: var(--text-color);
+        --ripple-color: rgba(165, 165, 165, 0.2);
+
+        &:not(:disabled):hover {
+            opacity: 0.8;
+        }
+    }
+
+    &--transparent {
+        background: transparent;
+        color: var(--text-color);
+        --ripple-color: rgba(165, 165, 165, 0.2);
+
+        &:not(:disabled):hover {
+            opacity: 0.8;
+        }
+    }
+}

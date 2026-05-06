@@ -1,0 +1,15 @@
+asgiref==3.10.0
+Django==5.2.7
+django-cors-headers==4.7.0
+django-unfold==0.89.0
+djangorestframework==3.16.1
+psycopg2-binary==2.9.11
+python-dotenv==1.1.1
+sqlparse==0.5.3
+tzdata==2025.2
+django-import-export==4.3.9
+django-parler==2.3
+django-parler-rest==2.2
+Pillow==11.3.0
+pillow-heif==1.1.0
+httpx==0.28.1

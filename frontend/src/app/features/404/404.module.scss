@@ -1,0 +1,66 @@
+@use "@/assets/styles/helpers/functions";
+@use "@/assets/styles/helpers/variables";
+
+.error-page {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 100vh;
+    background: var(--bg);
+    position: relative;
+    overflow: hidden;
+}
+
+.controls {
+    position: absolute;
+    right: functions.rem(32);
+    top: functions.rem(32);
+    display: flex;
+    align-items: center;
+    gap: functions.rem(16);
+    z-index: 10;
+
+    @media screen and (max-width: variables.$mobile-view) {
+        right: functions.rem(16);
+        top: functions.rem(16);
+    }
+}
+
+.error-center {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: functions.rem(32);
+
+    @media screen and (max-width: variables.$mobile-view) {
+        gap: functions.rem(24);
+    }
+}
+
+.digit {
+    font-size: clamp(#{functions.rem(100)}, 20vw, #{functions.rem(240)});
+    font-weight: var(--font-weight-bold);
+    color: var(--text-color);
+    line-height: 1;
+    user-select: none;
+}
+
+.description {
+    text-align: center;
+    width: min(100%, functions.rem(460));
+    color: var(--text-color-secondary);
+    font-size: functions.rem(18);
+    line-height: 1.6;
+    padding: 0 functions.rem(20);
+
+    @media screen and (max-width: variables.$mobile-view) {
+        font-size: functions.rem(15);
+    }
+}
+
+.back-btn {
+    display: flex;
+    justify-content: center;
+}

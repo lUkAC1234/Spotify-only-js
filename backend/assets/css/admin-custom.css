@@ -1,0 +1,50 @@
+:root {
+    --admin-radius: 8px;
+    --admin-border-light: rgb(229, 231, 235);
+    --admin-border-dark: rgb(55, 65, 81);
+}
+
+.parler-language-tabs {
+    border-bottom: 1px solid var(--admin-border-light) !important;
+}
+
+html.dark .parler-language-tabs {
+    border-bottom-color: var(--admin-border-dark) !important;
+}
+
+.parler-form .form-row {
+    padding: 14px 20px !important;
+    border-bottom: 1px solid var(--admin-border-light) !important;
+}
+
+html.dark .parler-form .form-row {
+    border-bottom-color: var(--admin-border-dark) !important;
+}
+
+.parler-form .form-row:last-child {
+    border-bottom: none !important;
+}
+
+.parler-form fieldset {
+    border: 1px solid var(--admin-border-light) !important;
+    border-radius: 12px !important;
+    margin-bottom: 20px !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+}
+
+html.dark .parler-form fieldset {
+    border-color: var(--admin-border-dark) !important;
+}
+
+.related-widget-wrapper > div {
+    display: flex;
+    flex-flow: row;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.related-widget-wrapper > div div,
+.related-widget-wrapper > div span {
+    cursor: pointer !important;
+}
