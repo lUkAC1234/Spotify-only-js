@@ -1,22 +1,49 @@
 @use "@/assets/styles/helpers/functions";
-@use "sass:color";
 
-.scrollbar {
-    &::-webkit-scrollbar {
-        background-color: transparent;
-        width: functions.rem(6);
-        height: functions.rem(4);
-    }
-
-    &::-webkit-scrollbar-thumb {
-        background-color: color.adjust(#dcddde, $lightness: -10%);
-    }
+:root {
+    --scrollbar-track: transparent;
+    --scrollbar-thumb: rgba(255, 255, 255, 0.16);
+    --scrollbar-thumb-hover: rgba(255, 255, 255, 0.32);
+    --scrollbar-size: #{functions.rem(8)};
+    --scrollbar-radius: #{functions.rem(8)};
 }
 
-:root[data-theme="dark"] {
-    .scrollbar {
-        &::-webkit-scrollbar-thumb {
-            background-color: color.adjust(#585858, $lightness: -10%);
-        }
-    }
+:root[data-theme="light"] {
+    --scrollbar-thumb: rgba(0, 0, 0, 0.18);
+    --scrollbar-thumb-hover: rgba(0, 0, 0, 0.36);
+}
+
+* {
+    scrollbar-width: thin;
+    scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+}
+
+*::-webkit-scrollbar {
+    width: var(--scrollbar-size);
+    height: var(--scrollbar-size);
+    background: var(--scrollbar-track);
+}
+
+*::-webkit-scrollbar-track {
+    background: var(--scrollbar-track);
+}
+
+*::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-thumb);
+    border-radius: var(--scrollbar-radius);
+    border: var(--border-width) solid transparent;
+    background-clip: padding-box;
+    transition: background-color var(--motion-fast) var(--motion-ease);
+}
+
+*::-webkit-scrollbar-thumb:hover {
+    background-color: var(--scrollbar-thumb-hover);
+}
+
+*::-webkit-scrollbar-corner {
+    background: transparent;
+}
+
+.scrollbar {
+    overflow: auto;
 }

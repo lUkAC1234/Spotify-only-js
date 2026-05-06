@@ -1,16 +1,16 @@
-@use "@/assets/styles/helpers/functions";
-
 .home {
     display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    min-height: 100dvh;
-    padding: functions.rem(24);
+    flex-direction: column;
+    gap: var(--space-7);
+    padding-bottom: var(--space-7);
+    color: var(--text);
     background: var(--bg);
-}
+    min-height: 100%;
+    width: 100%;
 
-.title {
-    color: var(--text-color);
-    text-align: center;
+    &__sections {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-7);
+    }
 }

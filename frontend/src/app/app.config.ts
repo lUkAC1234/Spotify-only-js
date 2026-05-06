@@ -1,4 +1,10 @@
 export const config = {
+    APP_NAME: "Spotify",
+    API_PREFIX: "/api/v1",
     PAGE_SIZE: 36,
+    CATALOG_PAGE_SIZE: 24,
     CACHE_TTL_MIN: 5,
+    PLAYER_SYNC_DEBOUNCE_MS: 800,
+    SEARCH_DEBOUNCE_MS: 250,
+    PLAYBACK_PROGRESS_INTERVAL_MS: 250,
 };

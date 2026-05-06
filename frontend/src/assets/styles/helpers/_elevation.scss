@@ -1,0 +1,14 @@
+@use "./functions";
+
+:root {
+    --elevation-0: none;
+    --elevation-1: 0 #{functions.rem(4)} #{functions.rem(12)} rgba(0, 0, 0, 0.15);
+    --elevation-2: 0 #{functions.rem(12)} #{functions.rem(40)} rgba(0, 0, 0, 0.45);
+    --elevation-player: 0 #{functions.rem(-2)} #{functions.rem(16)} rgba(0, 0, 0, 0.4);
+}
+
+:root[data-theme="light"] {
+    --elevation-1: 0 #{functions.rem(4)} #{functions.rem(12)} rgba(0, 0, 0, 0.06);
+    --elevation-2: 0 #{functions.rem(12)} #{functions.rem(40)} rgba(0, 0, 0, 0.1);
+    --elevation-player: 0 #{functions.rem(-2)} #{functions.rem(16)} rgba(0, 0, 0, 0.08);
+}

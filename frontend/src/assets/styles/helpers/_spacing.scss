@@ -1,0 +1,13 @@
+@use "./functions";
+
+:root {
+    --space-0: 0;
+    --space-1: #{functions.rem(4)};
+    --space-2: #{functions.rem(8)};
+    --space-3: #{functions.rem(12)};
+    --space-4: #{functions.rem(16)};
+    --space-5: #{functions.rem(24)};
+    --space-6: #{functions.rem(32)};
+    --space-7: #{functions.rem(48)};
+    --space-8: #{functions.rem(64)};
+}

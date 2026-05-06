@@ -275,6 +275,42 @@ Do not add styles that are already inherited from global base styles. Only write
 ### Never Add SVGs Inline
 When adding SVG icons, **always follow the existing pattern** in `frontend/src/app/shared/ui/svg/`.
 
+### Always Size Icons with CSS Tokens (HARD RULE)
+
+Every SVG/icon component must have **explicit `width` and `height` set in CSS**, sourced from one of the `--icon-*` tokens defined in `frontend/src/assets/styles/helpers/_layout-tokens.scss`. The HTML `width="..."` / `height="..."` attributes on the `<svg>` element alone are **not sufficient** — at browser zoom levels and in some flex/grid contexts, icons without explicit CSS sizing collapse to invisibility.
+
+**The tokens (defined via `functions.rem()`):**
+
+| Token | Size | Use |
+|---|---|---|
+| `--icon-xs` | `functions.rem(12)` | track-row helper marks, dense lists |
+| `--icon-sm` | `functions.rem(16)` | inline buttons, "create" pills, track-row index |
+| `--icon-md` | `functions.rem(20)` | default nav/general/utility icons (DESIGN.md default) |
+| `--icon-lg` | `functions.rem(24)` | player primary controls, sidebar nav |
+| `--icon-xl` | `functions.rem(32)` | brand mark, hero icons |
+
+**How to apply:**
+
+```scss
+/* ✅ correct — every icon has an explicit size from a token */
+.bottom-player__btn svg {
+    width: var(--icon-lg);
+    height: var(--icon-lg);
+}
+
+.sidebar__icon {
+    width: var(--icon-lg);
+    height: var(--icon-lg);
+}
+
+/* ❌ wrong — relying on the HTML width="24" attribute alone */
+/* svg renders with its intrinsic size only; at zoom levels it shrinks */
+```
+
+When you create a new SVG component or import an existing one into a new place, **stop and add a sizing class** to the parent container's `.module.scss` before shipping. If the visual context genuinely needs a size that none of the existing tokens cover, add a new `--icon-*` token to `_layout-tokens.scss` and document it here — never inline a literal size.
+
+This rule applies to **every icon, everywhere** — sidebar, top-nav, bottom-player, modal close buttons, list-row affordances, empty-state illustrations, etc. No exceptions.
+
 ### SVG Folder Structure
 ```
 app/shared/ui/svg/

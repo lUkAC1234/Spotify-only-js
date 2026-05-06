@@ -3,5 +3,122 @@
     "error": "Something went wrong, please try again later",
     "loading": "Loading",
     "page-title": "Spotify",
-    "country-search": "Search country..."
+    "country-search": "Search country...",
+    "app": {
+        "name": "Spotify"
+    },
+    "nav": {
+        "home": "Home",
+        "search": "Search",
+        "library": "Your Library",
+        "settings": "Settings",
+        "back": "Go back",
+        "forward": "Go forward"
+    },
+    "auth": {
+        "sign-in": "Sign in",
+        "sign-up": "Sign up",
+        "sign-out": "Sign out",
+        "signing-in": "Signing in...",
+        "signing-up": "Creating your account...",
+        "welcome-back": "Welcome back. Sign in to keep listening.",
+        "create-prompt": "Create an account to save tracks and build playlists.",
+        "no-account": "New here?",
+        "have-account": "Already have an account?",
+        "optional": "(optional)",
+        "identifier-label": "Email or username",
+        "identifier-placeholder": "you@example.com",
+        "email-label": "Email",
+        "username-label": "Username",
+        "username-placeholder": "your-handle",
+        "display-name-label": "Display name",
+        "display-name-placeholder": "How others see you",
+        "password-label": "Password",
+        "password-placeholder": "Your password",
+        "password-new-placeholder": "At least 8 characters",
+        "error": {
+            "invalid-credentials": "Wrong email/username or password.",
+            "email-invalid": "Enter a valid email address.",
+            "username-length": "Username must be 3 to 30 characters.",
+            "username-chars": "Use letters, numbers, dots, underscores or hyphens.",
+            "password-length": "Password must be at least 8 characters.",
+            "generic": "Something went wrong. Please try again."
+        }
+    },
+    "settings": {
+        "title": "Settings",
+        "subtitle": "Update your profile, avatar and password.",
+        "profile": "Profile",
+        "password": "Password",
+        "session": "Session",
+        "save": "Save changes",
+        "profile-saved": "Profile updated.",
+        "avatar-saved": "Avatar updated.",
+        "avatar-removed": "Avatar removed.",
+        "password-saved": "Password updated.",
+        "upload-avatar": "Upload photo",
+        "remove-avatar": "Remove",
+        "current-password": "Current password",
+        "new-password": "New password",
+        "update-password": "Update password",
+        "signed-out": "You are signed out.",
+        "error": {
+            "display-name-required": "Display name cannot be empty.",
+            "avatar-too-large": "Image must be under 5 MB.",
+            "avatar-invalid": "Please choose an image file."
+        }
+    },
+    "search": {
+        "placeholder": "What do you want to play?",
+        "aria-label": "Search music",
+        "empty": "Type a song, artist, or album to start searching.",
+        "loading": "Searching for \"{query}\"...",
+        "error": "Couldn't reach the catalog. Please try again.",
+        "no-results": "No results for \"{query}\".",
+        "tracks": "Tracks",
+        "artists": "Artists",
+        "albums": "Albums"
+    },
+    "playlist": {
+        "create": "Create playlist",
+        "create-disabled": "Available after sign-in"
+    },
+    "player": {
+        "empty": "Pick a track to start listening",
+        "empty-title": "Nothing playing",
+        "empty-artist": "Your queue is empty",
+        "play": "Play",
+        "pause": "Pause",
+        "prev": "Previous",
+        "next": "Next",
+        "shuffle": "Shuffle",
+        "repeat": "Repeat",
+        "queue": "Queue",
+        "queue-title": "Queue",
+        "queue-close": "Close queue",
+        "queue-empty": "Add tracks to your queue from a row, album, or search.",
+        "now-playing": "Now playing",
+        "next-up": "Next up",
+        "remove-from-queue": "Remove from queue",
+        "devices": "Connect to a device",
+        "volume": "Mute",
+        "volume-level": "Volume",
+        "seek": "Seek",
+        "like": "Save to your library"
+    },
+    "home": {
+        "greeting": {
+            "morning": "Good morning, {name}",
+            "afternoon": "Good afternoon, {name}",
+            "evening": "Good evening, {name}"
+        },
+        "recently-played": "Recently played",
+        "made-for-you": "Made for you",
+        "new-releases": "New releases",
+        "featured-playlists": "Featured playlists"
+    },
+    "coming-soon": {
+        "phase": "Phase {phase}",
+        "hint": "This area is part of the upcoming roadmap. The shell, theming, and tokens are already in place."
+    }
 }

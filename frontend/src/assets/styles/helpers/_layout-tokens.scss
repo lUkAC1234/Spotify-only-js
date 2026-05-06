@@ -1,0 +1,25 @@
+@use "./functions";
+
+:root {
+    --sidebar-width: #{functions.rem(240)};
+    --sidebar-width-collapsed: #{functions.rem(72)};
+    --rail-width: #{functions.rem(320)};
+    --player-height: #{functions.rem(90)};
+    --player-height-mobile: #{functions.rem(64)};
+    --topnav-height: #{functions.rem(64)};
+    --shell-gap: #{functions.rem(8)};
+
+    --icon-xs: #{functions.rem(12)};
+    --icon-sm: #{functions.rem(16)};
+    --icon-md: #{functions.rem(20)};
+    --icon-lg: #{functions.rem(24)};
+    --icon-xl: #{functions.rem(32)};
+
+    --control-sm: #{functions.rem(32)};
+    --control-md: #{functions.rem(36)};
+    --control-lg: #{functions.rem(40)};
+
+    --cover-sm: #{functions.rem(40)};
+    --cover-md: #{functions.rem(56)};
+    --cover-lg: #{functions.rem(80)};
+}

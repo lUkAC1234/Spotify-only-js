@@ -4,9 +4,13 @@
 
 **Spotify** is a music-streaming web application — a Spotify-style player layered on top of a free, legally-redistributable catalog (Jamendo + Audius). It is a class-based React 19 + MobX SPA against a Django 5.2 + DRF + Postgres backend, with a Spotify-minimalism UI (dark theme, green accent, content-first layout).
 
-**Status:** scaffold complete (clean React 19 + Django 5.2 architecture with i18n / DI / theming / error boundary). Implementation roadmap is in [`plan.md`](./plan.md) — 10 sequenced phases from "music ingestion + streaming proxy" through to "social, polish, and deploy".
+**Status:** Phases 1–3 complete. Catalog models migrated, Jamendo + Audius `Provider` clients live, `/api/v1/catalog/*` and `/api/v1/stream/<id>/` (HTTP Range) endpoints serve real audio. Real session-based auth — `/api/v1/auth/{register,login,logout,me,csrf,me/avatar,me/password}/` with DRF throttling (5/h register, 20/h login), 401-aware exception handler, custom `User` model with email login + display name + avatar (auto-WebP). Frontend has a CSRF-aware API client, full `AuthService` (login / register / logout / fetchMe / updateProfile / avatar upload+delete / changePassword), real `<Login>` / `<Register>` / `<Settings>` pages with form validation, an `AuthLayout` (centered card) and `Shell` for the rest. Phases 4–10 still pending.
 
-**Current home page:** placeholder `Hello World`. Replaced in Phase 1 by the Shell layout (sidebar + top-nav + bottom-player + main).
+**Current home page:** Spotify-style Shell with greeting and four placeholder feature rows ("Recently played", "Made for you", "New releases", "Featured playlists"). Real data lands in Phase 5.
+
+**Operator setup needed for streaming:** the dev `.env` ships with `JAMENDO_CLIENT_ID=eb2fcdef` (Enzora's app). Replace with your own at <https://devportal.jamendo.com/> for production.
+
+**Dev networking:** Vite proxies `/api/*` and `/media/*` to the Django backend (default `http://127.0.0.1:8000`), so the SPA and the API share the same origin (`localhost:5173`). This means the `csrftoken` cookie set by `/api/v1/auth/csrf/` is readable by the frontend's `document.cookie`, sessions just work, and there are no CORS / cross-origin cookie issues. The dev settings (`config/settings/dev.py`) also accept any localhost port via `CORS_ALLOWED_ORIGIN_REGEXES` for direct (non-proxied) calls.
 
 ### What we are *not* doing
 
@@ -348,10 +352,10 @@ Implementation is sequenced into 10 phases. The full plan — music-source strat
 
 | Phase | Goal |
 |---|---|
-| 1 | Foundations — env, settings split, DRF auth, `Provider` abstraction, Shell layout, docker-compose dev |
-| 2 | Music ingestion + streaming proxy — Jamendo client, catalog models, `/api/v1/stream/<id>` range proxy |
-| 3 | Auth, profile, settings — register / login / sessions / avatar / settings page |
-| 4 | Player engine + queue — MobX `PlayerService`, queue, shuffle / repeat, MediaSession, gapless |
+| 1 ✅ | Foundations — env, settings split, DRF auth scaffolding, `Provider` abstraction, Shell layout, design tokens |
+| 2 ✅ | Music ingestion + streaming proxy — catalog models, `CatalogSyncService`, search/track/album/artist endpoints, HTTP Range stream proxy, frontend `<audio>` engine, search page |
+| 3 ✅ | Auth, profile, settings — register / login / logout / me, avatar upload + change-password, throttling, frontend AuthService + `<Login>` / `<Register>` / `<Settings>` pages, AuthLayout |
+| 4 ✅ | Player engine + queue — keyboard shortcuts, MediaSession (OS lockscreen), QueuePanel (drag-reorder), playback-state sync (resume on reload), play-event logging |
 | 5 | Home & discovery — recently played, made-for-you, new releases, featured, trending |
 | 6 | Search — Postgres FTS over `tsvector`, debounced UI, recent searches, categorised results |
 | 7 | Library + playlists — saved tracks/albums/artists, playlist CRUD, reorder, collaborators, auto-mosaic covers |

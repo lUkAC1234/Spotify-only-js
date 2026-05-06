@@ -1,0 +1,14 @@
+@use "@/assets/styles/helpers/functions";
+
+.greeting {
+    padding: var(--space-7) var(--space-6) var(--space-5);
+
+    &__title {
+        font-size: var(--type-display);
+        font-weight: var(--font-weight-black);
+        line-height: var(--line-height-tight);
+        color: var(--text);
+        margin: 0;
+        max-width: #{functions.rem(900)};
+    }
+}

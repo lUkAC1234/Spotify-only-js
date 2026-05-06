@@ -1,0 +1,71 @@
+@use "@/assets/styles/helpers/functions";
+@use "@/assets/styles/helpers/variables";
+
+.auth-layout {
+    display: grid;
+    grid-template-rows: var(--topnav-height) minmax(0, 1fr);
+    width: 100%;
+    min-height: 100dvh;
+    background: var(--bg);
+    color: var(--text);
+
+    &__header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 var(--space-5);
+        background: var(--surface);
+        border-bottom: var(--border-width) solid var(--border);
+    }
+
+    &__brand {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--space-3);
+        text-decoration: none;
+        color: var(--text);
+        font-weight: var(--font-weight-bold);
+    }
+
+    &__brand-logo {
+        flex-shrink: 0;
+        color: var(--accent);
+        width: var(--icon-xl);
+        height: var(--icon-xl);
+    }
+
+    &__brand-name {
+        font-size: var(--type-title-3);
+        letter-spacing: var(--letter-spacing-overline);
+    }
+
+    &__controls {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--space-3);
+    }
+
+    &__main {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: var(--space-7) var(--space-5);
+    }
+
+    &__card {
+        width: 100%;
+        max-width: #{functions.rem(420)};
+        background: var(--surface-elevated);
+        border-radius: var(--radius-md);
+        padding: var(--space-7) var(--space-6);
+        box-shadow: var(--elevation-2);
+    }
+}
+
+@media (max-width: variables.$mobile-view) {
+    .auth-layout {
+        &__card {
+            padding: var(--space-6) var(--space-5);
+        }
+    }
+}

@@ -3,5 +3,122 @@
     "error": "Xatolik yuz berdi, keyinroq urinib ko'ring",
     "loading": "Yuklanmoqda",
     "page-title": "Spotify",
-    "country-search": "Davlatni qidirish..."
+    "country-search": "Davlatni qidirish...",
+    "app": {
+        "name": "Spotify"
+    },
+    "nav": {
+        "home": "Bosh sahifa",
+        "search": "Qidiruv",
+        "library": "Kutubxonangiz",
+        "settings": "Sozlamalar",
+        "back": "Orqaga",
+        "forward": "Oldinga"
+    },
+    "auth": {
+        "sign-in": "Kirish",
+        "sign-up": "Roʻyxatdan oʻtish",
+        "sign-out": "Chiqish",
+        "signing-in": "Kirilmoqda...",
+        "signing-up": "Hisob yaratilmoqda...",
+        "welcome-back": "Xush kelibsiz. Tinglashni davom ettirish uchun kiring.",
+        "create-prompt": "Treklarni saqlash va pleylist yaratish uchun hisob yarating.",
+        "no-account": "Bu yerda yangimisiz?",
+        "have-account": "Allaqachon hisobingiz bormi?",
+        "optional": "(majburiy emas)",
+        "identifier-label": "Email yoki foydalanuvchi nomi",
+        "identifier-placeholder": "you@example.com",
+        "email-label": "Email",
+        "username-label": "Foydalanuvchi nomi",
+        "username-placeholder": "siz-uchun-nom",
+        "display-name-label": "Ko'rinadigan ism",
+        "display-name-placeholder": "Boshqalar sizni qanday ko'radi",
+        "password-label": "Parol",
+        "password-placeholder": "Parolingiz",
+        "password-new-placeholder": "Kamida 8 ta belgi",
+        "error": {
+            "invalid-credentials": "Email/foydalanuvchi nomi yoki parol noto'g'ri.",
+            "email-invalid": "To'g'ri email kiriting.",
+            "username-length": "Foydalanuvchi nomi 3–30 ta belgidan iborat bo'lishi kerak.",
+            "username-chars": "Faqat harflar, raqamlar, nuqta, chiziqcha va pastki chiziqdan foydalaning.",
+            "password-length": "Parol kamida 8 ta belgidan iborat bo'lishi kerak.",
+            "generic": "Xatolik yuz berdi. Qayta urinib ko'ring."
+        }
+    },
+    "settings": {
+        "title": "Sozlamalar",
+        "subtitle": "Profil, avatar va parolingizni yangilang.",
+        "profile": "Profil",
+        "password": "Parol",
+        "session": "Seans",
+        "save": "Saqlash",
+        "profile-saved": "Profil yangilandi.",
+        "avatar-saved": "Avatar yangilandi.",
+        "avatar-removed": "Avatar olib tashlandi.",
+        "password-saved": "Parol yangilandi.",
+        "upload-avatar": "Foto yuklash",
+        "remove-avatar": "O'chirish",
+        "current-password": "Joriy parol",
+        "new-password": "Yangi parol",
+        "update-password": "Parolni yangilash",
+        "signed-out": "Hisobdan chiqdingiz.",
+        "error": {
+            "display-name-required": "Ism bo'sh bo'lishi mumkin emas.",
+            "avatar-too-large": "Fayl 5 MB dan kichik bo'lishi kerak.",
+            "avatar-invalid": "Rasm faylini tanlang."
+        }
+    },
+    "search": {
+        "placeholder": "Nimani tinglamoqchisiz?",
+        "aria-label": "Musiqa qidirish",
+        "empty": "Qidirishni boshlash uchun qo'shiq, ijrochi yoki albom nomini yozing.",
+        "loading": "«{query}» qidirilmoqda...",
+        "error": "Katalogga ulanish muvaffaqiyatsiz. Qayta urinib ko'ring.",
+        "no-results": "«{query}» bo'yicha hech narsa topilmadi.",
+        "tracks": "Treklar",
+        "artists": "Ijrochilar",
+        "albums": "Albomlar"
+    },
+    "playlist": {
+        "create": "Pleylist yaratish",
+        "create-disabled": "Kirgandan keyin foydalaning"
+    },
+    "player": {
+        "empty": "Boshlash uchun trek tanlang",
+        "empty-title": "Hech narsa o'ynalmayapti",
+        "empty-artist": "Navbat bo'sh",
+        "play": "Ijro etish",
+        "pause": "Pauza",
+        "prev": "Oldingi",
+        "next": "Keyingi",
+        "shuffle": "Aralash",
+        "repeat": "Takror",
+        "queue": "Navbat",
+        "queue-title": "Navbat",
+        "queue-close": "Navbatni yopish",
+        "queue-empty": "Karta, albom yoki qidiruvdan navbatga trek qo'shing.",
+        "now-playing": "Hozir ijro etilmoqda",
+        "next-up": "Keyingi",
+        "remove-from-queue": "Navbatdan o'chirish",
+        "devices": "Qurilmaga ulash",
+        "volume": "Ovozsiz",
+        "volume-level": "Ovoz balandligi",
+        "seek": "O'tkazish",
+        "like": "Kutubxonangizga qo'shish"
+    },
+    "home": {
+        "greeting": {
+            "morning": "Xayrli tong, {name}",
+            "afternoon": "Xayrli kun, {name}",
+            "evening": "Xayrli kech, {name}"
+        },
+        "recently-played": "Yaqinda tinglangan",
+        "made-for-you": "Sizga atalgan",
+        "new-releases": "Yangi relizlar",
+        "featured-playlists": "Tanlangan pleylistlar"
+    },
+    "coming-soon": {
+        "phase": "Bosqich {phase}",
+        "hint": "Ushbu bo'lim keyingi bosqichlarda paydo bo'ladi. Karkas, mavzular va tokenlar tayyor."
+    }
 }

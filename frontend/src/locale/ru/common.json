@@ -3,5 +3,122 @@
     "error": "Что-то пошло не так, попробуйте позже",
     "loading": "Загрузка",
     "page-title": "Spotify",
-    "country-search": "Поиск страны..."
+    "country-search": "Поиск страны...",
+    "app": {
+        "name": "Spotify"
+    },
+    "nav": {
+        "home": "Главная",
+        "search": "Поиск",
+        "library": "Моя медиатека",
+        "settings": "Настройки",
+        "back": "Назад",
+        "forward": "Вперёд"
+    },
+    "auth": {
+        "sign-in": "Войти",
+        "sign-up": "Регистрация",
+        "sign-out": "Выйти",
+        "signing-in": "Вход...",
+        "signing-up": "Создаём аккаунт...",
+        "welcome-back": "С возвращением. Войдите, чтобы продолжить слушать.",
+        "create-prompt": "Создайте аккаунт, чтобы сохранять треки и плейлисты.",
+        "no-account": "Впервые здесь?",
+        "have-account": "Уже есть аккаунт?",
+        "optional": "(необязательно)",
+        "identifier-label": "Email или имя пользователя",
+        "identifier-placeholder": "you@example.com",
+        "email-label": "Email",
+        "username-label": "Имя пользователя",
+        "username-placeholder": "ваш-логин",
+        "display-name-label": "Отображаемое имя",
+        "display-name-placeholder": "Как вас увидят другие",
+        "password-label": "Пароль",
+        "password-placeholder": "Ваш пароль",
+        "password-new-placeholder": "Минимум 8 символов",
+        "error": {
+            "invalid-credentials": "Неверный email/логин или пароль.",
+            "email-invalid": "Укажите корректный email.",
+            "username-length": "Логин должен быть от 3 до 30 символов.",
+            "username-chars": "Допустимы буквы, цифры, точки, дефисы и подчёркивания.",
+            "password-length": "Пароль должен быть не короче 8 символов.",
+            "generic": "Что-то пошло не так. Попробуйте ещё раз."
+        }
+    },
+    "settings": {
+        "title": "Настройки",
+        "subtitle": "Обновите профиль, аватар и пароль.",
+        "profile": "Профиль",
+        "password": "Пароль",
+        "session": "Сеанс",
+        "save": "Сохранить",
+        "profile-saved": "Профиль обновлён.",
+        "avatar-saved": "Аватар обновлён.",
+        "avatar-removed": "Аватар удалён.",
+        "password-saved": "Пароль обновлён.",
+        "upload-avatar": "Загрузить фото",
+        "remove-avatar": "Удалить",
+        "current-password": "Текущий пароль",
+        "new-password": "Новый пароль",
+        "update-password": "Обновить пароль",
+        "signed-out": "Вы вышли из аккаунта.",
+        "error": {
+            "display-name-required": "Имя не может быть пустым.",
+            "avatar-too-large": "Файл должен быть меньше 5 МБ.",
+            "avatar-invalid": "Выберите изображение."
+        }
+    },
+    "search": {
+        "placeholder": "Что хотите послушать?",
+        "aria-label": "Поиск музыки",
+        "empty": "Введите название песни, исполнителя или альбома, чтобы начать поиск.",
+        "loading": "Ищем «{query}»...",
+        "error": "Не удалось обратиться к каталогу. Повторите попытку.",
+        "no-results": "По запросу «{query}» ничего не найдено.",
+        "tracks": "Треки",
+        "artists": "Исполнители",
+        "albums": "Альбомы"
+    },
+    "playlist": {
+        "create": "Создать плейлист",
+        "create-disabled": "Доступно после входа"
+    },
+    "player": {
+        "empty": "Выберите трек, чтобы начать",
+        "empty-title": "Сейчас ничего не играет",
+        "empty-artist": "Очередь пуста",
+        "play": "Воспроизвести",
+        "pause": "Пауза",
+        "prev": "Предыдущий",
+        "next": "Следующий",
+        "shuffle": "Перемешать",
+        "repeat": "Повтор",
+        "queue": "Очередь",
+        "queue-title": "Очередь",
+        "queue-close": "Закрыть очередь",
+        "queue-empty": "Добавьте треки в очередь из карточки, альбома или поиска.",
+        "now-playing": "Сейчас играет",
+        "next-up": "Далее",
+        "remove-from-queue": "Удалить из очереди",
+        "devices": "Подключить устройство",
+        "volume": "Без звука",
+        "volume-level": "Громкость",
+        "seek": "Перемотка",
+        "like": "Добавить в медиатеку"
+    },
+    "home": {
+        "greeting": {
+            "morning": "Доброе утро, {name}",
+            "afternoon": "Добрый день, {name}",
+            "evening": "Добрый вечер, {name}"
+        },
+        "recently-played": "Недавно прослушанное",
+        "made-for-you": "Создано для вас",
+        "new-releases": "Новые релизы",
+        "featured-playlists": "Подборки редакторов"
+    },
+    "coming-soon": {
+        "phase": "Этап {phase}",
+        "hint": "Этот раздел появится на следующих этапах. Каркас, темы и токены уже готовы."
+    }
 }

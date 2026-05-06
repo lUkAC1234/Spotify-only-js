@@ -5,6 +5,7 @@ from django.contrib import admin
 from django.urls import include, path
 
 api_v1_patterns = [
+    path("", include("apps.common.api.urls")),
     path("auth/", include("apps.accounts.api.urls")),
     path("catalog/", include("apps.catalog.api.urls")),
     path("", include("apps.playback.api.urls")),

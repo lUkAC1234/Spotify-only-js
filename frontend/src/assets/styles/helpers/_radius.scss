@@ -1,0 +1,11 @@
+@use "./functions";
+
+:root {
+    --radius-sm: #{functions.rem(4)};
+    --radius-md: #{functions.rem(8)};
+    --radius-lg: #{functions.rem(12)};
+    --radius-circle: 50%;
+    --radius-pill: #{functions.rem(9999)};
+
+    --border-width: #{functions.rem(1)};
+}

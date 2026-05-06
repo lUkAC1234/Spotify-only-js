@@ -9,13 +9,12 @@ export type Theme = "light" | "dark" | "system";
 
 export const THEME_KEY: string = "theme-mode";
 
-export const detectTheme = (): "light" | "dark" => {
-    const isDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-    return isDark ? "dark" : "light";
-};
+export const detectTheme = (): "light" | "dark" => "dark";
 
 export const detectDefaultTheme = (): Theme => {
-    return (localStorage.getItem(THEME_KEY) as Theme) || detectTheme();
+    const stored = localStorage.getItem(THEME_KEY) as Theme | null;
+    if (stored === "light" || stored === "dark" || stored === "system") return stored;
+    return "dark";
 };
 
 @injectable()

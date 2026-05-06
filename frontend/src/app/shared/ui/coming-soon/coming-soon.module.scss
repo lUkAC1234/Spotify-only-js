@@ -1,0 +1,33 @@
+@use "@/assets/styles/helpers/functions";
+
+.coming-soon {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    padding: var(--space-7) var(--space-6);
+    max-width: #{functions.rem(720)};
+    margin: 0 auto;
+
+    &__phase {
+        font-size: var(--type-overline);
+        font-weight: var(--font-weight-bold);
+        text-transform: uppercase;
+        letter-spacing: var(--letter-spacing-overline);
+        color: var(--accent);
+    }
+
+    &__title {
+        font-size: var(--type-display);
+        font-weight: var(--font-weight-black);
+        line-height: var(--line-height-tight);
+        color: var(--text);
+        margin: 0;
+    }
+
+    &__hint {
+        font-size: var(--type-body);
+        line-height: var(--line-height-relaxed);
+        color: var(--text-secondary);
+        margin: 0;
+    }
+}

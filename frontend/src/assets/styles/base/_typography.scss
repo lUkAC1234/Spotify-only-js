@@ -19,6 +19,24 @@ $outer-radius: functions.rem($base-radius + $base-padding);
     --container: min(100%, #{functions.rem(1920)});
     --transition: 300ms ease;
     --button-shadow: 0 #{functions.rem(4)} #{functions.rem(12)} 0 var(--accent-color);
+
+    --font-weight-black: 900;
+
+    --type-display: clamp(#{functions.rem(32)}, 6vw, #{functions.rem(80)});
+    --type-title-1: #{functions.rem(32)};
+    --type-title-2: #{functions.rem(24)};
+    --type-title-3: #{functions.rem(16)};
+    --type-body: #{functions.rem(14)};
+    --type-body-strong: #{functions.rem(14)};
+    --type-caption: #{functions.rem(12)};
+    --type-overline: #{functions.rem(11)};
+
+    --line-height-tight: 1.1;
+    --line-height-snug: 1.2;
+    --line-height-normal: 1.4;
+    --line-height-relaxed: 1.5;
+
+    --letter-spacing-overline: 0.08em;
 }
 
 @media screen and (max-width: 639px) {
