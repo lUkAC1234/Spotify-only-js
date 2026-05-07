@@ -1,0 +1,49 @@
+@use "@/assets/styles/helpers/functions";
+
+.popover {
+    position: fixed;
+    z-index: var(--z-popover);
+    min-width: var(--popover-min-width);
+    max-width: var(--popover-max-width);
+    max-height: var(--popover-max-height);
+    background: var(--popover-bg);
+    color: var(--popover-fg);
+    border: var(--border-width) solid var(--border);
+    border-radius: var(--radius-md);
+    box-shadow: var(--elevation-2);
+    overflow: hidden;
+    animation: popover-fade var(--motion-base) var(--motion-ease-out);
+    transform-origin: top left;
+
+    &:focus-visible {
+        outline: var(--border-width) solid var(--accent);
+        outline-offset: var(--space-1);
+    }
+
+    &--top-start,
+    &--top-end {
+        transform-origin: bottom left;
+    }
+
+    &--bottom-end,
+    &--top-end {
+        transform-origin: top right;
+    }
+}
+
+@keyframes popover-fade {
+    from {
+        opacity: 0;
+        transform: scale(0.96) translateY(-4px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .popover {
+        animation: none;
+    }
+}

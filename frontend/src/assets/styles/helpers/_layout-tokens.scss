@@ -1,8 +1,8 @@
 @use "./functions";
 
 :root {
-    --sidebar-width: #{functions.rem(240)};
-    --sidebar-width-collapsed: #{functions.rem(72)};
+    --sidebar-width: #{functions.rem(280)};
+    --sidebar-width-collapsed: #{functions.rem(76)};
     --rail-width: #{functions.rem(320)};
     --player-height: #{functions.rem(90)};
     --player-height-mobile: #{functions.rem(64)};
@@ -22,4 +22,18 @@
     --cover-sm: #{functions.rem(40)};
     --cover-md: #{functions.rem(56)};
     --cover-lg: #{functions.rem(80)};
+
+    --marketing-banner-height: #{functions.rem(80)};
+    --marketing-banner-height-mobile: #{functions.rem(96)};
+
+    --popover-min-width: #{functions.rem(220)};
+    --popover-max-width: #{functions.rem(360)};
+    --popover-max-height: #{functions.rem(360)};
+
+    --hero-play-size: #{functions.rem(56)};
+    --hero-action-size: #{functions.rem(40)};
+
+    --content-padding-x: #{functions.rem(32)};
+    --content-padding-y: #{functions.rem(32)};
+    --content-padding-x-mobile: #{functions.rem(16)};
 }

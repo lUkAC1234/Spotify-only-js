@@ -1,0 +1,50 @@
+@use "@/assets/styles/helpers/functions";
+
+.load-more {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-4) 0;
+
+    &--full {
+        width: 100%;
+    }
+
+    &__btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        height: var(--control-lg);
+        padding: 0 var(--space-6);
+        background: transparent;
+        color: var(--text);
+        border: var(--border-width) solid var(--text-secondary);
+        border-radius: var(--radius-pill);
+        font-size: var(--type-body);
+        font-weight: var(--font-weight-bold);
+        letter-spacing: var(--letter-spacing-overline);
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: border-color var(--motion-fast) var(--motion-ease), color var(--motion-fast) var(--motion-ease),
+            transform var(--motion-fast) var(--motion-ease), background var(--motion-fast) var(--motion-ease);
+
+        &:hover:not(:disabled) {
+            border-color: var(--text);
+            transform: scale(1.04);
+        }
+
+        &:focus-visible {
+            outline: var(--border-width) solid var(--accent);
+            outline-offset: var(--space-1);
+        }
+
+        &:disabled {
+            opacity: 0.6;
+            cursor: progress;
+        }
+    }
+
+    &__label {
+        line-height: 1;
+    }
+}

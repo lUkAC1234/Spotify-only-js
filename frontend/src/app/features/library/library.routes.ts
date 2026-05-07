@@ -8,4 +8,8 @@ export const libraryRoutes: RouteObject[] = [
         path: "library",
         Component: lazyLoaded(Lazy.Named(() => import("./library"), "Library")),
     },
+    {
+        path: "library/liked",
+        Component: lazyLoaded(Lazy.Named(() => import("./liked-songs/liked-songs"), "LikedSongs")),
+    },
 ];

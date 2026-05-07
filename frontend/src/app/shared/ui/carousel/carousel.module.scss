@@ -1,0 +1,109 @@
+@use "@/assets/styles/helpers/functions";
+
+.carousel {
+    position: relative;
+
+    &__viewport {
+        overflow-x: auto;
+        overflow-y: hidden;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+        cursor: grab;
+        touch-action: pan-y;
+        overscroll-behavior-x: contain;
+
+        &::-webkit-scrollbar {
+            display: none;
+            width: 0;
+            height: 0;
+        }
+
+        &--dragging {
+            cursor: grabbing;
+            user-select: none;
+
+            * {
+                pointer-events: none;
+            }
+        }
+    }
+
+    &__track {
+        list-style: none;
+        margin: 0;
+        padding: 0 0 var(--space-2);
+    }
+
+    &__nav {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        z-index: 2;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: var(--control-md);
+        height: var(--control-md);
+        background: var(--surface-elevated);
+        color: var(--text);
+        border: var(--border-width) solid var(--border);
+        border-radius: var(--radius-circle);
+        cursor: pointer;
+        opacity: 0;
+        pointer-events: none;
+        box-shadow: var(--elevation-1);
+        transition: opacity var(--motion-fast) var(--motion-ease), background var(--motion-fast) var(--motion-ease),
+            border-color var(--motion-fast) var(--motion-ease), transform var(--motion-fast) var(--motion-ease);
+
+        svg {
+            width: var(--icon-sm);
+            height: var(--icon-sm);
+        }
+
+        &:hover {
+            background: var(--surface-highlight);
+            border-color: var(--border-strong);
+            transform: translateY(-50%) scale(1.05);
+        }
+
+        &:focus-visible {
+            outline: var(--border-width) solid var(--accent);
+            outline-offset: var(--space-1);
+        }
+
+        &--visible {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        &--prev {
+            left: calc(var(--space-2) * -1);
+        }
+
+        &--next {
+            right: calc(var(--space-2) * -1);
+        }
+    }
+
+    &:not(:hover) &__nav {
+        opacity: 0;
+    }
+
+    &:hover &__nav--visible {
+        opacity: 1;
+    }
+}
+
+@media (max-width: 720px) {
+    .carousel {
+        &__nav {
+            display: none;
+        }
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .carousel__nav {
+        transition: none;
+    }
+}

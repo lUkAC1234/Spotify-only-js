@@ -1,0 +1,84 @@
+@use "@/assets/styles/helpers/functions";
+
+.artist-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    padding: var(--space-4);
+    background: var(--surface-elevated);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: background var(--motion-fast) var(--motion-ease), transform var(--motion-fast) var(--motion-ease);
+    list-style: none;
+    color: var(--text);
+
+    &:hover {
+        background: var(--surface-highlight);
+    }
+
+    &:focus-visible {
+        outline: var(--border-width) solid var(--accent);
+        outline-offset: var(--space-1);
+    }
+
+    &__cover {
+        position: relative;
+        width: 100%;
+        aspect-ratio: 1 / 1;
+        border-radius: var(--radius-circle);
+        background: var(--surface-press);
+        overflow: hidden;
+        margin-bottom: var(--space-3);
+
+        &[data-fallback="gradient-0"] {
+            background: var(--genre-tile-gradient-0);
+        }
+        &[data-fallback="gradient-1"] {
+            background: var(--genre-tile-gradient-1);
+        }
+        &[data-fallback="gradient-2"] {
+            background: var(--genre-tile-gradient-2);
+        }
+        &[data-fallback="gradient-3"] {
+            background: var(--genre-tile-gradient-3);
+        }
+        &[data-fallback="gradient-4"] {
+            background: var(--genre-tile-gradient-4);
+        }
+        &[data-fallback="gradient-5"] {
+            background: var(--genre-tile-gradient-5);
+        }
+
+        img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+    }
+
+    &__placeholder {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: var(--type-display);
+        font-weight: var(--font-weight-bold);
+        color: var(--text);
+    }
+
+    &__name {
+        font-size: var(--type-title-3);
+        font-weight: var(--font-weight-bold);
+        color: var(--text);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    &__role {
+        font-size: var(--type-caption);
+        color: var(--text-secondary);
+    }
+}

@@ -1,0 +1,106 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: spotify-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - spotify-net
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: spotify-backend
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DJANGO_SETTINGS_MODULE: config.settings.prod
+      SECRET_KEY: ${SECRET_KEY}
+      DEBUG: "False"
+      ALLOWED_HOSTS: ${ALLOWED_HOSTS}
+      CSRF_TRUSTED_ORIGINS: ${CSRF_TRUSTED_ORIGINS}
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS}
+      NAME: ${DB_NAME}
+      USER: ${DB_USER}
+      PASSWORD: ${DB_PASSWORD}
+      HOST: postgres
+      PORT: 5432
+      JAMENDO_CLIENT_ID: ${JAMENDO_CLIENT_ID}
+      AUDIUS_DISCOVERY_HOST: ${AUDIUS_DISCOVERY_HOST:-}
+      DEFAULT_FROM_EMAIL: ${DEFAULT_FROM_EMAIL:-no-reply@spotify.local}
+      SITE_URL: ${SITE_URL}
+    volumes:
+      - backend-static:/app/staticfiles
+      - backend-media:/app/media
+    command: >
+      sh -c "
+        python manage.py migrate --noinput &&
+        python manage.py collectstatic --noinput &&
+        gunicorn config.wsgi:application
+          --bind 0.0.0.0:8000
+          --workers 3 --threads 2
+          --timeout 60
+          --access-logfile -
+          --error-logfile -
+      "
+    networks:
+      - spotify-net
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.prod
+      args:
+        VITE_API_ORIGIN: ""
+        VITE_DEFAULT_LANG: ru
+        VITE_REACT_DEV_TOOLS: "false"
+        VITE_MODE: production
+    container_name: spotify-frontend
+    restart: unless-stopped
+    networks:
+      - spotify-net
+
+  caddy:
+    image: caddy:2-alpine
+    container_name: spotify-caddy
+    restart: unless-stopped
+    depends_on:
+      - backend
+      - frontend
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      DOMAIN: ${DOMAIN}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - backend-static:/srv/staticfiles:ro
+      - backend-media:/srv/media:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    networks:
+      - spotify-net
+
+volumes:
+  postgres-data:
+  backend-static:
+  backend-media:
+  caddy-data:
+  caddy-config:
+
+networks:
+  spotify-net:
+    driver: bridge

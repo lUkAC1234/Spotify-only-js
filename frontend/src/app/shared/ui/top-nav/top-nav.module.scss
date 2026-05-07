@@ -2,58 +2,117 @@
 @use "@/assets/styles/helpers/variables";
 
 .topnav {
-    display: flex;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
     align-items: center;
     gap: var(--space-4);
-    padding: 0 var(--space-5);
+    padding: 0 var(--space-4);
     height: 100%;
     width: 100%;
 
-    &__history {
-        display: flex;
-        align-items: center;
-        gap: var(--space-2);
-        flex-shrink: 0;
-    }
-
-    &__history-btn {
-        display: inline-flex;
+    &__menu-btn {
+        display: none;
         align-items: center;
         justify-content: center;
-        width: var(--control-sm);
-        height: var(--control-sm);
-        border-radius: var(--radius-circle);
+        width: var(--control-md);
+        height: var(--control-md);
+        padding: 0;
         background: var(--surface-elevated);
         color: var(--text);
-        border: none;
+        border: var(--border-width) solid var(--border);
+        border-radius: var(--radius-circle);
         cursor: pointer;
-        transition: background var(--motion-fast) var(--motion-ease), transform var(--motion-fast) var(--motion-ease);
-
-        &:hover {
-            background: var(--surface-highlight);
-        }
-
-        &:active {
-            transform: scale(0.96);
-        }
+        flex-shrink: 0;
+        transition: background var(--motion-fast) var(--motion-ease);
 
         svg {
             width: var(--icon-md);
             height: var(--icon-md);
         }
+
+        &:hover {
+            background: var(--surface-highlight);
+        }
+
+        &:focus-visible {
+            outline: var(--border-width) solid var(--accent);
+            outline-offset: var(--space-1);
+        }
+    }
+
+    &__left {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--space-2);
+    }
+
+    &__home {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: var(--control-lg);
+        height: var(--control-lg);
+        background: var(--surface);
+        color: var(--text);
+        border-radius: var(--radius-circle);
+        text-decoration: none;
+        transition: background var(--motion-fast) var(--motion-ease), transform var(--motion-fast) var(--motion-ease), color var(--motion-fast) var(--motion-ease);
+
+        svg {
+            width: var(--icon-md);
+            height: var(--icon-md);
+        }
+
+        &:hover {
+            background: var(--surface-highlight);
+            color: var(--text);
+            transform: scale(1.04);
+        }
+
+        &--active {
+            background: var(--surface-highlight);
+            color: var(--text);
+
+            svg {
+                fill: currentColor;
+            }
+        }
+
+        &:focus-visible {
+            outline: var(--border-width) solid var(--accent);
+            outline-offset: var(--space-1);
+        }
     }
 
     &__search {
         position: relative;
-        flex: 1 1 0;
-        max-width: #{functions.rem(360)};
         display: flex;
         align-items: center;
+        justify-self: start;
+        width: 100%;
+        max-width: #{functions.rem(480)};
+        height: var(--control-lg);
+        padding: 0;
+        background: var(--surface);
+        border: var(--border-width) solid transparent;
+        border-radius: var(--radius-pill);
+        transition: background var(--motion-fast) var(--motion-ease), border-color var(--motion-fast) var(--motion-ease);
+
+        &:hover {
+            background: var(--surface-highlight);
+        }
+
+        &:focus-within {
+            background: var(--surface);
+            border-color: var(--text);
+        }
     }
 
     &__search-icon {
         position: absolute;
         left: var(--space-3);
+        top: 50%;
+        transform: translateY(-50%);
         color: var(--text-secondary);
         pointer-events: none;
         width: var(--icon-md);
@@ -61,108 +120,176 @@
     }
 
     &__search-input {
-        width: 100%;
-        height: var(--control-lg);
-        padding: 0 var(--space-4) 0 var(--control-lg);
-        background: var(--surface-elevated);
-        border: var(--border-width) solid transparent;
-        border-radius: var(--radius-pill);
+        flex: 1 1 0;
+        min-width: 0;
+        height: 100%;
+        padding: 0 var(--space-3) 0 var(--control-lg);
+        background: transparent;
+        border: none;
         color: var(--text);
         font-size: var(--type-body);
         outline: none;
-        transition: border-color var(--motion-fast) var(--motion-ease);
 
         &::placeholder {
             color: var(--text-tertiary);
         }
-
-        &:focus,
-        &:focus-visible {
-            border-color: var(--text);
-        }
     }
 
-    &__controls {
-        display: flex;
+    &__search-browse {
+        display: inline-flex;
         align-items: center;
-        gap: var(--space-3);
-        margin-left: auto;
+        justify-content: center;
         flex-shrink: 0;
-    }
-
-    &__auth {
-        display: flex;
-        align-items: center;
-        gap: var(--space-3);
-    }
-
-    &__auth-link {
+        width: var(--control-lg);
+        height: var(--control-lg);
+        margin-right: var(--space-1);
         color: var(--text-secondary);
+        border-radius: var(--radius-circle);
         text-decoration: none;
-        font-size: var(--type-body);
-        font-weight: var(--font-weight-bold);
-        transition: color var(--motion-fast) var(--motion-ease);
+        position: relative;
+        transition: color var(--motion-fast) var(--motion-ease), background var(--motion-fast) var(--motion-ease);
+
+        &::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: var(--border-width);
+            height: var(--icon-md);
+            background: var(--border);
+        }
+
+        svg {
+            width: var(--icon-md);
+            height: var(--icon-md);
+        }
 
         &:hover {
             color: var(--text);
         }
+
+        &:focus-visible {
+            outline: var(--border-width) solid var(--accent);
+            outline-offset: var(--space-1);
+        }
     }
 
-    &__auth-cta {
+    &__right {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--space-3);
+        justify-self: end;
+    }
+
+    &__friends-btn {
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        padding: var(--space-2) var(--space-5);
+        width: var(--control-md);
+        height: var(--control-md);
+        padding: 0;
+        background: var(--surface);
+        color: var(--text-secondary);
+        border: none;
+        border-radius: var(--radius-circle);
+        cursor: pointer;
+        transition: background var(--motion-fast) var(--motion-ease), color var(--motion-fast) var(--motion-ease), transform var(--motion-fast) var(--motion-ease);
+
+        svg {
+            width: var(--icon-md);
+            height: var(--icon-md);
+        }
+
+        &:hover {
+            background: var(--surface-highlight);
+            color: var(--text);
+            transform: scale(1.04);
+        }
+
+        &[aria-pressed="true"] {
+            background: var(--surface-highlight);
+            color: var(--accent);
+        }
+
+        &:focus-visible {
+            outline: var(--border-width) solid var(--accent);
+            outline-offset: var(--space-1);
+        }
+    }
+
+    &__guest {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--space-3);
+    }
+
+    &__signup {
+        color: var(--text-secondary);
+        text-decoration: none;
+        font-size: var(--type-body);
+        font-weight: var(--font-weight-bold);
+        transition: color var(--motion-fast) var(--motion-ease), transform var(--motion-fast) var(--motion-ease);
+        white-space: nowrap;
+        padding: var(--space-2) var(--space-3);
+
+        &:hover {
+            color: var(--text);
+            transform: scale(1.04);
+        }
+
+        &:focus-visible {
+            outline: var(--border-width) solid var(--accent);
+            outline-offset: var(--space-1);
+            border-radius: var(--radius-sm);
+        }
+    }
+
+    &__signin {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: var(--space-3) var(--space-6);
         background: var(--text);
         color: var(--bg);
         border-radius: var(--radius-pill);
         font-size: var(--type-body);
         font-weight: var(--font-weight-bold);
         text-decoration: none;
+        white-space: nowrap;
         transition: transform var(--motion-fast) var(--motion-ease);
 
         &:hover {
             transform: scale(1.04);
         }
-    }
 
-    &__user {
-        display: inline-flex;
-        align-items: center;
-        gap: var(--space-2);
-        padding: var(--space-2) var(--space-3);
-        border-radius: var(--radius-pill);
-        background: var(--surface-elevated);
-        color: var(--text);
-        text-decoration: none;
-        font-size: var(--type-body);
-        font-weight: var(--font-weight-bold);
-        transition: background var(--motion-fast) var(--motion-ease);
-
-        &:hover {
-            background: var(--surface-highlight);
+        &:focus-visible {
+            outline: var(--border-width) solid var(--accent);
+            outline-offset: var(--space-1);
         }
-    }
-
-    &__user-name {
-        max-width: #{functions.rem(120)};
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
     }
 }
 
 @media (max-width: variables.$mobile-view) {
     .topnav {
+        grid-template-columns: auto 1fr auto;
         padding: 0 var(--space-3);
         gap: var(--space-2);
 
-        &__history {
+        &__menu-btn {
+            display: inline-flex;
+        }
+
+        &__left {
             display: none;
         }
 
-        &__auth-link {
+        &__signup {
             display: none;
+        }
+
+        &__signin {
+            padding: var(--space-2) var(--space-4);
         }
     }
 }

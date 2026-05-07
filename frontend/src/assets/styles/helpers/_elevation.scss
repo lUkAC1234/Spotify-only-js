@@ -8,7 +8,7 @@
 }
 
 :root[data-theme="light"] {
-    --elevation-1: 0 #{functions.rem(4)} #{functions.rem(12)} rgba(0, 0, 0, 0.06);
-    --elevation-2: 0 #{functions.rem(12)} #{functions.rem(40)} rgba(0, 0, 0, 0.1);
+    --elevation-1: 0 #{functions.rem(2)} #{functions.rem(8)} rgba(0, 0, 0, 0.08);
+    --elevation-2: 0 #{functions.rem(12)} #{functions.rem(32)} rgba(0, 0, 0, 0.12);
     --elevation-player: 0 #{functions.rem(-2)} #{functions.rem(16)} rgba(0, 0, 0, 0.08);
 }

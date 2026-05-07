@@ -441,3 +441,27 @@ Support three breakpoints: `$tablet-view: 1280px`, `$ipad-view: 1024px`, `$mobil
 
 ### 8. Default Language
 Russian (ru) is the default language. All three languages (ru, en, uz) must be supported. `SUPPORTED_LANGS` in both `locale.service.ts` and `locale-enhanced.service.ts` must include all three.
+
+### 9. Never apply `overflow` globally
+Do not use `* { overflow: ... }`, `* { @extend ... }` from a scrollbar utility, or any other selector that injects `overflow` into every element. It silently turns headings, list items, and inline text into scroll containers and creates phantom scrollbars on tiny vertical jitter. Only apply `overflow: auto`/`hidden`/`scroll` to elements that genuinely need to clip or scroll their own content.
+
+### 10. Light-theme contrast
+In `data-theme="light"`, `--surface` and `--surface-elevated` are both pure white. Standalone controls floating on white chrome (top-nav buttons, theme toggle, language pill, search input) **must** carry an explicit `var(--border-width) solid var(--border)` border — without it they vanish into the white header. Cards on the off-white `--bg` content area get a subtle `--elevation-1` shadow instead of a border. See `DESIGN.md § 14` for the full contract.
+
+### 11. Dropdowns must escape header chrome
+Top-bar dropdowns (language picker, profile menu) **must** use `position: absolute; top: calc(100% + var(--space-2))` from a `position: relative` wrapper, with `z-index: var(--z-popover)`. The parent header element should have `z-index: var(--z-popover)` and `position: relative` so the dropdown's stacking context can render above the main scroll area. Never rely on raw integer `z-index` values — use the `--z-*` token scale from `_zIndexes.scss`.
+
+### 12. Page-level horizontal padding via `--content-padding-x`
+Every top-level page container (`.artist`, `.album`, `.playlist`, `.search`, `.library`, `.legal`, `.settings`, `.user`, all `*-hero` and `*-header` components, `section-row`, `greeting`, `liked-songs`) **must** use `var(--content-padding-x)` for its horizontal padding so that titles and content align on the same vertical line across pages. Mobile (`≤640px`) breakpoints use `var(--content-padding-x-mobile)`. Never inline a different `var(--space-N)` for page-level horizontal insets — if you need a unique value, add a new token. This is what makes navigation feel professional: the Spotify-clone "moves the content vertically" between pages, never horizontally.
+
+### 13. Scroll-to-top on every route change
+The shell-layout's `<main>` element holds the scroll for routed feature pages (it has `overflow-y: auto`). The router-level `useEffect([location.pathname, location.search])` in `shell-layout.tsx` resets `mainRef.current.scrollTo({ top: 0, behavior: "auto" })` plus `window.scrollTo(0, 0)` on every navigation. Never set `scroll-behavior: smooth` on the `__main` element — it makes the route-change reset visibly slow. Component-level scroll persistence (e.g., between tabs in the library) is fine, but inter-page navigation **always** lands at the top.
+
+### 14. No external Spotify redirects
+The clone is its own product. Never link to `spotify.com/legal/`, `spotify.com/safetyandprivacy/`, `support.spotify.com`, etc. Each link in the sidebar footer (and any future footer/legal copy) **must** be an internal route in `app/features/legal/`. Same applies to "Premium / Help / Download" CTAs — if they don't have a real internal page yet, do not render the link at all.
+
+### 15. Friends activity is an opt-in panel, not a permanent rail
+The friends-activity surface is a slide-in drawer (`position: fixed`) anchored from `top: var(--topnav-height)` to `bottom: calc(var(--player-height) + var(--shell-gap))`, opened via the `FriendsPanelService` from a top-nav button visible only when authenticated. Never reserve a permanent grid column for the rail — main content always runs full width. The panel sits at `--z-top` so it never tucks under top-nav. This is for two reasons: (a) main content gets the full viewport for premium feel, (b) the right-rail is a logged-in-only feature and shouldn't shift the entire layout when it's irrelevant.
+
+### 16. Playlist cover edits go through `CreatePlaylistModalService`
+There is exactly one playlist editor: the modal in `app/shared/ui/create-playlist-modal/`. Both create and edit flows live there (`open()` for create, `openEdit(playlist, onSaved?)` for edit, `notifySaved(id)` callback to inform the caller after save). Never re-implement an inline edit form inside the playlist page or anywhere else — extend the modal instead. Cover upload is via `library.uploadPlaylistCover(id, File)` which POSTs multipart to `/api/v1/playlists/<id>/cover/`.

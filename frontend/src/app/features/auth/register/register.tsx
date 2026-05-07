@@ -7,6 +7,7 @@ import { inject } from "@/app/shared/decorators/di";
 import { Button } from "@/app/shared/ui/buttons/button";
 import { Input } from "@/app/shared/ui/inputs/input";
 import { NavLink } from "@/app/shared/ui/link/nav-link";
+import { SVG_SpotifyBadge } from "@/app/shared/ui/svg/nav/svg-spotify-badge";
 
 import styles from "./register.module.scss";
 import { RegisterService } from "./register.service";
@@ -54,10 +55,15 @@ export class Register extends Component {
 
         return (
             <form className={styles["register"]} onSubmit={this.handleSubmit} noValidate>
-                <header className={styles["register__header"]}>
-                    <h1 className={styles["register__title"]}>{this.locale.t("common", "auth.sign-up")}</h1>
+                <header className={styles["register__hero"]}>
+                    <SVG_SpotifyBadge className={styles["register__hero-logo"]} />
+                    <h1 className={styles["register__title"]}>{this.locale.t("common", "auth.signup-title")}</h1>
                     <p className={styles["register__subtitle"]}>{this.locale.t("common", "auth.create-prompt")}</p>
                 </header>
+
+                <div className={styles["register__divider"]} aria-hidden="true">
+                    <span className={styles["register__divider-line"]} />
+                </div>
 
                 <div className={styles["register__field"]}>
                     <label className={styles["register__label"]} htmlFor="register-email">
@@ -71,7 +77,7 @@ export class Register extends Component {
                         fullwidth
                         value={email}
                         onChange={this.handleEmail}
-                        placeholder="you@example.com"
+                        placeholder={this.locale.t("common", "auth.identifier-placeholder")}
                         autoFocus
                     />
                     {errors.email && <span className={styles["register__error"]}>{errors.email}</span>}
@@ -142,10 +148,14 @@ export class Register extends Component {
                         : this.locale.t("common", "auth.sign-up")}
                 </Button>
 
+                <hr className={styles["register__rule"]} />
+
                 <p className={styles["register__switch"]}>
-                    {this.locale.t("common", "auth.have-account")}{" "}
+                    <span className={styles["register__switch-prompt"]}>
+                        {this.locale.t("common", "auth.have-account")}
+                    </span>
                     <NavLink to="/login" baseClass={styles["register__link"]}>
-                        {this.locale.t("common", "auth.sign-in")}
+                        {this.locale.t("common", "auth.sign-in-cta")}
                     </NavLink>
                 </p>
             </form>

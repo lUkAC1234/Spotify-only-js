@@ -13,3 +13,5 @@ django-parler-rest==2.2
 Pillow==11.3.0
 pillow-heif==1.1.0
 httpx==0.28.1
+argon2-cffi==23.1.0
+sentry-sdk[django]==2.20.0

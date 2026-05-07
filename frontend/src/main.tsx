@@ -1,5 +1,6 @@
 import "@/assets/styles/style.scss";
 
+import { initSentry } from "./app/core/observability/sentry";
 import { AppRouter } from "./app/core/providers/router";
 import { FocusPlugin } from "./app/shared/utils/classes/FocusPlugin";
 import { HistoryPlugin } from "./app/shared/utils/classes/HistoryModule";
@@ -16,6 +17,8 @@ if (MODE === "development") {
     Log.App("Application runs in development mode...");
     Log.App("StrictMode is turned on! React renders twice");
 }
+
+void initSentry();
 
 bootstrap()
     .node(root)

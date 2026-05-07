@@ -1,0 +1,13 @@
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-7);
+
+    &__hint {
+        margin: 0;
+        font-size: var(--type-body);
+        color: var(--text-secondary);
+        text-align: center;
+        padding: var(--space-7) var(--content-padding-x);
+    }
+}

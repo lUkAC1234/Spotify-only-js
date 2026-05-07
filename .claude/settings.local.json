@@ -191,7 +191,32 @@
       "Bash(python -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\('items=',len\\(d['items']\\)\\); [print\\(' ',t['title'],'-',t['artist']['name']\\) for t in d['items']]\")",
       "Bash(curl -s -o /dev/null -w \"new-releases HTTP %{http_code}\\\\n\" \"http://localhost:5175/api/v1/catalog/new-releases/?limit=4\")",
       "Bash(curl -s \"http://localhost:5175/api/v1/catalog/new-releases/?limit=2\")",
-      "Bash(./myenv/Scripts/python.exe manage.py makemigrations playback)"
+      "Bash(./myenv/Scripts/python.exe manage.py makemigrations playback)",
+      "Bash(./myenv/Scripts/python.exe -c \"import django; print\\(django.get_version\\(\\)\\)\")",
+      "Bash(./myenv/Scripts/python.exe manage.py makemigrations --dry-run library)",
+      "Bash(rm c:/Users/User/Documents/GitHub/Spotify-only-js/backend/apps/library/migrations/0001_initial.py)",
+      "Bash(./myenv/Scripts/python.exe manage.py makemigrations library)",
+      "Bash(echo \"EXIT $?\")",
+      "Bash(curl -s http://127.0.0.1:8000/api/v1/health/)",
+      "Bash(curl -s \"http://127.0.0.1:8000/api/v1/catalog/genres/\")",
+      "Bash(curl -s \"http://127.0.0.1:8000/api/v1/catalog/featured-playlists/\")",
+      "Bash(curl -s \"http://127.0.0.1:8000/api/v1/catalog/recommendations/?limit=3\")",
+      "Bash(./myenv/Scripts/python.exe manage.py seed_featured_playlists --tag rock --limit 6)",
+      "Bash(./myenv/Scripts/python.exe -X utf8 manage.py seed_featured_playlists --tag rock --limit 6)",
+      "Bash(./myenv/Scripts/python.exe manage.py shell -c \"from django.core.cache import cache; cache.clear\\(\\)\")",
+      "Bash(curl -s \"http://127.0.0.1:8000/api/v1/catalog/featured-playlists/\" -H \"Cache-Control: no-cache\")",
+      "Bash(./myenv/Scripts/python.exe manage.py shell -c \"from apps.library.models import Playlist; print\\(list\\(Playlist.objects.values\\('id','title','is_system','is_public'\\)\\)\\)\")",
+      "Read(//proc/bzm6vksgl/**)",
+      "Bash(tasklist /FI \"PID eq $\\(cat /proc/bzm6vksgl/pid \\)\")",
+      "Bash(findstr :8000)",
+      "Bash(taskkill /F /PID 15568)",
+      "Bash(./myenv/Scripts/python.exe manage.py shell -c \"from apps.library.selectors import system_playlists; pls = system_playlists\\(\\); print\\(len\\(pls\\)\\); [print\\(p.id, p.title, p.is_system, p.is_public, p.owner_id\\) for p in pls]\")",
+      "Bash(curl -s \"http://127.0.0.1:8000/api/v1/health/\")",
+      "Bash(taskkill /F /PID 7304)",
+      "Bash(PYTHONIOENCODING=utf-8 ./myenv/Scripts/python.exe -X utf8 manage.py runserver 127.0.0.1:8000)",
+      "Bash(curl -s \"http://127.0.0.1:8000/api/v1/catalog/playlist/1/\")",
+      "Bash(PYTHONIOENCODING=utf-8 ./myenv/Scripts/python.exe -X utf8 manage.py seed_featured_playlists --limit 12)",
+      "PowerShell(Stop-Process -Name \"python\" -Force -ErrorAction SilentlyContinue)"
     ]
   }
 }

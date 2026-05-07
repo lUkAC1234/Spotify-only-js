@@ -243,6 +243,60 @@ export class Settings extends Component {
 
                 <section className={styles["settings__section"]}>
                     <h2 className={styles["settings__section-title"]}>
+                        {this.locale.t("common", "settings.privacy")}
+                    </h2>
+
+                    <label className={styles["settings__toggle"]}>
+                        <input
+                            type="checkbox"
+                            checked={user.isProfilePublic}
+                            onChange={() => void this.service.togglePrivacy("isProfilePublic")}
+                        />
+                        <span className={styles["settings__toggle-meta"]}>
+                            <span className={styles["settings__toggle-title"]}>
+                                {this.locale.t("common", "settings.privacy-profile")}
+                            </span>
+                            <span className={styles["settings__toggle-hint"]}>
+                                {this.locale.t("common", "settings.privacy-profile-hint")}
+                            </span>
+                        </span>
+                    </label>
+
+                    <label className={styles["settings__toggle"]}>
+                        <input
+                            type="checkbox"
+                            checked={user.isListeningPublic}
+                            onChange={() => void this.service.togglePrivacy("isListeningPublic")}
+                        />
+                        <span className={styles["settings__toggle-meta"]}>
+                            <span className={styles["settings__toggle-title"]}>
+                                {this.locale.t("common", "settings.privacy-listening")}
+                            </span>
+                            <span className={styles["settings__toggle-hint"]}>
+                                {this.locale.t("common", "settings.privacy-listening-hint")}
+                            </span>
+                        </span>
+                    </label>
+
+                    <label className={styles["settings__toggle"]}>
+                        <input
+                            type="checkbox"
+                            checked={user.isRecentHistoryPublic}
+                            onChange={() => void this.service.togglePrivacy("isRecentHistoryPublic")}
+                        />
+                        <span className={styles["settings__toggle-meta"]}>
+                            <span className={styles["settings__toggle-title"]}>
+                                {this.locale.t("common", "settings.privacy-history")}
+                            </span>
+                            <span className={styles["settings__toggle-hint"]}>
+                                {this.locale.t("common", "settings.privacy-history-hint")}
+                            </span>
+                        </span>
+                    </label>
+                </section>
+
+                <section className={styles["settings__section"]}>
+                    <h2 className={styles["settings__section-title"]}>
                         {this.locale.t("common", "settings.session")}
                     </h2>
                     <div className={styles["settings__actions"]}>

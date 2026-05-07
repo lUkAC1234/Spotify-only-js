@@ -1,0 +1,17 @@
+.skeleton-card {
+    pointer-events: none;
+
+    &__line {
+        height: var(--type-body);
+        width: 70%;
+        background: var(--surface-highlight);
+        border-radius: var(--radius-sm);
+    }
+
+    &__line-sm {
+        height: var(--type-caption);
+        width: 45%;
+        background: var(--surface-highlight);
+        border-radius: var(--radius-sm);
+    }
+}

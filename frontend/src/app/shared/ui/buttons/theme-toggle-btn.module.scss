@@ -1,38 +1,67 @@
-$duration: 500ms;
+@use "@/assets/styles/helpers/functions";
+
+$rotate-duration: 320ms;
 
 .theme-btn {
-    background: rgba(255, 255, 255, 0.1);
-    color: #ffffff;
-}
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--control-md);
+    height: var(--control-md);
+    padding: 0;
+    background: var(--surface-elevated);
+    color: var(--text);
+    border: var(--border-width) solid var(--border);
+    border-radius: var(--radius-circle);
+    cursor: pointer;
+    transition: background var(--motion-fast) var(--motion-ease), border-color var(--motion-fast) var(--motion-ease);
 
-.sun,
-.moon {
-    position: absolute;
-    transition: all $duration ease-in-out !important;
+    &:hover {
+        background: var(--surface-highlight);
+        border-color: var(--border-strong);
+    }
+
+    &:focus-visible {
+        outline: var(--border-width) solid var(--accent);
+        outline-offset: var(--space-1);
+    }
+
+    &__stack {
+        position: relative;
+        display: inline-grid;
+        place-items: center;
+        width: var(--icon-md);
+        height: var(--icon-md);
+    }
+
+    &__icon {
+        grid-area: 1 / 1;
+        width: var(--icon-md);
+        height: var(--icon-md);
+        transition: opacity $rotate-duration var(--motion-ease), transform $rotate-duration var(--motion-ease);
+    }
 }
 
 :root[data-theme="light"] {
-    .sun {
-        position: relative;
+    .theme-btn__sun {
         opacity: 1;
-        transform: scale(1) rotate(0deg);
+        transform: rotate(0deg) scale(1);
     }
 
-    .moon {
+    .theme-btn__moon {
         opacity: 0;
-        transform: scale(0.3) rotate(90deg);
+        transform: rotate(90deg) scale(0.4);
     }
 }
 
 :root[data-theme="dark"] {
-    .sun {
+    .theme-btn__sun {
         opacity: 0;
-        transform: scale(0.3) rotate(-90deg);
+        transform: rotate(-90deg) scale(0.4);
     }
 
-    .moon {
-        position: relative;
+    .theme-btn__moon {
         opacity: 1;
-        transform: scale(1) rotate(0deg);
+        transform: rotate(0deg) scale(1);
     }
 }

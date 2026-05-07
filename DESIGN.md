@@ -45,20 +45,21 @@ All colors are defined once, themed via `data-theme="dark|light"`. Default theme
 
 | Token | Value |
 |---|---|
-| `--bg` | `#FFFFFF` |
-| `--surface` | `#FFFFFF` |
-| `--surface-elevated` | `#F6F6F6` |
-| `--surface-highlight` | `#EEEEEE` |
-| `--surface-press` | `#DEDEDE` |
+| `--bg` | `#F4F4F4` (page background — slightly off-white so cards lift) |
+| `--surface` | `#FFFFFF` (sidebar + topnav + bottom-player — bright white) |
+| `--surface-elevated` | `#FFFFFF` (cards — paired with `--elevation-1` for visual lift) |
+| `--surface-highlight` | `#ECECEC` (hover states on cards / list rows) |
+| `--surface-press` | `#D6D6D6` (active / pressed) |
 | `--accent` | `#1DB954` (unchanged — the brand green) |
 | `--accent-hover` | `#169C46` |
-| `--accent-press` | `#127538` |
-| `--text` | `#000000` |
+| `--accent-press` | `#0F7A37` |
+| `--text` | `#121212` |
 | `--text-secondary` | `#5A5A5A` |
-| `--text-tertiary` | `#9A9A9A` |
-| `--border` | `rgba(0,0,0,0.08)` |
-| `--overlay` | `rgba(0,0,0,0.4)` |
-| `--shadow` | `0 12px 40px rgba(0,0,0,0.08)` |
+| `--text-tertiary` | `#7A7A7A` |
+| `--border` | `rgba(0,0,0,0.10)` (visible against white surfaces) |
+| `--border-strong` | `rgba(0,0,0,0.18)` (focus rings, dividers) |
+| `--overlay` | `rgba(0,0,0,0.32)` |
+| `--shadow` | `0 12px 40px rgba(0,0,0,0.10)` |
 
 ### Hard rule
 
@@ -302,7 +303,21 @@ Album / playlist / artist card. Vertical layout: 1:1 cover on top, title below, 
 
 ---
 
-## 14. Hard "no" list (rules that must never be broken)
+## 14. Light-theme contrast rules
+
+In light theme, `--surface` and `--surface-elevated` are both pure white. Distinguish them by:
+
+- Adding `--elevation-1` (small drop shadow) to elevated cards — gives them a subtle lift on the slightly grey `--bg`.
+- Adding a `var(--border-width) solid var(--border)` border to standalone controls in the top-nav (theme-toggle, lang-select, history buttons) so they don't blend into the white header bar.
+- Page chrome (sidebar, top-nav, bottom-player) sits on `--surface` (white) with a `--border` divider to the off-white `--bg` content area.
+
+Buttons that float on white surfaces (e.g. theme-toggle, language pill) **must** carry a 1px `--border` border in addition to their background — without it they vanish in the light theme.
+
+`<input>` fields in the top-nav use `--surface-highlight` (light grey) for their background and `--border` for the resting border so they remain distinguishable from the white header.
+
+---
+
+## 15. Hard "no" list (rules that must never be broken)
 
 - ❌ No atomic-CSS class names (`flex-center`, `w-full`, `mb-16`, etc.). Every style ships as SCSS Modules.
 - ❌ No `style={{ ... }}` props. Compute classes; let CSS own the visuals.
@@ -315,7 +330,7 @@ Album / playlist / artist card. Vertical layout: 1:1 cover on top, title below, 
 
 ---
 
-## 15. How this doc evolves
+## 16. How this doc evolves
 
 - Update this file in the same PR that adds a new component or token.
 - If a token is added but never used after a phase ships, remove it.

@@ -1,3 +1,5 @@
+from django.contrib.postgres.indexes import GinIndex
+from django.contrib.postgres.search import SearchVectorField
 from django.db import models
 from django.utils import timezone
 from django.utils.text import slugify
@@ -127,6 +129,7 @@ class Track(models.Model):
     audio_url_cached = models.URLField(max_length=600, blank=True)
     audio_url_cached_at = models.DateTimeField(null=True, blank=True)
     metadata_synced_at = models.DateTimeField(default=timezone.now)
+    search_vector = SearchVectorField(null=True, blank=True)
     genres = models.ManyToManyField(Genre, through="TrackGenre", related_name="tracks", blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -140,6 +143,7 @@ class Track(models.Model):
             models.Index(fields=["artist"]),
             models.Index(fields=["album", "track_number"]),
             models.Index(fields=["popularity"]),
+            GinIndex(fields=["search_vector"], name="catalog_track_fts_idx"),
         ]
         ordering = ["-popularity", "title"]
 

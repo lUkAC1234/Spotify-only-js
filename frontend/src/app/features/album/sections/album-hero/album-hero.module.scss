@@ -1,0 +1,167 @@
+@use "@/assets/styles/helpers/functions";
+
+.hero {
+    position: relative;
+    overflow: hidden;
+    padding: var(--space-7) var(--content-padding-x) var(--space-5);
+    color: var(--text);
+    isolation: isolate;
+
+    &__backdrop {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        filter: blur(#{functions.rem(60)}) saturate(1.4);
+        opacity: 0.4;
+        z-index: -2;
+    }
+
+    &__shade {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(180deg, transparent 0%, var(--bg) 95%);
+        z-index: -1;
+    }
+
+    &__inner {
+        display: grid;
+        grid-template-columns: minmax(#{functions.rem(180)}, #{functions.rem(240)}) minmax(0, 1fr);
+        gap: var(--space-6);
+        align-items: end;
+    }
+
+    &__cover {
+        aspect-ratio: 1 / 1;
+        border-radius: var(--radius-md);
+        overflow: hidden;
+        background: var(--surface-highlight);
+        box-shadow: var(--elevation-2);
+
+        img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+    }
+
+    &__meta {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-3);
+        min-width: 0;
+    }
+
+    &__overline {
+        font-size: var(--type-overline);
+        text-transform: uppercase;
+        letter-spacing: var(--letter-spacing-overline);
+        color: var(--text);
+        font-weight: var(--font-weight-bold);
+    }
+
+    &__title {
+        margin: 0;
+        font-size: var(--type-display);
+        font-weight: var(--font-weight-black);
+        line-height: var(--line-height-tight);
+        color: var(--text);
+    }
+
+    &__line {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: var(--space-2);
+        font-size: var(--type-caption);
+        color: var(--text-secondary);
+    }
+
+    &__artist {
+        color: var(--text);
+        font-weight: var(--font-weight-bold);
+        text-decoration: none;
+
+        &:hover {
+            text-decoration: underline;
+        }
+    }
+
+    &__actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--space-3);
+        align-items: center;
+        padding-top: var(--space-2);
+    }
+
+    &__play {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--space-2);
+        padding: var(--space-3) var(--space-5);
+        background: var(--accent);
+        color: var(--black);
+        border: none;
+        border-radius: var(--radius-pill);
+        font-weight: var(--font-weight-bold);
+        cursor: pointer;
+        transition: background var(--motion-fast) var(--motion-ease), transform var(--motion-fast) var(--motion-ease);
+
+        svg {
+            width: var(--icon-md);
+            height: var(--icon-md);
+        }
+
+        &:hover {
+            background: var(--accent-hover);
+            transform: scale(1.04);
+        }
+
+        &:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+    }
+
+    &__heart {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: var(--control-md);
+        height: var(--control-md);
+        border-radius: var(--radius-circle);
+        background: transparent;
+        border: var(--border-width) solid var(--text-secondary);
+        color: var(--text-secondary);
+        cursor: pointer;
+        transition: border-color var(--motion-fast) var(--motion-ease), color var(--motion-fast) var(--motion-ease);
+
+        svg {
+            width: var(--icon-md);
+            height: var(--icon-md);
+        }
+
+        &:hover {
+            border-color: var(--text);
+            color: var(--text);
+        }
+
+        &--active {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+    }
+}
+
+@media (max-width: 720px) {
+    .hero {
+        padding: var(--space-5) var(--space-4);
+
+        &__inner {
+            grid-template-columns: 1fr;
+        }
+    }
+}

@@ -1,0 +1,42 @@
+{$DOMAIN} {
+    encode gzip zstd
+
+    @api path /api/* /admin/* /api-auth/*
+    handle @api {
+        reverse_proxy backend:8000 {
+            header_up X-Forwarded-Proto {scheme}
+            header_up X-Forwarded-Host {host}
+            header_up X-Real-IP {remote_host}
+        }
+    }
+
+    @static path /static/*
+    handle @static {
+        root * /srv
+        file_server
+        header Cache-Control "public, max-age=2592000, immutable"
+    }
+
+    @media path /media/*
+    handle @media {
+        root * /srv
+        file_server
+        header Cache-Control "public, max-age=86400"
+    }
+
+    handle {
+        reverse_proxy frontend:80
+    }
+
+    header {
+        X-Content-Type-Options "nosniff"
+        X-Frame-Options "DENY"
+        Referrer-Policy "same-origin"
+        -Server
+    }
+
+    log {
+        output stderr
+        format console
+    }
+}

@@ -117,6 +117,22 @@ class JamendoProvider(MusicProvider):
         )
         return tuple(self._parse_track(item) for item in data.get("results", []))
 
+    def tracks_by_tag(self, tag: str, *, limit: int = 12, offset: int = 0) -> tuple[TrackDTO, ...]:
+        if not tag:
+            return ()
+        data = self._get(
+            "/tracks/",
+            {
+                "tags": tag,
+                "limit": limit,
+                "offset": offset,
+                "order": "popularity_total",
+                "include": "musicinfo",
+                "audioformat": "mp32",
+            },
+        )
+        return tuple(self._parse_track(item) for item in data.get("results", []))
+
     def _parse_track(self, item: dict[str, Any]) -> TrackDTO:
         musicinfo = item.get("musicinfo") or {}
         tags = musicinfo.get("tags") or {}

@@ -1,0 +1,48 @@
+@use "@/assets/styles/helpers/functions";
+
+.footer {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    padding: var(--space-3) var(--space-2) var(--space-2);
+
+    &__links {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--space-2) var(--space-4);
+    }
+
+    &__link-item {
+        display: block;
+    }
+
+    &__link {
+        color: var(--text-tertiary);
+        text-decoration: none;
+        font-size: var(--type-overline);
+        font-weight: var(--font-weight-medium);
+        transition: color var(--motion-fast) var(--motion-ease);
+        white-space: nowrap;
+
+        &:hover {
+            color: var(--text-secondary);
+            text-decoration: underline;
+        }
+
+        &:focus-visible {
+            outline: var(--border-width) solid var(--accent);
+            outline-offset: var(--space-1);
+            border-radius: var(--radius-sm);
+        }
+    }
+
+    &__controls {
+        display: flex;
+        align-items: center;
+        gap: var(--space-2);
+        margin-top: var(--space-2);
+    }
+}

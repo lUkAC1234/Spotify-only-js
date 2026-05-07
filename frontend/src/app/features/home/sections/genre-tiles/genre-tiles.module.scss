@@ -1,0 +1,101 @@
+@use "@/assets/styles/helpers/functions";
+
+.genre-tiles {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    padding: 0 var(--space-6);
+
+    &__header {
+        display: flex;
+        align-items: baseline;
+    }
+
+    &__title {
+        font-size: var(--type-title-2);
+        font-weight: var(--font-weight-bold);
+        color: var(--text);
+        margin: 0;
+    }
+
+    &__grid {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(#{functions.rem(180)}, 1fr));
+        gap: var(--space-3);
+    }
+
+    &__tile {
+        position: relative;
+        aspect-ratio: 16 / 9;
+        border-radius: var(--radius-md);
+        overflow: hidden;
+        background: var(--genre-tile-gradient, var(--genre-tile-gradient-0));
+
+        &--v0 {
+            --genre-tile-gradient: var(--genre-tile-gradient-0);
+        }
+
+        &--v1 {
+            --genre-tile-gradient: var(--genre-tile-gradient-1);
+        }
+
+        &--v2 {
+            --genre-tile-gradient: var(--genre-tile-gradient-2);
+        }
+
+        &--v3 {
+            --genre-tile-gradient: var(--genre-tile-gradient-3);
+        }
+
+        &--v4 {
+            --genre-tile-gradient: var(--genre-tile-gradient-4);
+        }
+
+        &--v5 {
+            --genre-tile-gradient: var(--genre-tile-gradient-5);
+        }
+    }
+
+    &__btn {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: flex-end;
+        padding: var(--space-4);
+        border: none;
+        background: var(--genre-tile-gradient);
+        color: var(--text);
+        cursor: pointer;
+        transition: transform var(--motion-fast) var(--motion-ease), filter var(--motion-fast) var(--motion-ease);
+
+        &:hover {
+            transform: scale(1.02);
+            filter: brightness(1.08);
+        }
+
+        &:focus-visible {
+            outline: var(--border-width) solid var(--accent);
+            outline-offset: var(--space-1);
+        }
+    }
+
+    &__name {
+        font-size: var(--type-title-3);
+        font-weight: var(--font-weight-bold);
+        color: var(--text);
+        text-transform: capitalize;
+    }
+}
+
+@media (max-width: 640px) {
+    .genre-tiles {
+        padding: 0 var(--space-4);
+
+        &__grid {
+            grid-template-columns: repeat(auto-fill, minmax(#{functions.rem(140)}, 1fr));
+        }
+    }
+}

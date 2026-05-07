@@ -7,6 +7,7 @@ import { inject } from "@/app/shared/decorators/di";
 import { Button } from "@/app/shared/ui/buttons/button";
 import { Input } from "@/app/shared/ui/inputs/input";
 import { NavLink } from "@/app/shared/ui/link/nav-link";
+import { SVG_SpotifyBadge } from "@/app/shared/ui/svg/nav/svg-spotify-badge";
 
 import styles from "./login.module.scss";
 import { LoginService } from "./login.service";
@@ -45,10 +46,15 @@ export class Login extends Component {
 
         return (
             <form className={styles["login"]} onSubmit={this.handleSubmit} noValidate>
-                <header className={styles["login__header"]}>
-                    <h1 className={styles["login__title"]}>{this.locale.t("common", "auth.sign-in")}</h1>
+                <header className={styles["login__hero"]}>
+                    <SVG_SpotifyBadge className={styles["login__hero-logo"]} />
+                    <h1 className={styles["login__title"]}>{this.locale.t("common", "auth.welcome-title")}</h1>
                     <p className={styles["login__subtitle"]}>{this.locale.t("common", "auth.welcome-back")}</p>
                 </header>
+
+                <div className={styles["login__divider"]} aria-hidden="true">
+                    <span className={styles["login__divider-line"]} />
+                </div>
 
                 <div className={styles["login__field"]}>
                     <label className={styles["login__label"]} htmlFor="login-identifier">
@@ -93,10 +99,14 @@ export class Login extends Component {
                     {isSubmitting ? this.locale.t("common", "auth.signing-in") : this.locale.t("common", "auth.sign-in")}
                 </Button>
 
+                <hr className={styles["login__rule"]} />
+
                 <p className={styles["login__switch"]}>
-                    {this.locale.t("common", "auth.no-account")}{" "}
+                    <span className={styles["login__switch-prompt"]}>
+                        {this.locale.t("common", "auth.no-account")}
+                    </span>
                     <NavLink to="/register" baseClass={styles["login__link"]}>
-                        {this.locale.t("common", "auth.sign-up")}
+                        {this.locale.t("common", "auth.sign-up-cta")}
                     </NavLink>
                 </p>
             </form>

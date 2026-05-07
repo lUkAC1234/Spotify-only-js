@@ -4,6 +4,10 @@
     "loading": "Yuklanmoqda",
     "page-title": "Spotify",
     "country-search": "Davlatni qidirish...",
+    "common": {
+        "load-more": "Yana yuklash",
+        "loading-more": "Yuklanmoqda..."
+    },
     "app": {
         "name": "Spotify"
     },
@@ -13,11 +17,18 @@
         "library": "Kutubxonangiz",
         "settings": "Sozlamalar",
         "back": "Orqaga",
-        "forward": "Oldinga"
+        "forward": "Oldinga",
+        "menu": "Menyuni ochish",
+        "primary": "Asosiy navigatsiya",
+        "close-menu": "Menyuni yopish"
     },
     "auth": {
         "sign-in": "Kirish",
         "sign-up": "Roʻyxatdan oʻtish",
+        "sign-up-cta": "Bepul roʻyxatdan oʻting",
+        "sign-in-cta": "Kirish",
+        "welcome-title": "Xush kelibsiz",
+        "signup-title": "Tinglashni boshlash uchun roʻyxatdan oʻting",
         "sign-out": "Chiqish",
         "signing-in": "Kirilmoqda...",
         "signing-up": "Hisob yaratilmoqda...",
@@ -50,6 +61,7 @@
         "subtitle": "Profil, avatar va parolingizni yangilang.",
         "profile": "Profil",
         "password": "Parol",
+        "privacy": "Maxfiylik",
         "session": "Seans",
         "save": "Saqlash",
         "profile-saved": "Profil yangilandi.",
@@ -61,6 +73,12 @@
         "current-password": "Joriy parol",
         "new-password": "Yangi parol",
         "update-password": "Parolni yangilash",
+        "privacy-profile": "Ochiq profil",
+        "privacy-profile-hint": "Har kim profilingizni va ochiq pleylistlaringizni ko'ra oladi.",
+        "privacy-listening": "Hozir nima eshitayotganimni ko'rsatish",
+        "privacy-listening-hint": "Obunachilar hozirgi trekni do'stlar lentasida ko'radi.",
+        "privacy-history": "Ochiq tinglovlar tarixi",
+        "privacy-history-hint": "Yaqinda eshitilgan treklar obunachilar lentasida paydo bo'ladi.",
         "signed-out": "Hisobdan chiqdingiz.",
         "error": {
             "display-name-required": "Ism bo'sh bo'lishi mumkin emas.",
@@ -76,14 +94,51 @@
         "error": "Katalogga ulanish muvaffaqiyatsiz. Qayta urinib ko'ring.",
         "no-results": "«{query}» bo'yicha hech narsa topilmadi.",
         "tracks": "Treklar",
+        "tracks-singular": "Trek",
+        "songs": "Qo'shiqlar",
+        "all-songs": "Barcha treklar ({count})",
         "artists": "Ijrochilar",
-        "albums": "Albomlar"
+        "albums": "Albomlar",
+        "top-result": "Eng yaxshi natija",
+        "browse-genres": "Barcha janrlar",
+        "recent": "Yaqindagi qidiruvlar",
+        "clear-recent": "Tozalash",
+        "remove-recent": "Yaqindagi qidiruvlardan o'chirish"
     },
     "playlist": {
         "create": "Pleylist yaratish",
-        "create-disabled": "Kirgandan keyin foydalaning"
+        "create-disabled": "Kirgandan keyin foydalaning",
+        "create-cta": "Yaratish",
+        "creating": "Yaratilmoqda...",
+        "create-error": "Pleylistni yaratib bo'lmadi.",
+        "saving": "Saqlanmoqda...",
+        "update-error": "Pleylistni yangilab bo'lmadi.",
+        "cover-aria": "Pleylist muqovasini o'zgartirish",
+        "choose-cover": "Rasm tanlash",
+        "cover-too-large": "Fayl 5 MB dan kichik bo'lishi kerak.",
+        "edit-cover": "Muqovani o'zgartirish",
+        "name-label": "Nomi",
+        "description-label": "Tavsif",
+        "title-placeholder": "Mening pleylistim #1",
+        "description-placeholder": "Tavsif qo'shish (ixtiyoriy)",
+        "title-required": "Pleylist nomini kiriting.",
+        "label": "Pleylist",
+        "system": "Spotify tanlovi",
+        "edit": "Tahrirlash",
+        "save": "Saqlash",
+        "cancel": "Bekor qilish",
+        "close": "Yopish",
+        "tracks-count": "{count} ta trek",
+        "remove-from-playlist": "Pleylistdan o'chirish",
+        "added": "Qo'shilgan",
+        "duration": "Davomiyligi",
+        "empty-tracks": "Pleylist hozircha bo'sh.",
+        "not-found": "Pleylist mavjud emas.",
+        "collaborative-on": "Hamkorlikda",
+        "collaborative-off": "Hamkorlikni yoqish"
     },
     "player": {
+        "aria-label": "Pleyer",
         "empty": "Boshlash uchun trek tanlang",
         "empty-title": "Hech narsa o'ynalmayapti",
         "empty-artist": "Navbat bo'sh",
@@ -104,7 +159,8 @@
         "volume": "Ovozsiz",
         "volume-level": "Ovoz balandligi",
         "seek": "O'tkazish",
-        "like": "Kutubxonangizga qo'shish"
+        "like": "Kutubxonangizga qo'shish",
+        "unlike": "Kutubxonadan olib tashlash"
     },
     "home": {
         "greeting": {
@@ -115,10 +171,175 @@
         "recently-played": "Yaqinda tinglangan",
         "made-for-you": "Sizga atalgan",
         "new-releases": "Yangi relizlar",
-        "featured-playlists": "Tanlangan pleylistlar"
+        "featured-playlists": "Tanlangan pleylistlar",
+        "trending": "Hozir trendda",
+        "browse-genres": "Barcha janrlar",
+        "empty-recommendations": "Bir nechta trekni tinglang — sizga moslashtiramiz."
     },
     "coming-soon": {
         "phase": "Bosqich {phase}",
         "hint": "Ushbu bo'lim keyingi bosqichlarda paydo bo'ladi. Karkas, mavzular va tokenlar tayyor."
+    },
+    "library": {
+        "title": "Sizning kutubxonangiz",
+        "tab-playlists": "Pleylistlar",
+        "tab-albums": "Albomlar",
+        "tab-artists": "Ijrochilar",
+        "liked-songs": "Sevimli treklar",
+        "liked-count": "{count} ta sevimli trek",
+        "signed-out-hint": "Saqlangan treklar, albomlar va pleylistlardan foydalanish uchun kiring.",
+        "empty-playlists": "Hali pleylist yaratmadingiz.",
+        "empty-albums": "Hali albom saqlamadingiz.",
+        "empty-artists": "Hali hech bir ijrochiga obuna bo'lmadingiz.",
+        "empty-liked": "Saqlash uchun istalgan trekdagi yurakcha tugmasini bosing.",
+        "artist-hint": "Ijrochi",
+        "tabs-aria": "Kutubxona ilovalari"
+    },
+    "artist": {
+        "label": "Ijrochi",
+        "follow": "Obuna bo'lish",
+        "following": "Obunadasiz",
+        "monthly-listeners": "Oyiga {count} ta tinglovchi",
+        "popular": "Mashhur treklar",
+        "discography": "Diskografiya",
+        "discography-all": "Hammasi",
+        "discography-albums": "Albomlar",
+        "discography-singles": "Singllar va EP",
+        "discography-compilations": "To'plamlar",
+        "discography-filters": "Diskografiya filtrlari",
+        "discography-empty": "Bu yerda hozircha bo'sh.",
+        "fans-also-like": "Shunga o'xshash ijrochilar",
+        "not-found": "Ijrochi mavjud emas.",
+        "type-album": "Albom",
+        "type-single": "Singl",
+        "type-ep": "EP",
+        "type-compilation": "To'plam"
+    },
+    "album": {
+        "label": "Albom",
+        "save": "Albomni saqlash",
+        "unsave": "Albomni olib tashlash",
+        "related": "O'xshash ijrochilardan yana",
+        "not-found": "Albom mavjud emas."
+    },
+    "profile": {
+        "label": "Profil",
+        "account": "Hisob",
+        "privacy": "Maxfiylik va sozlamalar",
+        "follow": "Obuna bo'lish",
+        "unfollow": "Obunadasiz",
+        "followers": "{count} ta obunachi",
+        "following": "{count} ta obuna",
+        "public-playlists": "Ochiq pleylistlar",
+        "empty-playlists": "Hali ochiq pleylist yo'q.",
+        "not-found": "Foydalanuvchi mavjud emas."
+    },
+    "social": {
+        "friend-activity": "Do'stlar faolligi",
+        "friend-activity-empty": "Ochiq tinglovchi do'stlaringizga obuna bo'ling — bu yerda treklari paydo bo'ladi."
+    },
+    "lang": {
+        "aria-label": "Tilni o'zgartirish"
+    },
+    "theme": {
+        "aria-label": "Mavzuni almashtirish"
+    },
+    "carousel": {
+        "prev": "Chapga aylantirish",
+        "next": "O'ngga aylantirish"
+    },
+    "topnav": {
+        "brand-aria": "Spotify — bosh sahifaga",
+        "home-aria": "Bosh sahifa",
+        "browse-aria": "Ko'rib chiqish",
+        "premium": "Premium",
+        "help": "Yordam",
+        "download": "Yuklab olish",
+        "install-app": "Ilovani o'rnatish"
+    },
+    "marketing": {
+        "title": "Spotify — oldindan ko'rish",
+        "subtitle": "Cheksiz musiqa va podkastlarni tinglash uchun ro'yxatdan o'ting. Ba'zan reklamani ko'rsatamiz, ammo siz xizmatdan bepul foydalanasiz!",
+        "cta": "Ro'yxatdan o'tish"
+    },
+    "sidebar": {
+        "library-title": "Mening kutubxonam",
+        "create-aria": "Pleylist yoki podkast yaratish",
+        "guest": {
+            "playlist-title": "Birinchi pleylistingizni yarating",
+            "playlist-sub": "Bu juda oson! Biz yordam beramiz.",
+            "playlist-cta": "Pleylist yaratish",
+            "podcasts-title": "Qiziqarli podkastlarga obuna bo'ling",
+            "podcasts-sub": "Yangi epizodlar haqida xabardor bo'lasiz.",
+            "podcasts-cta": "Podkastlarni ko'rib chiqish"
+        },
+        "footer": {
+            "legal": "Yuridik ma'lumot",
+            "safety": "Xavfsizlik va maxfiylik markazi",
+            "privacy": "Maxfiylik siyosati",
+            "cookies": "Cookie fayllari",
+            "ads": "Reklama haqida",
+            "accessibility": "Maxsus imkoniyatlar"
+        }
+    },
+    "show-all": "Hammasini ko'rsatish",
+    "popular": {
+        "tracks": "Mashhur treklar",
+        "artists": "Mashhur ijrochilar"
+    },
+    "artist-menu": {
+        "add-to-playlist": "Pleylistga qo'shish",
+        "new-playlist": "Yangi pleylist yaratish",
+        "add-to-liked": "Sevimlilarga qo'shish",
+        "remove-from-liked": "Sevimlilardan olib tashlash",
+        "go-to-radio": "Trek radiosiga o'tish",
+        "go-to-album": "Albomga o'tish",
+        "view-details": "Tafsilotlar",
+        "share": "Ulashish",
+        "share-copy": "Ijrochi havolasini nusxalash",
+        "share-system": "Tizim orqali ulashish",
+        "open-in-app": "Ilovada ochish",
+        "more-aria": "Ijrochi uchun qo'shimcha amallar",
+        "copied": "Havola nusxalandi"
+    },
+    "artist-about": {
+        "title": "Ijrochi haqida",
+        "monthly-listeners": "oylik tinglovchi",
+        "country": "Mamlakat",
+        "genres": "Janrlar",
+        "no-bio": "Biografiya mavjud emas."
+    },
+    "legal": {
+        "overline": "Spotify",
+        "updated": "Yangilangan: {date}",
+        "body": {
+            "intro": "Spotify millionlab foydalanuvchilarga yangi treklar, ijrochilar va podkastlarni topishga yordam beradigan musiqa platformasidir. Ushbu hujjat xizmatdan foydalanish shartlarini bayon qiladi.",
+            "terms": "Akkaunt yaratish yoki Spotify’dan foydalanish orqali siz hamjamiyat qoidalarini, bepul akkaunt cheklovlarini va kontent tarqatish shartlarini qabul qilgan bo‘lasiz.",
+            "contact": "Savollar bo‘lsa, profil sozlamalaridagi “Yordam” bo‘limi orqali bog‘laning. Biz uch ish kuni ichida javob berishga harakat qilamiz."
+        },
+        "safety": {
+            "intro": "Foydalanuvchi xavfsizligi biz uchun ustuvor. Sessiyalar zamonaviy shifrlash bilan himoyalangan, ma’lumotlar bizning infratuzilmamizda saqlanadi.",
+            "report": "Shubhali harakat yoki nomaqbul kontentni ko‘rsangiz, akkaunt sahifasidan xabar bering. Har bir xabar moderatsiya jamoasi tomonidan ko‘rib chiqiladi.",
+            "controls": "Maxfiylik sozlamalari profilni yashirish, ochiq tinglash tarixini o‘chirish va do‘stlar feedida ko‘rinishni nazorat qilish imkonini beradi."
+        },
+        "privacy": {
+            "intro": "Biz faqat pleyer uchun zarur ma’lumotlarni yig‘amiz: afzalliklar, tinglash tarixi va obunalar.",
+            "data": "Ma’lumotlar serverimizda saqlanadi va sizning roziligingizsiz uchinchi shaxslarga uzatilmaydi. Audiofayllar to‘g‘ridan-to‘g‘ri sherik provayderlardan oqim qilinadi va bizda saqlanmaydi.",
+            "rights": "Ma’lumotlaringizni eksport qilish yoki o‘chirib tashlashni sozlamalar orqali so‘rashingiz mumkin. So‘rov 30 kun ichida ko‘rib chiqiladi."
+        },
+        "cookies": {
+            "intro": "Spotify sizni tizimda saqlash, til va mavzu sozlamalarini eslab qolish uchun cookie fayllaridan foydalanadi.",
+            "types": "Cookie uch toifaga bo‘linadi: texnik (majburiy), funksional (sozlamalarni eslaydi) va analitik (xizmatni yaxshilashga yordam beradi).",
+            "manage": "Cookie fayllarini istalgan vaqt brauzer sozlamalari orqali tozalashingiz mumkin. Texnik cookie keyingi kirishda tiklanadi."
+        },
+        "ads": {
+            "intro": "Bepul akkauntlar treklar orasida qisqa reklama eshitiladi — bu xizmat ishlashini ta’minlaydi.",
+            "choices": "Premium obunachilar reklamasiz tinglashadi va to‘liq oflayn kirishga ega bo‘lishadi. Obunani istalgan vaqt yoqish yoki o‘chirish mumkin."
+        },
+        "accessibility": {
+            "intro": "Spotify hamma uchun qulay bo‘lishga intiladi: har bir interaktiv element klaviatura orqali ishlaydi va ekran o‘qigichlar tomonidan o‘qiladi.",
+            "standards": "Interfeys WCAG 2.1 AA standartiga muvofiq: fokus halqalari, matn kontrasti va `prefers-reduced-motion` qo‘llab-quvvatlanadi.",
+            "feedback": "Agar biror narsa kutganingizdek ishlamasa, bizga xabar bering — Spotify barcha tinglovchilar uchun qulay bo‘lib qolishi kerak."
+        }
     }
 }

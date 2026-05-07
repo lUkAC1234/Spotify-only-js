@@ -4,6 +4,10 @@
     "loading": "Loading",
     "page-title": "Spotify",
     "country-search": "Search country...",
+    "common": {
+        "load-more": "Load more",
+        "loading-more": "Loading..."
+    },
     "app": {
         "name": "Spotify"
     },
@@ -13,11 +17,18 @@
         "library": "Your Library",
         "settings": "Settings",
         "back": "Go back",
-        "forward": "Go forward"
+        "forward": "Go forward",
+        "menu": "Open menu",
+        "primary": "Primary",
+        "close-menu": "Close menu"
     },
     "auth": {
         "sign-in": "Sign in",
         "sign-up": "Sign up",
+        "sign-up-cta": "Sign up free",
+        "sign-in-cta": "Sign in",
+        "welcome-title": "Welcome back",
+        "signup-title": "Sign up to start listening",
         "sign-out": "Sign out",
         "signing-in": "Signing in...",
         "signing-up": "Creating your account...",
@@ -50,6 +61,7 @@
         "subtitle": "Update your profile, avatar and password.",
         "profile": "Profile",
         "password": "Password",
+        "privacy": "Privacy",
         "session": "Session",
         "save": "Save changes",
         "profile-saved": "Profile updated.",
@@ -61,6 +73,12 @@
         "current-password": "Current password",
         "new-password": "New password",
         "update-password": "Update password",
+        "privacy-profile": "Public profile",
+        "privacy-profile-hint": "Let anyone view your profile and public playlists.",
+        "privacy-listening": "Show what I'm listening to",
+        "privacy-listening-hint": "Followers see your current track in their friends rail.",
+        "privacy-history": "Public listening history",
+        "privacy-history-hint": "Recent plays appear in followers' activity feed.",
         "signed-out": "You are signed out.",
         "error": {
             "display-name-required": "Display name cannot be empty.",
@@ -76,14 +94,51 @@
         "error": "Couldn't reach the catalog. Please try again.",
         "no-results": "No results for \"{query}\".",
         "tracks": "Tracks",
+        "tracks-singular": "Song",
+        "songs": "Songs",
+        "all-songs": "All songs ({count})",
         "artists": "Artists",
-        "albums": "Albums"
+        "albums": "Albums",
+        "top-result": "Top result",
+        "browse-genres": "Browse all genres",
+        "recent": "Recent searches",
+        "clear-recent": "Clear all",
+        "remove-recent": "Remove from recent searches"
     },
     "playlist": {
         "create": "Create playlist",
-        "create-disabled": "Available after sign-in"
+        "create-disabled": "Available after sign-in",
+        "create-cta": "Create",
+        "creating": "Creating...",
+        "create-error": "Could not create the playlist.",
+        "saving": "Saving...",
+        "update-error": "Could not update the playlist.",
+        "cover-aria": "Change playlist cover",
+        "choose-cover": "Choose photo",
+        "cover-too-large": "File must be smaller than 5 MB.",
+        "edit-cover": "Change cover",
+        "name-label": "Name",
+        "description-label": "Description",
+        "title-placeholder": "My Playlist #1",
+        "description-placeholder": "Add an optional description",
+        "title-required": "Give your playlist a name.",
+        "label": "Playlist",
+        "system": "Curated by Spotify",
+        "edit": "Edit details",
+        "save": "Save",
+        "cancel": "Cancel",
+        "close": "Close",
+        "tracks-count": "{count} tracks",
+        "remove-from-playlist": "Remove from this playlist",
+        "added": "Added",
+        "duration": "Duration",
+        "empty-tracks": "This playlist is empty.",
+        "not-found": "Playlist not available.",
+        "collaborative-on": "Collaborative",
+        "collaborative-off": "Make collaborative"
     },
     "player": {
+        "aria-label": "Player",
         "empty": "Pick a track to start listening",
         "empty-title": "Nothing playing",
         "empty-artist": "Your queue is empty",
@@ -104,7 +159,8 @@
         "volume": "Mute",
         "volume-level": "Volume",
         "seek": "Seek",
-        "like": "Save to your library"
+        "like": "Save to your library",
+        "unlike": "Remove from your library"
     },
     "home": {
         "greeting": {
@@ -115,10 +171,175 @@
         "recently-played": "Recently played",
         "made-for-you": "Made for you",
         "new-releases": "New releases",
-        "featured-playlists": "Featured playlists"
+        "featured-playlists": "Featured playlists",
+        "trending": "Trending right now",
+        "browse-genres": "Browse all genres",
+        "empty-recommendations": "Listen to a few tracks and we'll tailor this to you."
     },
     "coming-soon": {
         "phase": "Phase {phase}",
         "hint": "This area is part of the upcoming roadmap. The shell, theming, and tokens are already in place."
+    },
+    "library": {
+        "title": "Your Library",
+        "tab-playlists": "Playlists",
+        "tab-albums": "Albums",
+        "tab-artists": "Artists",
+        "liked-songs": "Liked Songs",
+        "liked-count": "{count} liked tracks",
+        "signed-out-hint": "Sign in to access your saved tracks, albums, and playlists.",
+        "empty-playlists": "You haven't created any playlists yet.",
+        "empty-albums": "You haven't saved any albums yet.",
+        "empty-artists": "You aren't following any artists yet.",
+        "empty-liked": "Tap the heart on any track to save it here.",
+        "artist-hint": "Artist",
+        "tabs-aria": "Library tabs"
+    },
+    "artist": {
+        "label": "Artist",
+        "follow": "Follow",
+        "following": "Following",
+        "monthly-listeners": "{count} monthly listeners",
+        "popular": "Popular",
+        "discography": "Discography",
+        "discography-all": "All",
+        "discography-albums": "Albums",
+        "discography-singles": "Singles & EPs",
+        "discography-compilations": "Compilations",
+        "discography-filters": "Discography filters",
+        "discography-empty": "Nothing here yet.",
+        "fans-also-like": "Fans also like",
+        "not-found": "Artist not available.",
+        "type-album": "Album",
+        "type-single": "Single",
+        "type-ep": "EP",
+        "type-compilation": "Compilation"
+    },
+    "album": {
+        "label": "Album",
+        "save": "Save album",
+        "unsave": "Remove album",
+        "related": "More by similar artists",
+        "not-found": "Album not available."
+    },
+    "profile": {
+        "label": "Profile",
+        "account": "Account",
+        "privacy": "Privacy & Settings",
+        "follow": "Follow",
+        "unfollow": "Following",
+        "followers": "{count} followers",
+        "following": "{count} following",
+        "public-playlists": "Public playlists",
+        "empty-playlists": "No public playlists yet.",
+        "not-found": "User not available."
+    },
+    "social": {
+        "friend-activity": "Friend activity",
+        "friend-activity-empty": "Follow people who listen publicly to see what they're playing here."
+    },
+    "lang": {
+        "aria-label": "Change language"
+    },
+    "theme": {
+        "aria-label": "Toggle theme"
+    },
+    "carousel": {
+        "prev": "Scroll left",
+        "next": "Scroll right"
+    },
+    "topnav": {
+        "brand-aria": "Spotify — go to home",
+        "home-aria": "Home",
+        "browse-aria": "Browse",
+        "premium": "Premium",
+        "help": "Support",
+        "download": "Download",
+        "install-app": "Install app"
+    },
+    "marketing": {
+        "title": "Preview of Spotify",
+        "subtitle": "Sign up to enjoy unlimited music and podcasts. We'll show you the occasional ad — but you'll keep using the service for free!",
+        "cta": "Sign up free"
+    },
+    "sidebar": {
+        "library-title": "Your Library",
+        "create-aria": "Create playlist or podcast",
+        "guest": {
+            "playlist-title": "Create your first playlist",
+            "playlist-sub": "It's easy, we'll help you.",
+            "playlist-cta": "Create playlist",
+            "podcasts-title": "Let's find some podcasts to follow",
+            "podcasts-sub": "We'll keep you updated on new episodes.",
+            "podcasts-cta": "Browse podcasts"
+        },
+        "footer": {
+            "legal": "Legal",
+            "safety": "Safety & Privacy Center",
+            "privacy": "Privacy Policy",
+            "cookies": "Cookies",
+            "ads": "About Ads",
+            "accessibility": "Accessibility"
+        }
+    },
+    "show-all": "Show all",
+    "popular": {
+        "tracks": "Trending songs",
+        "artists": "Popular artists"
+    },
+    "artist-menu": {
+        "add-to-playlist": "Add to playlist",
+        "new-playlist": "Create new playlist",
+        "add-to-liked": "Add to liked songs",
+        "remove-from-liked": "Remove from liked",
+        "go-to-radio": "Go to song radio",
+        "go-to-album": "Go to album",
+        "view-details": "View details",
+        "share": "Share",
+        "share-copy": "Copy link to artist",
+        "share-system": "Share via system",
+        "open-in-app": "Open in desktop app",
+        "more-aria": "More options for artist",
+        "copied": "Link copied"
+    },
+    "artist-about": {
+        "title": "About artist",
+        "monthly-listeners": "monthly listeners",
+        "country": "Country",
+        "genres": "Genres",
+        "no-bio": "Biography unavailable."
+    },
+    "legal": {
+        "overline": "Spotify",
+        "updated": "Updated: {date}",
+        "body": {
+            "intro": "Spotify is a music platform that helps millions of listeners discover tracks, artists and podcasts. This page outlines the terms that apply to all accounts.",
+            "terms": "By creating an account or using Spotify, you agree to our community guidelines, free-tier policy, and content distribution limits. The full text is published here as it evolves.",
+            "contact": "Have a question? Reach the support team via the Help section in your profile settings. We aim to respond within three business days."
+        },
+        "safety": {
+            "intro": "Listener safety is our priority. We secure sessions with modern encryption and keep your data inside our infrastructure.",
+            "report": "If you spot suspicious activity or harmful content, report it from your account page. Every report is reviewed by our moderation team.",
+            "controls": "Privacy settings let you hide your profile, disable public listening history, and control what friends see in their activity feed."
+        },
+        "privacy": {
+            "intro": "We only collect what we need to run the player: your preferences, playback history, and follow lists.",
+            "data": "Data is stored on our servers and never shared with third parties without consent. Audio is streamed directly from partner providers and is never persisted on our side.",
+            "rights": "You can request an export or deletion of your data through the settings. Requests are processed within 30 days."
+        },
+        "cookies": {
+            "intro": "Spotify uses cookies to keep you signed in, remember your language and theme preferences.",
+            "types": "Cookies fall into three groups: essential (required to run), functional (remember preferences), and analytical (help us improve the service).",
+            "manage": "You can clear cookies any time through your browser. Essential cookies will be re-created on your next visit."
+        },
+        "ads": {
+            "intro": "Free accounts hear short ad breaks between tracks. Ads keep the service running and the catalog growing.",
+            "choices": "Premium subscribers enjoy ad-free playback and full offline access. You can subscribe or cancel any time from the account page."
+        },
+        "accessibility": {
+            "intro": "Spotify is built to be accessible to everyone: every interactive element is keyboard-friendly and announced by screen readers.",
+            "standards": "The interface follows WCAG 2.1 AA: visible focus rings, sufficient contrast, and `prefers-reduced-motion` support are part of the design system.",
+            "feedback": "If something does not work the way you expect, let us know — we want Spotify to remain comfortable for every listener."
+        }
     }
 }

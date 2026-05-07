@@ -1,0 +1,92 @@
+@use "@/assets/styles/helpers/functions";
+@use "@/assets/styles/helpers/variables";
+
+.banner {
+    position: sticky;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-5);
+    padding: var(--space-3) var(--space-6);
+    min-height: var(--marketing-banner-height);
+    background: var(--marketing-banner-gradient);
+    color: var(--marketing-banner-fg);
+    z-index: var(--z-layout);
+    box-shadow: var(--elevation-2);
+
+    &__copy {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-1);
+        min-width: 0;
+        flex: 1 1 0;
+    }
+
+    &__overline {
+        font-size: var(--type-overline);
+        font-weight: var(--font-weight-bold);
+        letter-spacing: var(--letter-spacing-overline);
+        text-transform: uppercase;
+        color: var(--marketing-banner-fg);
+    }
+
+    &__sub {
+        margin: 0;
+        font-size: var(--type-body);
+        font-weight: var(--font-weight-bold);
+        color: var(--marketing-banner-fg);
+        line-height: var(--line-height-snug);
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+    }
+
+    &__cta {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        padding: var(--space-3) var(--space-7);
+        background: var(--marketing-banner-cta-bg);
+        color: var(--marketing-banner-cta-fg);
+        border-radius: var(--radius-pill);
+        font-size: var(--type-body);
+        font-weight: var(--font-weight-bold);
+        text-decoration: none;
+        white-space: nowrap;
+        transition: transform var(--motion-fast) var(--motion-ease);
+
+        &:hover {
+            transform: scale(1.04);
+        }
+
+        &:focus-visible {
+            outline: var(--border-width) solid var(--marketing-banner-cta-bg);
+            outline-offset: var(--space-1);
+        }
+    }
+}
+
+@media (max-width: variables.$mobile-view) {
+    .banner {
+        flex-direction: column;
+        align-items: stretch;
+        text-align: center;
+        gap: var(--space-3);
+        padding: var(--space-3) var(--space-4);
+        min-height: var(--marketing-banner-height-mobile);
+
+        &__cta {
+            align-self: center;
+        }
+
+        &__sub {
+            -webkit-line-clamp: 3;
+        }
+    }
+}

@@ -1,12 +1,15 @@
 import { observer } from "mobx-react";
 import { ChangeEvent, Component, ReactNode } from "react";
 
+import { AuthService } from "@/app/core/services/auth/auth.service";
+import { LibraryService } from "@/app/core/services/library/library.service";
 import { LocaleService } from "@/app/core/services/locale.service";
 import { PlayerService } from "@/app/core/services/player/player.service";
 import { inject } from "@/app/shared/decorators/di";
 import { className } from "@/app/shared/utils/functions/className";
 
 import { SVG_Devices } from "../svg/player/svg-devices";
+import { SVG_HeartFilled } from "../svg/player/svg-heart-filled";
 import { SVG_Heart } from "../svg/player/svg-heart";
 import { SVG_Next } from "../svg/player/svg-next";
 import { SVG_Pause } from "../svg/player/svg-pause";
@@ -32,6 +35,8 @@ const formatMs = (ms: number): string => {
 export class BottomPlayer extends Component {
     private locale: LocaleService = inject(LocaleService);
     private player: PlayerService = inject(PlayerService);
+    private library: LibraryService = inject(LibraryService);
+    private auth: AuthService = inject(AuthService);
 
     private handleSeek = (event: ChangeEvent<HTMLInputElement>): void => {
         this.player.seek(Number(event.target.value));
@@ -39,6 +44,12 @@ export class BottomPlayer extends Component {
 
     private handleVolume = (event: ChangeEvent<HTMLInputElement>): void => {
         this.player.setVolume(Number(event.target.value));
+    };
+
+    private handleHeart = (): void => {
+        const track = this.player.currentTrack;
+        if (!track || !this.auth.isAuthenticated) return;
+        void this.library.toggleTrackSaved(track.id);
     };
 
     private renderRepeatIcon(): ReactNode {
@@ -60,7 +71,11 @@ export class BottomPlayer extends Component {
         });
 
         return (
-            <section className={styles["bottom-player"]} role="region" aria-label="Player">
+            <section
+                className={styles["bottom-player"]}
+                role="region"
+                aria-label={this.locale.t("common", "player.aria-label")}
+            >
                 <div className={styles["bottom-player__left"]}>
                     <div className={styles["bottom-player__cover"]} aria-hidden={!track}>
                         {track?.cover && <img src={track.cover} alt="" loading="lazy" />}
@@ -73,14 +88,25 @@ export class BottomPlayer extends Component {
                             {track?.artist?.name ?? this.locale.t("common", "player.empty-artist")}
                         </span>
                     </div>
-                    <button
-                        type="button"
-                        className={styles["bottom-player__btn"]}
-                        aria-label={this.locale.t("common", "player.like")}
-                        disabled={!track}
-                    >
-                        <SVG_Heart />
-                    </button>
+                    {this.auth.isAuthenticated && track && (
+                        <button
+                            type="button"
+                            className={className(styles["bottom-player__btn"], {
+                                [styles["bottom-player__btn--active"]]: this.library.isTrackSaved(
+                                    track.id,
+                                ),
+                            })}
+                            onClick={this.handleHeart}
+                            aria-label={
+                                this.library.isTrackSaved(track.id)
+                                    ? this.locale.t("common", "player.unlike")
+                                    : this.locale.t("common", "player.like")
+                            }
+                            aria-pressed={this.library.isTrackSaved(track.id)}
+                        >
+                            {this.library.isTrackSaved(track.id) ? <SVG_HeartFilled /> : <SVG_Heart />}
+                        </button>
+                    )}
                 </div>
 
                 <div className={styles["bottom-player__center"]}>
@@ -166,7 +192,7 @@ export class BottomPlayer extends Component {
                     </button>
                     <button
                         type="button"
-                        className={styles["bottom-player__btn"]}
+                        className={`${styles["bottom-player__btn"]} ${styles["bottom-player__devices"]}`}
                         aria-label={this.locale.t("common", "player.devices")}
                     >
                         <SVG_Devices />

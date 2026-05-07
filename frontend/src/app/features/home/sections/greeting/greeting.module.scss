@@ -1,7 +1,7 @@
 @use "@/assets/styles/helpers/functions";
 
 .greeting {
-    padding: var(--space-7) var(--space-6) var(--space-5);
+    padding: var(--space-7) var(--content-padding-x) var(--space-5);
 
     &__title {
         font-size: var(--type-display);

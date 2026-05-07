@@ -13,6 +13,10 @@ class UserSerializer(serializers.ModelSerializer):
     isStaff = serializers.BooleanField(source="is_staff", read_only=True)
     dateJoined = serializers.DateTimeField(source="date_joined", read_only=True)
     avatar = serializers.SerializerMethodField()
+    isProfilePublic = serializers.BooleanField(source="is_profile_public", read_only=True)
+    isListeningPublic = serializers.BooleanField(source="is_listening_public", read_only=True)
+    isRecentHistoryPublic = serializers.BooleanField(source="is_recent_history_public", read_only=True)
+    bio = serializers.CharField(read_only=True)
 
     class Meta:
         model = User
@@ -22,8 +26,12 @@ class UserSerializer(serializers.ModelSerializer):
             "username",
             "displayName",
             "avatar",
+            "bio",
             "isStaff",
             "dateJoined",
+            "isProfilePublic",
+            "isListeningPublic",
+            "isRecentHistoryPublic",
         )
 
     def get_avatar(self, obj) -> str | None:
@@ -82,10 +90,11 @@ class LoginSerializer(serializers.Serializer):
 
 class UpdateProfileSerializer(serializers.ModelSerializer):
     displayName = serializers.CharField(source="display_name", required=False, allow_blank=False, max_length=80)
+    bio = serializers.CharField(required=False, allow_blank=True, max_length=240)
 
     class Meta:
         model = User
-        fields = ("displayName",)
+        fields = ("displayName", "bio")
 
 
 class ChangePasswordSerializer(serializers.Serializer):

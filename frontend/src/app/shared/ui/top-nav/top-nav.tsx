@@ -6,12 +6,14 @@ import { AuthService } from "@/app/core/services/auth/auth.service";
 import { CatalogService } from "@/app/core/services/catalog/catalog.service";
 import { LocaleService } from "@/app/core/services/locale.service";
 import { NavigateService } from "@/app/core/services/navigate.service";
+import { LayoutService } from "@/app/core/services/ui/layout.service";
 import { inject } from "@/app/shared/decorators/di";
-import { ThemeToggleBtn } from "@/app/shared/ui/buttons/theme-toggle-btn";
-import { LangSelect } from "@/app/shared/ui/lang/lang-select";
+import { FriendsPanelService } from "@/app/shared/ui/friends-rail/friends-panel.service";
 import { NavLink } from "@/app/shared/ui/link/nav-link";
-import { SVG_Back } from "@/app/shared/ui/svg/nav/svg-back";
-import { SVG_Forward } from "@/app/shared/ui/svg/nav/svg-forward";
+import { ProfileMenu } from "@/app/shared/ui/profile-menu/profile-menu";
+import { SVG_Friends } from "@/app/shared/ui/svg/nav/svg-friends";
+import { SVG_GridBrowse } from "@/app/shared/ui/svg/nav/svg-grid-browse";
+import { SVG_Home } from "@/app/shared/ui/svg/nav/svg-home";
 import { SVG_Search } from "@/app/shared/ui/svg/nav/svg-search";
 
 import styles from "./top-nav.module.scss";
@@ -22,14 +24,8 @@ export class TopNav extends Component {
     private navigate: NavigateService = inject(NavigateService);
     private catalog: CatalogService = inject(CatalogService);
     private auth: AuthService = inject(AuthService);
-
-    private handleBack = (): void => {
-        window.history.back();
-    };
-
-    private handleForward = (): void => {
-        window.history.forward();
-    };
+    private layout: LayoutService = inject(LayoutService);
+    private friendsPanel: FriendsPanelService = inject(FriendsPanelService);
 
     private handleQueryChange = (event: ChangeEvent<HTMLInputElement>): void => {
         this.catalog.setQuery(event.target.value);
@@ -42,21 +38,13 @@ export class TopNav extends Component {
         this.navigate.navigate(`/search?q=${encodeURIComponent(trimmed)}`);
     };
 
-    private renderAuthArea(): ReactNode {
-        if (this.auth.isAuthenticated && this.auth.me) {
-            return (
-                <NavLink to="/settings" baseClass={styles["topnav__user"]}>
-                    <span className={styles["topnav__user-name"]}>{this.auth.me.displayName}</span>
-                </NavLink>
-            );
-        }
-
+    private renderGuestActions(): ReactNode {
         return (
-            <div className={styles["topnav__auth"]}>
-                <NavLink to="/register" baseClass={styles["topnav__auth-link"]}>
+            <div className={styles["topnav__guest"]}>
+                <NavLink to="/register" baseClass={styles["topnav__signup"]}>
                     {this.locale.t("common", "auth.sign-up")}
                 </NavLink>
-                <NavLink to="/login" baseClass={styles["topnav__auth-cta"]}>
+                <NavLink to="/login" baseClass={styles["topnav__signin"]}>
                     {this.locale.t("common", "auth.sign-in")}
                 </NavLink>
             </div>
@@ -66,26 +54,42 @@ export class TopNav extends Component {
     render(): ReactNode {
         const placeholder: string = this.locale.t("common", "search.placeholder");
         const ariaLabel: string = this.locale.t("common", "search.aria-label");
+        const isAuthed: boolean = this.auth.isAuthenticated && this.auth.me !== null;
 
         return (
             <div className={styles["topnav"]}>
-                <div className={styles["topnav__history"]}>
-                    <button
-                        type="button"
-                        className={styles["topnav__history-btn"]}
-                        onClick={this.handleBack}
-                        aria-label={this.locale.t("common", "nav.back")}
+                <button
+                    type="button"
+                    className={styles["topnav__menu-btn"]}
+                    onClick={this.layout.toggleSidebar}
+                    aria-label={this.locale.t("common", "nav.menu")}
+                    aria-expanded={this.layout.sidebarIsActive}
+                >
+                    <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        aria-hidden="true"
                     >
-                        <SVG_Back />
-                    </button>
-                    <button
-                        type="button"
-                        className={styles["topnav__history-btn"]}
-                        onClick={this.handleForward}
-                        aria-label={this.locale.t("common", "nav.forward")}
+                        <line x1="4" y1="7" x2="20" y2="7" />
+                        <line x1="4" y1="12" x2="20" y2="12" />
+                        <line x1="4" y1="17" x2="20" y2="17" />
+                    </svg>
+                </button>
+
+                <div className={styles["topnav__left"]}>
+                    <NavLink
+                        to="/"
+                        baseClass={styles["topnav__home"]}
+                        activeClass={styles["topnav__home--active"]}
+                        end
+                        aria-label={this.locale.t("common", "topnav.home-aria")}
                     >
-                        <SVG_Forward />
-                    </button>
+                        <SVG_Home />
+                    </NavLink>
                 </div>
 
                 <form className={styles["topnav__search"]} onSubmit={this.handleSubmit} role="search">
@@ -102,12 +106,29 @@ export class TopNav extends Component {
                         spellCheck={false}
                         data-debounce-ms={config.SEARCH_DEBOUNCE_MS}
                     />
+                    <NavLink
+                        to="/search"
+                        baseClass={styles["topnav__search-browse"]}
+                        aria-label={this.locale.t("common", "topnav.browse-aria")}
+                    >
+                        <SVG_GridBrowse />
+                    </NavLink>
                 </form>
 
-                <div className={styles["topnav__controls"]}>
-                    <LangSelect mini />
-                    <ThemeToggleBtn />
-                    {this.renderAuthArea()}
+                <div className={styles["topnav__right"]}>
+                    {isAuthed && (
+                        <button
+                            type="button"
+                            className={styles["topnav__friends-btn"]}
+                            onClick={this.friendsPanel.toggle}
+                            aria-label={this.locale.t("common", "social.friend-activity")}
+                            aria-expanded={this.friendsPanel.isOpen}
+                            aria-pressed={this.friendsPanel.isOpen}
+                        >
+                            <SVG_Friends />
+                        </button>
+                    )}
+                    {isAuthed ? <ProfileMenu /> : this.renderGuestActions()}
                 </div>
             </div>
         );

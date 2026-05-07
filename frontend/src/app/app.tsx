@@ -13,6 +13,14 @@ import { _static } from "./shared/decorators/static";
 export class App extends Component {
     appService: AppService = inject(AppService);
 
+    componentDidMount(): void {
+        this.appService.init();
+    }
+
+    componentWillUnmount(): void {
+        this.appService.dispose();
+    }
+
     render(): ReactNode {
         return (
             <>

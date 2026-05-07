@@ -1,0 +1,16 @@
+.home-auth {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-7);
+    padding-bottom: var(--space-7);
+    color: var(--text);
+    background: var(--bg);
+    min-height: 100%;
+    width: 100%;
+
+    &__sections {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-7);
+    }
+}

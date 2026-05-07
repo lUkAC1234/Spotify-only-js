@@ -5,7 +5,7 @@ import { LocaleService } from "@/app/core/services/locale.service";
 import { PlayerService } from "@/app/core/services/player/player.service";
 import { Track } from "@/app/core/types/track";
 import { inject } from "@/app/shared/decorators/di";
-import { className } from "@/app/shared/utils/functions/className";
+import { SidePanel } from "@/app/shared/ui/side-panel/side-panel";
 import { SVG_CloseIcon } from "@/app/shared/ui/svg/svg-close-icon";
 
 import styles from "./queue-panel.module.scss";
@@ -56,7 +56,10 @@ export class QueuePanel extends Component {
     private renderCurrent(track: Track): ReactNode {
         const cover = track.cover || track.album?.cover || "";
         return (
-            <article className={styles["queue-panel__current"]} aria-label="Now playing">
+            <article
+                className={styles["queue-panel__current"]}
+                aria-label={this.locale.t("common", "player.now-playing")}
+            >
                 <div className={styles["queue-panel__cover"]}>
                     {cover && <img src={cover} alt="" loading="lazy" />}
                 </div>
@@ -103,58 +106,41 @@ export class QueuePanel extends Component {
         const { isQueueOpen, currentTrack, queue } = this.player;
 
         return (
-            <aside
-                className={className(styles["queue-panel"], {
-                    [styles["queue-panel--open"]]: isQueueOpen,
-                })}
-                role="dialog"
-                aria-hidden={!isQueueOpen}
-                aria-label={this.locale.t("common", "player.queue-title")}
+            <SidePanel
+                isOpen={isQueueOpen}
+                title={this.locale.t("common", "player.queue-title")}
+                onClose={this.handleClose}
+                ariaLabel={this.locale.t("common", "player.queue-title")}
+                closeAriaLabel={this.locale.t("common", "player.queue-close")}
             >
-                <header className={styles["queue-panel__header"]}>
-                    <h2 className={styles["queue-panel__heading"]}>
-                        {this.locale.t("common", "player.queue-title")}
-                    </h2>
-                    <button
-                        type="button"
-                        className={styles["queue-panel__close"]}
-                        onClick={this.handleClose}
-                        aria-label={this.locale.t("common", "player.queue-close")}
-                    >
-                        <SVG_CloseIcon />
-                    </button>
-                </header>
+                <section className={styles["queue-panel__section"]}>
+                    <h3 className={styles["queue-panel__section-title"]}>
+                        {this.locale.t("common", "player.now-playing")}
+                    </h3>
+                    {currentTrack ? (
+                        this.renderCurrent(currentTrack)
+                    ) : (
+                        <p className={styles["queue-panel__empty"]}>
+                            {this.locale.t("common", "player.empty-title")}
+                        </p>
+                    )}
+                </section>
 
-                <div className={styles["queue-panel__body"]}>
-                    <section className={styles["queue-panel__section"]}>
-                        <h3 className={styles["queue-panel__section-title"]}>
-                            {this.locale.t("common", "player.now-playing")}
-                        </h3>
-                        {currentTrack ? (
-                            this.renderCurrent(currentTrack)
-                        ) : (
-                            <p className={styles["queue-panel__empty"]}>
-                                {this.locale.t("common", "player.empty-title")}
-                            </p>
-                        )}
-                    </section>
-
-                    <section className={styles["queue-panel__section"]}>
-                        <h3 className={styles["queue-panel__section-title"]}>
-                            {this.locale.t("common", "player.next-up")}
-                        </h3>
-                        {queue.length === 0 ? (
-                            <p className={styles["queue-panel__empty"]}>
-                                {this.locale.t("common", "player.queue-empty")}
-                            </p>
-                        ) : (
-                            <ul className={styles["queue-panel__list"]}>
-                                {queue.map((track, index) => this.renderQueueItem(track, index))}
-                            </ul>
-                        )}
-                    </section>
-                </div>
-            </aside>
+                <section className={styles["queue-panel__section"]}>
+                    <h3 className={styles["queue-panel__section-title"]}>
+                        {this.locale.t("common", "player.next-up")}
+                    </h3>
+                    {queue.length === 0 ? (
+                        <p className={styles["queue-panel__empty"]}>
+                            {this.locale.t("common", "player.queue-empty")}
+                        </p>
+                    ) : (
+                        <ul className={styles["queue-panel__list"]}>
+                            {queue.map((track, index) => this.renderQueueItem(track, index))}
+                        </ul>
+                    )}
+                </section>
+            </SidePanel>
         );
     }
 }

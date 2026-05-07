@@ -1,0 +1,57 @@
+@use "@/assets/styles/helpers/functions";
+
+.cards {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    padding: var(--space-2);
+}
+
+.card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    padding: var(--space-4);
+    background: var(--sidebar-card-bg);
+    color: var(--sidebar-card-fg);
+    border-radius: var(--radius-md);
+
+    &__title {
+        margin: 0;
+        font-size: var(--type-title-3);
+        font-weight: var(--font-weight-bold);
+        line-height: var(--line-height-snug);
+        color: var(--sidebar-card-fg);
+    }
+
+    &__sub {
+        margin: 0;
+        font-size: var(--type-caption);
+        font-weight: var(--font-weight-medium);
+        color: var(--sidebar-card-fg);
+        opacity: 0.85;
+        line-height: var(--line-height-normal);
+    }
+
+    &__cta {
+        align-self: flex-start;
+        padding: var(--space-2) var(--space-4);
+        background: var(--text);
+        color: var(--bg);
+        border: none;
+        border-radius: var(--radius-pill);
+        font-size: var(--type-caption);
+        font-weight: var(--font-weight-bold);
+        cursor: pointer;
+        transition: transform var(--motion-fast) var(--motion-ease);
+
+        &:hover {
+            transform: scale(1.04);
+        }
+
+        &:focus-visible {
+            outline: var(--border-width) solid var(--accent);
+            outline-offset: var(--space-1);
+        }
+    }
+}

@@ -1,0 +1,10 @@
+.home-guest {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-7);
+    padding: var(--space-6) 0 var(--space-7);
+    color: var(--text);
+    background: var(--bg);
+    min-height: 100%;
+    width: 100%;
+}

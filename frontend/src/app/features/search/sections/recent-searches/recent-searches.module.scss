@@ -1,0 +1,116 @@
+@use "@/assets/styles/helpers/functions";
+
+.recent-searches {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+
+    &__header {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: var(--space-3);
+    }
+
+    &__title {
+        margin: 0;
+        font-size: var(--type-title-2);
+        font-weight: var(--font-weight-bold);
+        color: var(--text);
+    }
+
+    &__clear {
+        background: transparent;
+        border: none;
+        color: var(--text-secondary);
+        font-size: var(--type-caption);
+        font-weight: var(--font-weight-bold);
+        text-transform: uppercase;
+        letter-spacing: var(--letter-spacing-overline);
+        cursor: pointer;
+        padding: var(--space-1) var(--space-2);
+        border-radius: var(--radius-sm);
+        transition: color var(--motion-fast) var(--motion-ease);
+
+        &:hover {
+            color: var(--text);
+        }
+    }
+
+    &__list {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--space-2);
+    }
+
+    &__item {
+        display: inline-flex;
+    }
+
+    &__chip {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--space-1);
+        padding: var(--space-1) var(--space-2);
+        border: var(--border-width) solid var(--border);
+        border-radius: var(--radius-pill);
+        background: var(--surface-elevated);
+        transition: background var(--motion-fast) var(--motion-ease), border-color var(--motion-fast) var(--motion-ease);
+
+        &:hover {
+            background: var(--surface-highlight);
+            border-color: var(--text-tertiary);
+        }
+    }
+
+    &__query {
+        max-width: #{functions.rem(220)};
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        background: transparent;
+        border: none;
+        color: var(--text);
+        font-size: var(--type-body);
+        padding: var(--space-1) var(--space-2);
+        cursor: pointer;
+
+        &:focus-visible {
+            outline: var(--border-width) solid var(--accent);
+            outline-offset: var(--space-1);
+            border-radius: var(--radius-sm);
+        }
+    }
+
+    &__remove {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: var(--icon-md);
+        height: var(--icon-md);
+        border-radius: var(--radius-circle);
+        background: transparent;
+        border: none;
+        color: var(--text-secondary);
+        cursor: pointer;
+        transition: background var(--motion-fast) var(--motion-ease), color var(--motion-fast) var(--motion-ease);
+
+        svg {
+            width: var(--icon-xs);
+            height: var(--icon-xs);
+        }
+
+        &:hover {
+            background: var(--surface-press);
+            color: var(--text);
+        }
+
+        &:focus-visible {
+            outline: var(--border-width) solid var(--accent);
+            outline-offset: var(--space-1);
+        }
+    }
+}

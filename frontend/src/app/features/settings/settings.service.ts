@@ -4,6 +4,8 @@ import { AuthService } from "@/app/core/services/auth/auth.service";
 import { DisposableService } from "@/app/core/services/disposable-stack.service";
 import { LocaleService } from "@/app/core/services/locale.service";
 import { NavigateService } from "@/app/core/services/navigate.service";
+import { SocialService } from "@/app/core/services/social/social.service";
+import { PrivacyPatch } from "@/app/core/types/user";
 import { inject, injectable } from "@/app/shared/decorators/di";
 
 const MAX_AVATAR_BYTES = 5 * 1024 * 1024;
@@ -13,6 +15,7 @@ export class SettingsService {
     private readonly auth: AuthService = inject(AuthService);
     private readonly navigate: NavigateService = inject(NavigateService);
     private readonly locale: LocaleService = inject(LocaleService);
+    private readonly social: SocialService = inject(SocialService);
     private readonly disposable: DisposableService = inject(DisposableService);
 
     @observable displayName: string = "";
@@ -206,5 +209,16 @@ export class SettingsService {
     signOut = async (): Promise<void> => {
         await this.auth.logout();
         this.navigate.navigate("/login");
+    };
+
+    togglePrivacy = async (key: keyof PrivacyPatch): Promise<void> => {
+        const me = this.auth.me;
+        if (!me) return;
+        const current = me[key as keyof typeof me] as boolean;
+        const next = !current;
+        const result = await this.social.patchPrivacy({ [key]: next } as PrivacyPatch);
+        if (result) {
+            await this.auth.fetchMe();
+        }
     };
 }

@@ -30,7 +30,7 @@ export class Error404 extends Component<{
             <div className={styles["error-page"]}>
                 {!this.props.minimal && (
                     <div className={styles["controls"]}>
-                        <LangSelect mini />
+                        <LangSelect />
                         <ThemeToggleBtn />
                     </div>
                 )}

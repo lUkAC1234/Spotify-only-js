@@ -1,0 +1,246 @@
+@use "@/assets/styles/helpers/functions";
+
+.playlist-header {
+    display: grid;
+    grid-template-columns: minmax(#{functions.rem(180)}, #{functions.rem(240)}) minmax(0, 1fr);
+    gap: var(--space-6);
+    padding: var(--space-7) var(--content-padding-x) var(--space-5);
+    background: linear-gradient(180deg, var(--surface-elevated) 0%, var(--bg) 100%);
+    align-items: end;
+
+    &__cover {
+        position: relative;
+        aspect-ratio: 1 / 1;
+        border: none;
+        padding: 0;
+        border-radius: var(--radius-md);
+        overflow: hidden;
+        background: var(--surface-highlight);
+        box-shadow: var(--elevation-2);
+        cursor: default;
+
+        img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        &--editable {
+            cursor: pointer;
+        }
+
+        &:focus-visible {
+            outline: var(--border-width) solid var(--accent);
+            outline-offset: var(--space-1);
+        }
+    }
+
+    &__cover-overlay {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(0, 0, 0, 0.55);
+        color: #ffffff;
+        font-size: var(--type-caption);
+        font-weight: var(--font-weight-bold);
+        opacity: 0;
+        transition: opacity var(--motion-fast) var(--motion-ease);
+        text-align: center;
+        padding: 0 var(--space-3);
+    }
+
+    &__cover--editable:hover &__cover-overlay,
+    &__cover--editable:focus-visible &__cover-overlay {
+        opacity: 1;
+    }
+
+    &__meta {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-3);
+        min-width: 0;
+    }
+
+    &__overline {
+        font-size: var(--type-overline);
+        text-transform: uppercase;
+        letter-spacing: var(--letter-spacing-overline);
+        color: var(--text);
+        font-weight: var(--font-weight-bold);
+    }
+
+    &__title {
+        margin: 0;
+        font-size: var(--type-display);
+        font-weight: var(--font-weight-black);
+        line-height: var(--line-height-tight);
+        color: var(--text);
+
+        &--editable {
+            cursor: pointer;
+        }
+
+        &--editable:hover {
+            text-decoration: underline;
+        }
+
+        &:focus-visible {
+            outline: var(--border-width) solid var(--accent);
+            outline-offset: var(--space-1);
+            border-radius: var(--radius-sm);
+        }
+    }
+
+    &__description {
+        margin: 0;
+        font-size: var(--type-body);
+        color: var(--text-secondary);
+        max-width: #{functions.rem(720)};
+    }
+
+    &__line {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: var(--space-2);
+        font-size: var(--type-caption);
+        color: var(--text-secondary);
+    }
+
+    &__owner {
+        color: var(--text);
+        font-weight: var(--font-weight-bold);
+    }
+
+    &__actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--space-3);
+        align-items: center;
+        padding-top: var(--space-2);
+    }
+
+    &__play {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: var(--hero-play-size);
+        height: var(--hero-play-size);
+        background: var(--accent);
+        color: var(--accent-on-accent);
+        border: none;
+        border-radius: var(--radius-circle);
+        cursor: pointer;
+        box-shadow: var(--elevation-1);
+        transition: background var(--motion-fast) var(--motion-ease), transform var(--motion-fast) var(--motion-ease);
+
+        svg {
+            width: var(--icon-lg);
+            height: var(--icon-lg);
+        }
+
+        &:hover {
+            background: var(--accent-hover);
+            transform: scale(1.06);
+        }
+
+        &:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        &:focus-visible {
+            outline: var(--border-width) solid var(--accent);
+            outline-offset: var(--space-1);
+        }
+    }
+
+    &__secondary {
+        display: inline-flex;
+        align-items: center;
+        padding: var(--space-2) var(--space-4);
+        background: transparent;
+        color: var(--text);
+        border: var(--border-width) solid var(--text-secondary);
+        border-radius: var(--radius-pill);
+        cursor: pointer;
+        font-weight: var(--font-weight-bold);
+        transition: border-color var(--motion-fast) var(--motion-ease), color var(--motion-fast) var(--motion-ease);
+
+        &:hover {
+            border-color: var(--text);
+        }
+
+        &--active {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        &:focus-visible {
+            outline: var(--border-width) solid var(--accent);
+            outline-offset: var(--space-1);
+        }
+    }
+
+    &__form {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-2);
+    }
+
+    &__input {
+        font-size: var(--type-title-2);
+        font-weight: var(--font-weight-bold);
+        color: var(--text);
+        background: var(--surface-elevated);
+        border: var(--border-width) solid var(--border);
+        border-radius: var(--radius-sm);
+        padding: var(--space-2) var(--space-3);
+    }
+
+    &__textarea {
+        resize: vertical;
+        font-family: inherit;
+        font-size: var(--type-body);
+        color: var(--text);
+        background: var(--surface-elevated);
+        border: var(--border-width) solid var(--border);
+        border-radius: var(--radius-sm);
+        padding: var(--space-2) var(--space-3);
+    }
+
+    &__form-actions {
+        display: flex;
+        gap: var(--space-2);
+    }
+
+    &__submit {
+        padding: var(--space-2) var(--space-4);
+        background: var(--accent);
+        color: var(--black);
+        border: none;
+        border-radius: var(--radius-pill);
+        cursor: pointer;
+        font-weight: var(--font-weight-bold);
+    }
+
+    &__cancel {
+        padding: var(--space-2) var(--space-4);
+        background: transparent;
+        color: var(--text-secondary);
+        border: none;
+        cursor: pointer;
+        font-weight: var(--font-weight-bold);
+    }
+}
+
+@media (max-width: 720px) {
+    .playlist-header {
+        grid-template-columns: 1fr;
+        padding: var(--space-5) var(--space-4) var(--space-4);
+    }
+}

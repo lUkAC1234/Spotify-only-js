@@ -1,12 +1,16 @@
 import { observer } from "mobx-react";
 import { Component, ReactNode } from "react";
 
+import { AuthService } from "@/app/core/services/auth/auth.service";
+import { LibraryService } from "@/app/core/services/library/library.service";
 import { LocaleService } from "@/app/core/services/locale.service";
 import { PlayerService } from "@/app/core/services/player/player.service";
 import { Track } from "@/app/core/types/track";
 import { inject } from "@/app/shared/decorators/di";
 import { className } from "@/app/shared/utils/functions/className";
 
+import { SVG_HeartFilled } from "../svg/player/svg-heart-filled";
+import { SVG_Heart } from "../svg/player/svg-heart";
 import { SVG_Pause } from "../svg/player/svg-pause";
 import { SVG_Play } from "../svg/player/svg-play";
 import styles from "./track-row.module.scss";
@@ -29,6 +33,8 @@ const formatDuration = (ms: number): string => {
 export class TrackRow extends Component<Props> {
     private locale: LocaleService = inject(LocaleService);
     private player: PlayerService = inject(PlayerService);
+    private library: LibraryService = inject(LibraryService);
+    private auth: AuthService = inject(AuthService);
 
     private get isCurrent(): boolean {
         return this.player.currentTrack?.id === this.props.track.id;
@@ -42,14 +48,23 @@ export class TrackRow extends Component<Props> {
         this.props.onPlay(this.props.track);
     };
 
+    private handleHeart = (): void => {
+        if (!this.auth.isAuthenticated) return;
+        void this.library.toggleTrackSaved(this.props.track.id);
+    };
+
     render(): ReactNode {
         const { track, index } = this.props;
         const cover = track.cover || track.album?.cover || "";
         const isCurrent = this.isCurrent;
         const isPlaying = isCurrent && this.player.isPlaying;
+        const isLiked = this.library.isTrackSaved(track.id);
         const playLabel = isPlaying
             ? this.locale.t("common", "player.pause")
             : this.locale.t("common", "player.play");
+        const heartLabel = isLiked
+            ? this.locale.t("common", "player.unlike")
+            : this.locale.t("common", "player.like");
 
         const rowClass = className(styles["track-row"], {
             [styles["track-row--current"]]: isCurrent,
@@ -81,7 +96,24 @@ export class TrackRow extends Component<Props> {
 
                 <div className={styles["track-row__album"]}>{track.album?.title ?? ""}</div>
 
-                <div className={styles["track-row__duration"]}>{formatDuration(track.durationMs)}</div>
+                <div className={styles["track-row__actions"]}>
+                    {this.auth.isAuthenticated && (
+                        <button
+                            type="button"
+                            className={className(styles["track-row__heart"], {
+                                [styles["track-row__heart--active"]]: isLiked,
+                            })}
+                            onClick={this.handleHeart}
+                            aria-label={heartLabel}
+                            aria-pressed={isLiked}
+                        >
+                            {isLiked ? <SVG_HeartFilled /> : <SVG_Heart />}
+                        </button>
+                    )}
+                    <span className={styles["track-row__duration"]}>
+                        {formatDuration(track.durationMs)}
+                    </span>
+                </div>
             </li>
         );
     }

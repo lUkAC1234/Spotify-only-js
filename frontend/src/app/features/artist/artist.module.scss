@@ -1,0 +1,25 @@
+@use "@/assets/styles/helpers/functions";
+
+.artist {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-7);
+    color: var(--text);
+    background: var(--bg);
+    min-height: 100%;
+    width: 100%;
+    padding-bottom: var(--space-7);
+
+    &__notice {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: var(--space-7) var(--content-padding-x);
+        min-height: #{functions.rem(280)};
+        color: var(--text-secondary);
+
+        p {
+            margin: 0;
+        }
+    }
+}

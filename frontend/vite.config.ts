@@ -5,7 +5,7 @@ import { fileURLToPath } from "url";
 import { defineConfig, loadEnv } from "vite";
 import { ViteImageOptimizer } from "vite-plugin-image-optimizer";
 
-// import { VitePWA } from "vite-plugin-pwa";
+import { VitePWA } from "vite-plugin-pwa";
 import react from "@vitejs/plugin-react-swc";
 
 const env = loadEnv(process.env.VITE_MODE || "development", process.cwd(), "VITE_");
@@ -86,35 +86,77 @@ export default defineConfig({
             png: { quality: 70 },
             jpg: { quality: 70 },
         }),
-        // VitePWA({
-        //     registerType: "autoUpdate",
-        //     injectRegister: false,
-
-        //     pwaAssets: {
-        //         disabled: false,
-        //         config: true,
-        //     },
-
-        //     manifest: {
-        //         name: "my-pwa-app",
-        //         short_name: "my-pwa-app",
-        //         description: "my-pwa-app",
-        //         theme_color: "#ffffff",
-        //     },
-
-        //     workbox: {
-        //         globPatterns: ["**/*.{js,css,html,svg,png,ico}"],
-        //         cleanupOutdatedCaches: true,
-        //         clientsClaim: true,
-        //     },
-
-        //     devOptions: {
-        //         enabled: false,
-        //         navigateFallback: "index.html",
-        //         suppressWarnings: true,
-        //         type: "module",
-        //     },
-        // }),
+        VitePWA({
+            registerType: "autoUpdate",
+            injectRegister: "auto",
+            includeAssets: ["favicon.svg", "robots.txt"],
+            manifest: {
+                name: "Spotify",
+                short_name: "Spotify",
+                description: "Spotify-style music streaming on top of Jamendo + Audius.",
+                theme_color: "#121212",
+                background_color: "#000000",
+                display: "standalone",
+                orientation: "portrait",
+                start_url: "/",
+                scope: "/",
+                icons: [
+                    {
+                        src: "favicon.svg",
+                        sizes: "any",
+                        type: "image/svg+xml",
+                        purpose: "any maskable",
+                    },
+                ],
+            },
+            workbox: {
+                globPatterns: ["**/*.{js,css,html,svg,png,ico,webp,woff2}"],
+                cleanupOutdatedCaches: true,
+                clientsClaim: true,
+                skipWaiting: true,
+                navigateFallback: "/index.html",
+                navigateFallbackDenylist: [/^\/api\//, /^\/admin\//, /^\/media\//],
+                runtimeCaching: [
+                    {
+                        urlPattern: /\/api\/v1\/stream\//,
+                        handler: "NetworkOnly",
+                    },
+                    {
+                        urlPattern: /\/api\/v1\/auth\/me/,
+                        handler: "NetworkOnly",
+                    },
+                    {
+                        urlPattern: /\/api\/v1\/me\//,
+                        handler: "NetworkOnly",
+                    },
+                    {
+                        urlPattern: /\/api\/v1\//,
+                        handler: "NetworkFirst",
+                        options: {
+                            cacheName: "spotify-api",
+                            networkTimeoutSeconds: 4,
+                            expiration: { maxEntries: 80, maxAgeSeconds: 60 * 30 },
+                        },
+                    },
+                    {
+                        urlPattern: ({ url }) =>
+                            url.hostname.includes("usercontent.jamendo.com") ||
+                            url.hostname.includes("audius.co"),
+                        handler: "CacheFirst",
+                        options: {
+                            cacheName: "spotify-covers",
+                            expiration: { maxEntries: 200, maxAgeSeconds: 60 * 60 * 24 * 7 },
+                        },
+                    },
+                ],
+            },
+            devOptions: {
+                enabled: false,
+                navigateFallback: "index.html",
+                suppressWarnings: true,
+                type: "module",
+            },
+        }),
     ],
     resolve: {
         alias: {

@@ -81,3 +81,6 @@ class MusicProvider(ABC):
 
     def recent_tracks(self, *, limit: int = 12, offset: int = 0) -> tuple[TrackDTO, ...]:
         return ()
+
+    def tracks_by_tag(self, tag: str, *, limit: int = 12, offset: int = 0) -> tuple[TrackDTO, ...]:
+        return ()

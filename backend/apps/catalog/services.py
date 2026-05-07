@@ -3,7 +3,9 @@ from dataclasses import dataclass
 from datetime import timedelta
 from typing import Iterable, Optional
 
+from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector
 from django.db import transaction
+from django.db.models import F, Q, Value
 from django.utils import timezone
 
 from .models import Album, Artist, Genre, Source, Track, TrackGenre
@@ -58,6 +60,7 @@ class CatalogSyncService:
                 "metadata_synced_at": timezone.now(),
             },
         )
+        rebuild_track_search_vectors_for_artist(artist.pk)
         return artist
 
     @transaction.atomic
@@ -77,6 +80,7 @@ class CatalogSyncService:
                 "metadata_synced_at": timezone.now(),
             },
         )
+        rebuild_track_search_vectors_for_album(album.pk)
         return album
 
     @transaction.atomic
@@ -115,6 +119,7 @@ class CatalogSyncService:
         if dto.genres:
             self._sync_genres(track, dto.genres)
 
+        rebuild_track_search_vector(track.pk)
         return track
 
     def search(
@@ -155,6 +160,18 @@ class CatalogSyncService:
     ) -> list[Track]:
         provider = self.get_provider(source)
         dtos = provider.recent_tracks(limit=limit, offset=offset)
+        return [self.upsert_track(dto) for dto in dtos]
+
+    def tracks_by_tag(
+        self,
+        tag: str,
+        *,
+        source: str = Source.JAMENDO,
+        limit: int = 18,
+        offset: int = 0,
+    ) -> list[Track]:
+        provider = self.get_provider(source)
+        dtos = provider.tracks_by_tag(tag, limit=limit, offset=offset)
         return [self.upsert_track(dto) for dto in dtos]
 
     def get_or_sync_track(self, track_id: int) -> Optional[Track]:
@@ -252,3 +269,87 @@ class CatalogSyncService:
         if not value or not isinstance(value, str):
             return False
         return len(value) >= 10 and value[4] == "-" and value[7] == "-"
+
+
+def _track_vector_expression(title: str, artist_name: str, album_title: str):
+    return (
+        SearchVector(Value(title or ""), weight="A", config="simple")
+        + SearchVector(Value(artist_name or ""), weight="B", config="simple")
+        + SearchVector(Value(album_title or ""), weight="C", config="simple")
+    )
+
+
+def _apply_track_vector(row: dict) -> None:
+    Track.objects.filter(pk=row["pk"]).update(
+        search_vector=_track_vector_expression(
+            row["title"],
+            row["artist__name"],
+            row["album__title"],
+        )
+    )
+
+
+def rebuild_track_search_vector(track_id: int) -> None:
+    row = (
+        Track.objects.filter(pk=track_id)
+        .values("pk", "title", "artist__name", "album__title")
+        .first()
+    )
+    if row:
+        _apply_track_vector(row)
+
+
+def rebuild_track_search_vectors_for_artist(artist_id: int) -> None:
+    rows = Track.objects.filter(artist_id=artist_id).values("pk", "title", "artist__name", "album__title")
+    for row in rows:
+        _apply_track_vector(row)
+
+
+def rebuild_track_search_vectors_for_album(album_id: int) -> None:
+    rows = Track.objects.filter(album_id=album_id).values("pk", "title", "artist__name", "album__title")
+    for row in rows:
+        _apply_track_vector(row)
+
+
+def rebuild_all_track_search_vectors() -> int:
+    rows = list(Track.objects.values("pk", "title", "artist__name", "album__title"))
+    for row in rows:
+        _apply_track_vector(row)
+    return len(rows)
+
+
+def search_tracks_local(
+    query: str, *, limit: int = 24, offset: int = 0
+) -> tuple[list[Track], int]:
+    if not query:
+        return [], 0
+    fts_query = SearchQuery(query, config="simple", search_type="websearch")
+    qs = (
+        Track.objects.select_related("artist", "album__artist")
+        .annotate(rank=SearchRank(F("search_vector"), fts_query))
+        .filter(Q(search_vector=fts_query) | Q(title__icontains=query) | Q(artist__name__icontains=query))
+        .order_by("-rank", "-popularity", "title")
+    )
+    total = qs.count()
+    return list(qs[offset : offset + limit]), total
+
+
+def search_artists_local(query: str, *, limit: int = 12) -> list[Artist]:
+    if not query:
+        return []
+    qs = (
+        Artist.objects.filter(name__icontains=query)
+        .order_by("-monthly_listeners", "name")
+    )
+    return list(qs[:limit])
+
+
+def search_albums_local(query: str, *, limit: int = 12) -> list[Album]:
+    if not query:
+        return []
+    qs = (
+        Album.objects.select_related("artist")
+        .filter(Q(title__icontains=query) | Q(artist__name__icontains=query))
+        .order_by("-release_date", "title")
+    )
+    return list(qs[:limit])
