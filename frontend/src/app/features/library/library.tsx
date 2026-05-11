@@ -38,6 +38,7 @@ export class Library extends Component {
 
     componentWillUnmount(): void {
         this.title.dispose();
+        this.page.dispose();
     }
 
     private renderTab(): ReactNode {

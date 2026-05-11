@@ -1,4 +1,4 @@
-import { reaction } from "mobx";
+import { reaction, runInAction } from "mobx";
 
 import { config } from "@/app/app.config";
 import { AuthService } from "@/app/core/services/auth/auth.service";
@@ -38,6 +38,7 @@ export class PlayerSyncService {
 
     private isMounted: boolean = false;
     private isHydrating: boolean = false;
+    private hasHydrated: boolean = false;
     private lastSyncedKey: string = "";
 
     private readonly pushDebounced = debounce(() => {
@@ -55,12 +56,14 @@ export class PlayerSyncService {
         this.disposable.register(
             "player-sync-on-auth",
             reaction(
-                () => this.auth.isAuthenticated,
-                (authenticated) => {
-                    if (authenticated) {
+                () => this.auth.isAuthenticated && this.auth.isBootstrapped,
+                (ready) => {
+                    if (ready) {
+                        if (this.isHydrating || this.hasHydrated) return;
                         void this.hydrate();
                     } else {
                         this.lastSyncedKey = "";
+                        this.hasHydrated = false;
                     }
                 },
                 { fireImmediately: true },
@@ -116,12 +119,14 @@ export class PlayerSyncService {
     }
 
     private async hydrate(): Promise<void> {
+        if (this.isHydrating) return;
         this.isHydrating = true;
         try {
             const result = await apiRequest<PlaybackStatePayload>("GET", "/playback/state/");
             if (!result.ok || !result.data) return;
             this.applyPayload(result.data);
             this.lastSyncedKey = this.snapshotKey();
+            this.hasHydrated = true;
         } catch (err) {
             Log.APIError(`[player-sync] hydrate failed: ${(err as Error).message}`);
         } finally {
@@ -130,22 +135,21 @@ export class PlayerSyncService {
     }
 
     private applyPayload(payload: PlaybackStatePayload): void {
-        if (payload.repeatMode && isRepeatMode(payload.repeatMode)) {
-            this.player.repeatMode = payload.repeatMode;
-        }
-        this.player.shuffleEnabled = !!payload.shuffleEnabled;
-        if (typeof payload.volume === "number") {
-            this.player.setVolume(payload.volume);
-        }
-        if (typeof payload.isMuted === "boolean") {
-            this.player.isMuted = payload.isMuted;
-        }
-        if (payload.track) {
-            this.player.currentTrack = payload.track;
-            this.player.durationMs = payload.track.durationMs;
-            this.player.positionMs = Math.min(payload.positionMs ?? 0, payload.track.durationMs);
-            this.player.isPlaying = false;
-        }
+        runInAction(() => {
+            if (payload.repeatMode && isRepeatMode(payload.repeatMode)) {
+                this.player.setRepeatMode(payload.repeatMode);
+            }
+            this.player.setShuffleEnabled(!!payload.shuffleEnabled);
+            if (typeof payload.volume === "number") {
+                this.player.setVolume(payload.volume);
+            }
+            if (typeof payload.isMuted === "boolean") {
+                this.player.setMuted(payload.isMuted);
+            }
+            if (payload.track) {
+                this.player.hydrateTrack(payload.track, payload.positionMs ?? 0);
+            }
+        });
     }
 
     private async pushNow(): Promise<void> {

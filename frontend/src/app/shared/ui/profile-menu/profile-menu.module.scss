@@ -1,25 +1,26 @@
 @use "@/assets/styles/helpers/functions";
 
 .menu {
-    position: relative;
-    display: inline-flex;
-
     &__trigger {
         display: inline-flex;
         align-items: center;
         gap: var(--space-2);
-        height: var(--control-md);
-        padding: 0 var(--space-3) 0 var(--space-1);
+        height: var(--control-lg);
+        padding: 0 var(--space-3) 0 #{functions.rem(4)};
         background: var(--surface-elevated);
         border: var(--border-width) solid var(--border);
         border-radius: var(--radius-pill);
         color: var(--text);
         cursor: pointer;
-        transition: background var(--motion-fast) var(--motion-ease), border-color var(--motion-fast) var(--motion-ease);
+        transition:
+            background var(--motion-fast) var(--motion-ease),
+            border-color var(--motion-fast) var(--motion-ease),
+            transform var(--motion-fast) var(--motion-ease);
 
         &:hover {
             background: var(--surface-highlight);
             border-color: var(--border-strong);
+            transform: scale(1.02);
         }
 
         &:focus-visible {
@@ -37,22 +38,12 @@
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        width: #{functions.rem(28)};
-        height: #{functions.rem(28)};
+        width: #{functions.rem(32)};
+        height: #{functions.rem(32)};
         border-radius: var(--radius-circle);
-        background: var(--accent);
-        color: var(--accent-on-accent);
+        background: var(--surface-highlight);
         overflow: hidden;
-        font-weight: var(--font-weight-bold);
-        font-size: var(--type-caption);
         flex-shrink: 0;
-
-        img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            display: block;
-        }
     }
 
     &__name {
@@ -76,78 +67,9 @@
             transform: rotate(180deg);
         }
     }
-
-    &__panel {
-        position: absolute;
-        top: calc(100% + var(--space-2));
-        right: 0;
-        min-width: #{functions.rem(220)};
-        background: var(--surface-elevated);
-        border: var(--border-width) solid var(--border);
-        border-radius: var(--radius-md);
-        box-shadow: var(--elevation-2);
-        padding: var(--space-1);
-        z-index: var(--z-popover);
-        visibility: hidden;
-        opacity: 0;
-        transform: translateY(#{functions.rem(-4)});
-        transition: opacity var(--motion-fast) var(--motion-ease), transform var(--motion-fast) var(--motion-ease),
-            visibility var(--motion-fast) var(--motion-ease);
-
-        &--open {
-            visibility: visible;
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
-    &__list {
-        list-style: none;
-        margin: 0;
-        padding: 0;
-        display: flex;
-        flex-direction: column;
-        gap: 0;
-    }
-
-    &__item {
-        display: flex;
-        align-items: center;
-        width: 100%;
-        background: transparent;
-        border: none;
-        text-align: left;
-        padding: var(--space-2) var(--space-3);
-        border-radius: var(--radius-sm);
-        color: var(--text);
-        font-size: var(--type-body);
-        font-weight: var(--font-weight-medium);
-        cursor: pointer;
-        text-decoration: none;
-        transition: background var(--motion-fast) var(--motion-ease), color var(--motion-fast) var(--motion-ease);
-
-        &:hover {
-            background: var(--surface-highlight);
-        }
-
-        &:focus-visible {
-            outline: var(--border-width) solid var(--accent);
-            outline-offset: calc(var(--space-1) * -1);
-        }
-
-        &--danger {
-            color: var(--danger);
-        }
-    }
-
-    &__divider {
-        height: var(--border-width);
-        margin: var(--space-1) calc(var(--space-1) * -1);
-        background: var(--border);
-    }
 }
 
-@media (max-width: 720px) {
+@media (max-width: #{functions.rem(720)}) {
     .menu {
         &__name {
             display: none;
@@ -158,7 +80,15 @@
         }
 
         &__trigger {
-            padding: 0 var(--space-1);
+            padding: 0;
+            height: var(--control-md);
+            width: var(--control-md);
+            justify-content: center;
+        }
+
+        &__avatar {
+            width: #{functions.rem(28)};
+            height: #{functions.rem(28)};
         }
     }
 }

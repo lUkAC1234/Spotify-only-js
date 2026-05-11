@@ -5,6 +5,7 @@ import { DisposableService } from "@/app/core/services/disposable-stack.service"
 import { FeedEntry, FollowEntry, FriendListening, YearlyRecap } from "@/app/core/types/social";
 import { PrivacyPatch, PublicUser } from "@/app/core/types/user";
 import { inject, injectable } from "@/app/shared/decorators/di";
+import { ActionGuard } from "@/app/shared/utils/classes/ActionGuard";
 
 import { apiRequest } from "../http/api-client";
 import { PlaylistSummary } from "@/app/core/types/playlist";
@@ -21,6 +22,7 @@ export class SocialService {
 
     private pollHandle: ReturnType<typeof setInterval> | null = null;
     private isMounted: boolean = false;
+    private readonly guard: ActionGuard = new ActionGuard();
 
     constructor() {
         makeObservable(this);
@@ -32,9 +34,9 @@ export class SocialService {
         this.disposable.register(
             "social-friends-on-auth",
             reaction(
-                () => this.auth.isAuthenticated,
-                (authed) => {
-                    if (authed) {
+                () => this.auth.isAuthenticated && this.auth.isBootstrapped,
+                (ready) => {
+                    if (ready) {
                         void this.fetchFriendsActivity();
                         this.startPolling();
                     } else {
@@ -107,12 +109,23 @@ export class SocialService {
         return result.ok && result.data ? result.data.items : [];
     }
 
+    isFollowBusy(userId: number | string): boolean {
+        return this.guard.isBusy(`social:follow:${userId}`);
+    }
+
+    get isPrivacyBusy(): boolean {
+        return this.guard.isBusy("social:patch-privacy");
+    }
+
     async toggleFollow(userId: number | string, currentlyFollowing: boolean): Promise<boolean> {
         if (!this.auth.isAuthenticated) return currentlyFollowing;
-        const method = currentlyFollowing ? "DELETE" : "PUT";
-        const result = await apiRequest<{ following: boolean }>(method, `/users/${userId}/follow/`);
-        if (!result.ok) return currentlyFollowing;
-        return result.data?.following ?? !currentlyFollowing;
+        const outcome = await this.guard.run(`social:follow:${userId}`, async () => {
+            const method = currentlyFollowing ? "DELETE" : "PUT";
+            const result = await apiRequest<{ following: boolean }>(method, `/users/${userId}/follow/`);
+            if (!result.ok) return currentlyFollowing;
+            return result.data?.following ?? !currentlyFollowing;
+        });
+        return outcome ?? currentlyFollowing;
     }
 
     async getFeed(limit: number = 30): Promise<FeedEntry[]> {
@@ -130,7 +143,11 @@ export class SocialService {
     }
 
     async patchPrivacy(patch: PrivacyPatch): Promise<PrivacyPatch | null> {
-        const result = await apiRequest<PrivacyPatch>("PATCH", "/me/privacy/", { body: patch });
-        return result.ok ? result.data : null;
+        return (
+            (await this.guard.run("social:patch-privacy", async () => {
+                const result = await apiRequest<PrivacyPatch>("PATCH", "/me/privacy/", { body: patch });
+                return result.ok ? result.data : null;
+            })) ?? null
+        );
     }
 }

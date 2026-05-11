@@ -36,15 +36,27 @@ So the realistic options for **full-length streaming** through a backend are lim
 | **Internet Archive Audio** | ~14M items (huge but messy) | Public domain / CC | None | varies | ❌ | ❌ Not a clean fit |
 | **Spotify Web API** | full Spotify catalog | proprietary | OAuth | 30s preview only | ✅ | ❌ Can't give us full streaming |
 | **Apple Music API** | full Apple catalog | proprietary | OAuth + active subscription on device | full only via MusicKit | ✅ | ❌ Won't work without a paying subscriber |
-| **YouTube / yt-dlp** | everything | scraping; violates ToS | — | — | ✅ | ❌ Off the table — we won't ship a project that breaks ToS |
+| **YouTube / yt-dlp** | everything | scraping; violates ToS | — | — | ✅ | ❌ Off the table for any public deployment — fingerprinting breaks frequently |
+| **Yandex Music (unofficial)** | full popular RU/CIS catalog | proprietary; OAuth-token scraped from web client | personal Yandex Music account token | direct signed MP3 URLs (short TTL) | ✅ (incl. Russian mainstream) | ⚠️ **Personal/educational use only** — see § 1a below |
 
 ### Decision
 
-**Primary upstream: Jamendo. Secondary upstream: Audius.**
+**Primary upstream: Jamendo. Secondary: Audius. Tertiary (opt-in, personal use): Yandex Music (unofficial).**
 
 - Jamendo gives us a single, well-documented REST API (`api.jamendo.com/v3.0`), free `client_id` registration, full-length MP3/OGG streaming, and rich metadata (genre, BPM, mood tags, license info, cover art).
 - Audius supplements Jamendo's catalog with electronic/indie that Jamendo lacks. Discoverable through `audius.co`'s public discovery node API; HLS-streamed.
-- The frontend never knows the upstream — it sees `GET /api/v1/stream/<track_id>` and an HTML5 `<audio>` element. The backend resolves which upstream to fetch from, range-proxies the bytes, and hides the upstream `client_id`.
+- Yandex Music is the **only** practical source for Russian mainstream pop/rap. It is enabled when `YANDEX_MUSIC_TOKEN` is set; absent that, the Yandex provider is dormant and the app falls back to Jamendo + Audius. Provider file is named `yandex_music_unofficial.py` so the unofficial nature is visible in every import.
+- The frontend never knows the upstream — it sees `GET /api/v1/stream/<track_id>` and an HTML5 `<audio>` element. The backend resolves which upstream to fetch from, range-proxies the bytes, and hides the upstream credentials. The track's `source` field (`"jamendo" | "audius" | "yandex"`) is exposed honestly in the JSON so the UI can label provenance.
+
+### 1a. Unofficial provider exception (Yandex Music)
+
+The original wording of this document said *"we won't ship a project that breaks ToS"*. That rule is **relaxed for the Yandex Music provider only**, and only under the following conditions:
+
+1. The provider file is named `yandex_music_unofficial.py` and its module docstring states it violates Yandex Music ToS.
+2. The `.env` variable is `YANDEX_MUSIC_TOKEN` and `.env.example` documents it as *unofficial / personal-use only*.
+3. The track's `source` field travels to the frontend unchanged so UI badges can reveal the origin to the user.
+4. This exception covers personal / educational / single-tenant deployments. **Do not ship a public, multi-tenant SaaS with this provider enabled** — Yandex's signing keys rotate, the token is account-bound, and rate-limits are not designed for serving thousands of users.
+5. All other providers must remain strictly legal. The unofficial exception is local to this one file and is not a precedent for adding more scraped sources.
 
 ### What this means for users
 

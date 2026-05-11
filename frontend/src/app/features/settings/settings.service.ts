@@ -211,6 +211,10 @@ export class SettingsService {
         this.navigate.navigate("/login");
     };
 
+    afterSignOut = (): void => {
+        this.navigate.navigate("/login");
+    };
+
     togglePrivacy = async (key: keyof PrivacyPatch): Promise<void> => {
         const me = this.auth.me;
         if (!me) return;
@@ -218,7 +222,7 @@ export class SettingsService {
         const next = !current;
         const result = await this.social.patchPrivacy({ [key]: next } as PrivacyPatch);
         if (result) {
-            await this.auth.fetchMe();
+            this.auth.applyMePatch(result as Partial<typeof me>);
         }
     };
 }

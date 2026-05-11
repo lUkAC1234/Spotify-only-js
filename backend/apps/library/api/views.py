@@ -3,6 +3,7 @@ import logging
 from django.contrib.auth import get_user_model
 from django.core.exceptions import PermissionDenied
 from rest_framework import status
+from rest_framework.parsers import FormParser, MultiPartParser
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -332,7 +333,7 @@ class PlaylistDetailView(APIView):
 
 class PlaylistCoverView(APIView):
     permission_classes = [IsAuthenticated]
-    parser_classes = None
+    parser_classes = [MultiPartParser, FormParser]
 
     def post(self, request, playlist_id: int) -> Response:
         playlist = playlist_for_user(request.user.id, playlist_id)

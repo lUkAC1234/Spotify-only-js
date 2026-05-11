@@ -41,8 +41,7 @@ export class InternetState extends Component {
                 () => this.connection.isOnline,
                 () => {
                     if (!this.connection.isOnline) {
-                        this.alertService.pushAlert({
-                            message: this.locale.t("common", "no-internet") + "!",
+                        this.alertService.warning(this.locale.t("common", "no-internet"), {
                             delay: 5000,
                         });
                     }

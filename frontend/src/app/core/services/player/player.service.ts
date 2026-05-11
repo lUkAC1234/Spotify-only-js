@@ -194,8 +194,18 @@ export class PlayerService {
     }
 
     @action.bound
+    setMuted(muted: boolean): void {
+        this.isMuted = muted;
+    }
+
+    @action.bound
     toggleMute(): void {
         this.isMuted = !this.isMuted;
+    }
+
+    @action.bound
+    setShuffleEnabled(enabled: boolean): void {
+        this.shuffleEnabled = enabled;
     }
 
     @action.bound
@@ -207,10 +217,24 @@ export class PlayerService {
     }
 
     @action.bound
+    setRepeatMode(mode: RepeatMode): void {
+        this.repeatMode = mode;
+    }
+
+    @action.bound
     cycleRepeat(): void {
         const order: RepeatMode[] = ["off", "all", "one"];
         const next = order[(order.indexOf(this.repeatMode) + 1) % order.length];
         this.repeatMode = next;
+    }
+
+    @action.bound
+    hydrateTrack(track: Track, positionMs: number): void {
+        this.currentTrack = track;
+        this.durationMs = track.durationMs;
+        this.positionMs = Math.max(0, Math.min(track.durationMs, positionMs));
+        this.isPlaying = false;
+        this.isBuffering = false;
     }
 
     @action.bound
@@ -258,13 +282,22 @@ export class PlayerService {
     private stopAndClear(): void {
         if (this.audio) {
             this.audio.pause();
-            this.audio.src = "";
+            this.audio.removeAttribute("src");
+            this.audio.load();
         }
         this.currentTrack = null;
         this.isPlaying = false;
         this.isBuffering = false;
         this.positionMs = 0;
         this.durationMs = 0;
+    }
+
+    @action.bound
+    clearTrack(): void {
+        this.stopAndClear();
+        this.queue = [];
+        this.context = null;
+        this.isQueueOpen = false;
     }
 
     private loadAndPlay(track: Track): void {
@@ -316,6 +349,7 @@ export class PlayerService {
     };
 
     private handleError = (): void => {
+        if (!this.audio?.currentSrc) return;
         Log.APIError("[player] audio element error");
         this.applyBuffering(false);
         this.applyPlaying(false);

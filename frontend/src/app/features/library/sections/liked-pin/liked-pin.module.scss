@@ -23,8 +23,8 @@
         width: var(--cover-lg);
         height: var(--cover-lg);
         border-radius: var(--radius-sm);
-        background: var(--genre-tile-gradient-4);
-        color: var(--text);
+        background: var(--liked-cover-gradient);
+        color: var(--liked-cover-fg);
         flex: 0 0 var(--cover-lg);
 
         svg {

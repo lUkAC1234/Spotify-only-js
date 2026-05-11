@@ -1,6 +1,7 @@
 from .audius import AudiusProvider
 from .base import AlbumDTO, ArtistDTO, MusicProvider, SearchResultDTO, TrackDTO
 from .jamendo import JamendoProvider
+from .yandex_music_unofficial import YandexMusicProvider
 
 __all__ = [
     "AlbumDTO",
@@ -10,4 +11,5 @@ __all__ = [
     "MusicProvider",
     "SearchResultDTO",
     "TrackDTO",
+    "YandexMusicProvider",
 ]

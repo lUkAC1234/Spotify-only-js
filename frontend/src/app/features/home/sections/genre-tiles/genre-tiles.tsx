@@ -1,7 +1,13 @@
-import { Component, ReactNode } from "react";
+import { Component, ComponentType, ReactNode } from "react";
 
 import { Genre } from "@/app/core/types/playlist";
 import { className } from "@/app/shared/utils/functions/className";
+import { SVG_EqualizerIllustration } from "@/app/shared/ui/svg/illustrations/svg-equalizer-illustration";
+import { SVG_GuitarIllustration } from "@/app/shared/ui/svg/illustrations/svg-guitar-illustration";
+import { SVG_HeadphonesIllustration } from "@/app/shared/ui/svg/illustrations/svg-headphones-illustration";
+import { SVG_MicrophoneIllustration } from "@/app/shared/ui/svg/illustrations/svg-microphone-illustration";
+import { SVG_VinylIllustration } from "@/app/shared/ui/svg/illustrations/svg-vinyl-illustration";
+import { SVG_WavesIllustration } from "@/app/shared/ui/svg/illustrations/svg-waves-illustration";
 
 import styles from "./genre-tiles.module.scss";
 
@@ -11,7 +17,24 @@ interface Props {
     onSelect?: (genre: Genre) => void;
 }
 
-const HUE_VARIANTS = 6;
+const ILLUSTRATIONS: ComponentType<{ className?: string }>[] = [
+    SVG_VinylIllustration,
+    SVG_HeadphonesIllustration,
+    SVG_EqualizerIllustration,
+    SVG_MicrophoneIllustration,
+    SVG_GuitarIllustration,
+    SVG_WavesIllustration,
+];
+
+const VARIANT_COUNT = 6;
+
+const hashSlug = (slug: string): number => {
+    let hash = 0;
+    for (let i = 0; i < slug.length; i += 1) {
+        hash = (hash * 31 + slug.charCodeAt(i)) >>> 0;
+    }
+    return hash;
+};
 
 export class GenreTiles extends Component<Props> {
     render(): ReactNode {
@@ -24,8 +47,10 @@ export class GenreTiles extends Component<Props> {
                     <h2 className={styles["genre-tiles__title"]}>{title}</h2>
                 </header>
                 <ul className={styles["genre-tiles__grid"]}>
-                    {genres.map((genre, index) => {
-                        const variant = (genre.slug.length + index) % HUE_VARIANTS;
+                    {genres.map((genre) => {
+                        const seed = hashSlug(genre.slug);
+                        const variant = seed % VARIANT_COUNT;
+                        const Illustration = ILLUSTRATIONS[seed % ILLUSTRATIONS.length];
                         return (
                             <li
                                 key={genre.slug}
@@ -39,6 +64,9 @@ export class GenreTiles extends Component<Props> {
                                     onClick={onSelect ? () => onSelect(genre) : undefined}
                                 >
                                     <span className={styles["genre-tiles__name"]}>{genre.name}</span>
+                                    <span className={styles["genre-tiles__art"]} aria-hidden="true">
+                                        <Illustration className={styles["genre-tiles__art-svg"]} />
+                                    </span>
                                 </button>
                             </li>
                         );

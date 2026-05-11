@@ -3,6 +3,8 @@ import { Component, ReactNode } from "react";
 import { LocaleService } from "@/app/core/services/locale.service";
 import { FollowedArtistEntry } from "@/app/core/types/playlist";
 import { inject } from "@/app/shared/decorators/di";
+import { Avatar } from "@/app/shared/ui/avatar/avatar";
+import { NavLink } from "@/app/shared/ui/link/nav-link";
 
 import styles from "./artists-tab.module.scss";
 
@@ -26,15 +28,21 @@ export class ArtistsTab extends Component<Props> {
             <ul className={styles["artists-tab__grid"]}>
                 {artists.map((entry) => (
                     <li key={entry.id} className={styles["artists-tab__card"]}>
-                        <div className={styles["artists-tab__avatar"]}>
-                            {entry.artist.image && <img src={entry.artist.image} alt="" loading="lazy" />}
-                        </div>
-                        <span className={styles["artists-tab__name"]} title={entry.artist.name}>
-                            {entry.artist.name}
-                        </span>
-                        <span className={styles["artists-tab__hint"]}>
-                            {this.locale.t("common", "library.artist-hint")}
-                        </span>
+                        <NavLink
+                            to={`/artist/${entry.artist.id}`}
+                            baseClass={styles["artists-tab__link"]}
+                            aria-label={entry.artist.name}
+                        >
+                            <div className={styles["artists-tab__avatar"]}>
+                                <Avatar name={entry.artist.name} image={entry.artist.image} />
+                            </div>
+                            <span className={styles["artists-tab__name"]} title={entry.artist.name}>
+                                {entry.artist.name}
+                            </span>
+                            <span className={styles["artists-tab__hint"]}>
+                                {this.locale.t("common", "library.artist-hint")}
+                            </span>
+                        </NavLink>
                     </li>
                 ))}
             </ul>

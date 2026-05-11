@@ -7,8 +7,16 @@ import { BreakpointsService } from "../breakpoints.service";
 import { DisposableService } from "../disposable-stack.service";
 
 export const NAV_LAYOUT_STYLE = "nav-layout-style";
+export const SIDEBAR_COLLAPSE_OVERRIDE = "sidebar-collapse-override";
 
 export type NavLayoutStyle = "header" | "sidebar";
+
+const readCollapseOverride = (): boolean | null => {
+    const stored = localStorage.getItem(SIDEBAR_COLLAPSE_OVERRIDE);
+    if (stored === "true") return true;
+    if (stored === "false") return false;
+    return null;
+};
 
 @injectable()
 export class LayoutService {
@@ -17,6 +25,7 @@ export class LayoutService {
 
     @observable sidebarIsMobileForce: boolean = false;
     @observable sidebarIsActive: boolean = false;
+    @observable sidebarCollapseOverride: boolean | null = readCollapseOverride();
     @observable.ref mainRef: RefObject<HTMLElement | null> = createRef();
     @observable.ref mainWrapRef: RefObject<HTMLDivElement | null> = createRef();
     @observable navLayout: NavLayoutStyle = (localStorage.getItem(NAV_LAYOUT_STYLE) as NavLayoutStyle) || "sidebar";
@@ -24,6 +33,13 @@ export class LayoutService {
     @computed
     get sidebarIsMobile(): boolean {
         return this.breakpoints.isMobile || this.sidebarIsMobileForce;
+    }
+
+    @computed
+    get sidebarIsCollapsed(): boolean {
+        if (this.breakpoints.isMobile) return false;
+        if (this.sidebarCollapseOverride !== null) return this.sidebarCollapseOverride;
+        return this.breakpoints.isTablet;
     }
 
     constructor() {
@@ -36,6 +52,20 @@ export class LayoutService {
             reaction(
                 () => this.navLayout,
                 (navLayout) => localStorage.setItem(NAV_LAYOUT_STYLE, navLayout),
+            ),
+        );
+
+        this.disposable.register(
+            "sidebar-collapse-override",
+            reaction(
+                () => this.sidebarCollapseOverride,
+                (value) => {
+                    if (value === null) {
+                        localStorage.removeItem(SIDEBAR_COLLAPSE_OVERRIDE);
+                    } else {
+                        localStorage.setItem(SIDEBAR_COLLAPSE_OVERRIDE, String(value));
+                    }
+                },
             ),
         );
 
@@ -96,5 +126,10 @@ export class LayoutService {
     @action.bound
     setMobile(v: boolean): void {
         this.sidebarIsMobileForce = v;
+    }
+
+    @action.bound
+    toggleSidebarCollapsed(): void {
+        this.sidebarCollapseOverride = !this.sidebarIsCollapsed;
     }
 }

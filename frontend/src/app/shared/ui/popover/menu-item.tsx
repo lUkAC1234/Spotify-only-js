@@ -8,6 +8,8 @@ import styles from "./menu.module.scss";
 interface Props {
     label: string;
     icon?: ReactNode;
+    trailingIcon?: ReactNode;
+    selected?: boolean;
     disabled?: boolean;
     danger?: boolean;
     hasSubmenu?: boolean;
@@ -24,15 +26,19 @@ export class MenuItem extends Component<Props> {
     };
 
     render(): ReactNode {
-        const { label, icon, disabled, danger, hasSubmenu, href } = this.props;
+        const { label, icon, trailingIcon, selected, disabled, danger, hasSubmenu, href } = this.props;
         const cls = className(styles["item"], {
             [styles["item--disabled"]]: disabled === true,
             [styles["item--danger"]]: danger === true,
+            [styles["item--selected"]]: selected === true,
         });
         const inner: ReactNode = (
             <>
                 {icon && <span className={styles["item__icon"]}>{icon}</span>}
                 <span className={styles["item__label"]}>{label}</span>
+                {trailingIcon && !hasSubmenu && (
+                    <span className={styles["item__trailing"]}>{trailingIcon}</span>
+                )}
                 {hasSubmenu && (
                     <span className={styles["item__chevron"]}>
                         <SVG_ChevronRight />
@@ -66,11 +72,12 @@ export class MenuItem extends Component<Props> {
                 <button
                     type="button"
                     className={cls}
-                    role="menuitem"
+                    role={selected !== undefined ? "menuitemradio" : "menuitem"}
                     data-menu-item
                     data-disabled={disabled === true}
                     aria-haspopup={hasSubmenu === true ? "menu" : undefined}
                     aria-disabled={disabled === true}
+                    aria-checked={selected === true ? true : selected === false ? false : undefined}
                     disabled={disabled === true}
                     onClick={this.handleClick}
                 >

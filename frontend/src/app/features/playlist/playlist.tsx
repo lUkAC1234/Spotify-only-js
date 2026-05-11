@@ -3,7 +3,9 @@ import { Component, ReactNode } from "react";
 import { useParams } from "react-router";
 
 import { TitleService } from "@/app/core/services/browser/title.service";
+import { LibraryService } from "@/app/core/services/library/library.service";
 import { LocaleService } from "@/app/core/services/locale.service";
+import { NavigateService } from "@/app/core/services/navigate.service";
 import { PlayerService } from "@/app/core/services/player/player.service";
 import { Track } from "@/app/core/types/track";
 import { inject } from "@/app/shared/decorators/di";
@@ -23,6 +25,8 @@ class PlaylistView extends Component<Props> {
     private locale: LocaleService = inject(LocaleService);
     private service: PlaylistPageService = inject(PlaylistPageService);
     private player: PlayerService = inject(PlayerService);
+    private navigate: NavigateService = inject(NavigateService);
+    private library: LibraryService = inject(LibraryService);
 
     componentDidMount(): void {
         this.title.construct({ title: "Playlist", titleNamespace: "common", titleTKey: "nav.library" });
@@ -56,6 +60,12 @@ class PlaylistView extends Component<Props> {
         this.player.playTrack(track, { type: "playlist", id: this.service.detail?.id ?? null });
     };
 
+    private handleDelete = async (): Promise<boolean> => {
+        const ok = await this.service.deletePlaylist();
+        if (ok) this.navigate.navigate("/library");
+        return ok;
+    };
+
     render(): ReactNode {
         if (this.service.isLoading && !this.service.detail) {
             return (
@@ -82,6 +92,8 @@ class PlaylistView extends Component<Props> {
                     onPlay={this.handlePlayAll}
                     onMetaChange={(patch) => this.service.patchMeta(patch)}
                     onAfterSave={(id) => void this.service.load(String(id))}
+                    onDelete={this.handleDelete}
+                    isDeleting={this.library.isPlaylistBusy(detail.id)}
                 />
                 <PlaylistTrackList
                     detail={detail}

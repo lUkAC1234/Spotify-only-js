@@ -1,5 +1,7 @@
+import hashlib
 import logging
 
+from django.conf import settings
 from django.core.cache import cache
 from django.core.exceptions import ImproperlyConfigured
 from django.db.models import Count
@@ -11,6 +13,7 @@ from rest_framework.views import APIView
 from apps.catalog.models import Album, Artist, Genre, Source, Track
 from apps.catalog.services import (
     CatalogSyncService,
+    normalize_search_query,
     search_albums_local,
     search_artists_local,
     search_tracks_local,
@@ -46,17 +49,32 @@ logger = logging.getLogger(__name__)
 
 DISCOVERY_CACHE_TTL = 60 * 30
 MAX_DISCOVERY_LIMIT = 24
+ALLOWED_SOURCES: frozenset[str] = frozenset({Source.JAMENDO, Source.AUDIUS, Source.YANDEX})
+
+
+def _default_source() -> str:
+    configured = (getattr(settings, "DEFAULT_CATALOG_SOURCE", "") or "").strip().lower()
+    if configured in ALLOWED_SOURCES:
+        if configured == Source.YANDEX and not getattr(settings, "YANDEX_MUSIC_TOKEN", ""):
+            return Source.JAMENDO
+        return configured
+    return Source.JAMENDO
 
 
 def _resolve_source(value: str | None) -> str:
     if not value:
-        return Source.JAMENDO
-    if value not in {Source.JAMENDO, Source.AUDIUS}:
-        return Source.JAMENDO
-    return value
+        return _default_source()
+    cleaned = value.strip().lower()
+    if cleaned not in ALLOWED_SOURCES:
+        return _default_source()
+    if cleaned == Source.YANDEX and not getattr(settings, "YANDEX_MUSIC_TOKEN", ""):
+        return _default_source()
+    return cleaned
 
 
-WEAK_MATCH_THRESHOLD = 5
+WEAK_MATCH_THRESHOLD = 4
+SEARCH_CACHE_TTL = 60
+SEARCH_RESULT_LIMIT_SECONDARY = 12
 
 
 class CatalogSearchView(APIView):
@@ -64,48 +82,58 @@ class CatalogSearchView(APIView):
     authentication_classes: list = []
 
     def get(self, request) -> Response:
-        query = (request.query_params.get("q") or "").strip()
+        raw_query = request.query_params.get("q") or ""
+        query = normalize_search_query(raw_query)
         if not query:
-            empty = SearchResultSerializer({"tracks": [], "artists": [], "albums": []}).data
-            empty["totalTracks"] = 0
-            empty["limit"] = 0
-            empty["offset"] = 0
-            empty["hasMore"] = False
-            return Response(empty)
+            return Response(self._empty_payload())
 
         source = _resolve_source(request.query_params.get("source"))
         kinds = self._parse_kinds(request.query_params.get("type"))
         limit = self._parse_int(request.query_params.get("limit"), default=24, maximum=50)
         offset = self._parse_int(request.query_params.get("offset"), default=0, maximum=1000)
 
-        if "track" in kinds:
-            local_tracks, total_tracks = search_tracks_local(query, limit=limit, offset=offset)
-        else:
-            local_tracks, total_tracks = [], 0
-        local_artists = search_artists_local(query, limit=12) if "artist" in kinds and offset == 0 else []
-        local_albums = search_albums_local(query, limit=12) if "album" in kinds and offset == 0 else []
+        cache_key = self._cache_key(query, kinds, source, limit, offset)
+        cached = cache.get(cache_key)
+        if cached is not None:
+            return Response(cached)
 
+        payload = self._build_payload(query, kinds, source, limit, offset)
+        cache.set(cache_key, payload, SEARCH_CACHE_TTL)
+        return Response(payload)
+
+    def _build_payload(
+        self,
+        query: str,
+        kinds: tuple[str, ...],
+        source: str,
+        limit: int,
+        offset: int,
+    ) -> dict:
+        local_tracks, total_tracks = (
+            search_tracks_local(query, limit=limit, offset=offset)
+            if "track" in kinds
+            else ([], 0)
+        )
         is_first_page = offset == 0
-        is_weak = is_first_page and (
-            len(local_tracks) + len(local_artists) + len(local_albums)
-        ) < WEAK_MATCH_THRESHOLD
+        local_artists = (
+            search_artists_local(query, limit=SEARCH_RESULT_LIMIT_SECONDARY)
+            if "artist" in kinds and is_first_page
+            else []
+        )
+        local_albums = (
+            search_albums_local(query, limit=SEARCH_RESULT_LIMIT_SECONDARY)
+            if "album" in kinds and is_first_page
+            else []
+        )
 
-        if is_weak:
-            try:
-                CatalogSyncService().search(query, source=source, kinds=kinds, limit=limit)
-            except ImproperlyConfigured as exc:
-                logger.warning("Catalog provider not configured: %s", exc)
-            except Exception as exc:
-                logger.warning("Catalog upstream search failed: %s", exc)
-            else:
-                if "track" in kinds:
-                    local_tracks, total_tracks = search_tracks_local(query, limit=limit, offset=offset)
-                local_artists = (
-                    search_artists_local(query, limit=12) if "artist" in kinds else []
-                )
-                local_albums = (
-                    search_albums_local(query, limit=12) if "album" in kinds else []
-                )
+        if is_first_page and self._is_weak_match(local_tracks, local_artists, local_albums):
+            self._sync_upstream(query, source=source, kinds=kinds, limit=limit)
+            if "track" in kinds:
+                local_tracks, total_tracks = search_tracks_local(query, limit=limit, offset=offset)
+            if "artist" in kinds:
+                local_artists = search_artists_local(query, limit=SEARCH_RESULT_LIMIT_SECONDARY)
+            if "album" in kinds:
+                local_albums = search_albums_local(query, limit=SEARCH_RESULT_LIMIT_SECONDARY)
 
         payload = SearchResultSerializer({
             "tracks": local_tracks,
@@ -116,7 +144,35 @@ class CatalogSearchView(APIView):
         payload["limit"] = limit
         payload["offset"] = offset
         payload["hasMore"] = offset + len(local_tracks) < total_tracks
-        return Response(payload)
+        return payload
+
+    @staticmethod
+    def _is_weak_match(tracks: list, artists: list, albums: list) -> bool:
+        return (len(tracks) + len(artists) + len(albums)) < WEAK_MATCH_THRESHOLD
+
+    @staticmethod
+    def _sync_upstream(query: str, *, source: str, kinds: tuple[str, ...], limit: int) -> None:
+        try:
+            CatalogSyncService().search(query, source=source, kinds=kinds, limit=limit)
+        except ImproperlyConfigured as exc:
+            logger.warning("Catalog provider not configured: %s", exc)
+        except Exception as exc:
+            logger.warning("Catalog upstream search failed: %s", exc)
+
+    @staticmethod
+    def _empty_payload() -> dict:
+        empty = SearchResultSerializer({"tracks": [], "artists": [], "albums": []}).data
+        empty["totalTracks"] = 0
+        empty["limit"] = 0
+        empty["offset"] = 0
+        empty["hasMore"] = False
+        return empty
+
+    @staticmethod
+    def _cache_key(query: str, kinds: tuple[str, ...], source: str, limit: int, offset: int) -> str:
+        digest = hashlib.blake2s(query.lower().encode("utf-8"), digest_size=12).hexdigest()
+        kinds_part = ",".join(kinds)
+        return f"catalog:search:{source}:{kinds_part}:{limit}:{offset}:{digest}"
 
     @staticmethod
     def _parse_kinds(raw: str | None) -> tuple[str, ...]:
@@ -222,15 +278,97 @@ def _discovery_response(cache_key: str, fetch) -> Response:
     return Response({"items": payload})
 
 
+def _available_aggregation_sources() -> list[str]:
+    sources: list[str] = []
+    if getattr(settings, "JAMENDO_CLIENT_ID", ""):
+        sources.append(Source.JAMENDO)
+    sources.append(Source.AUDIUS)
+    if getattr(settings, "YANDEX_MUSIC_TOKEN", ""):
+        sources.append(Source.YANDEX)
+    return sources
+
+
+def _round_robin_merge(buckets: list[list[Track]], limit: int) -> list[Track]:
+    merged: list[Track] = []
+    seen_keys: set[tuple[str, str]] = set()
+    indices = [0] * len(buckets)
+    while len(merged) < limit:
+        progressed = False
+        for bucket_index, bucket in enumerate(buckets):
+            cursor = indices[bucket_index]
+            if cursor >= len(bucket):
+                continue
+            track = bucket[cursor]
+            indices[bucket_index] = cursor + 1
+            progressed = True
+            key = (track.source, track.source_id)
+            if key in seen_keys:
+                continue
+            seen_keys.add(key)
+            merged.append(track)
+            if len(merged) >= limit:
+                break
+        if not progressed:
+            break
+    return merged
+
+
+def _aggregated_discovery_response(cache_key: str, *, limit: int, fetch_for_source) -> Response:
+    cached = cache.get(cache_key)
+    if cached is not None:
+        return Response({"items": cached})
+
+    service = CatalogSyncService()
+    buckets: list[list[Track]] = []
+    per_source = max(limit, 6)
+
+    for source in _available_aggregation_sources():
+        try:
+            tracks = fetch_for_source(service, source, per_source)
+        except ImproperlyConfigured as exc:
+            logger.info("Skipping %s in aggregation: %s", source, exc)
+            continue
+        except Exception as exc:
+            logger.warning("Aggregated fetch for %s failed: %s", source, exc)
+            continue
+        if tracks:
+            buckets.append(list(tracks))
+
+    if not buckets:
+        return Response(
+            {"code": "provider_not_configured", "message": "No music provider is configured"},
+            status=status.HTTP_503_SERVICE_UNAVAILABLE,
+        )
+
+    merged = _round_robin_merge(buckets, limit)
+    payload = TrackSerializer(merged, many=True).data
+    cache.set(cache_key, payload, DISCOVERY_CACHE_TTL)
+    return Response({"items": payload})
+
+
+def _wants_aggregation(query_source: str | None) -> bool:
+    if query_source:
+        return False
+    return not (getattr(settings, "DEFAULT_CATALOG_SOURCE", "") or "").strip()
+
+
 class PopularTracksView(APIView):
     permission_classes = [AllowAny]
     authentication_classes: list = []
 
     def get(self, request) -> Response:
         limit = _parse_limit(request.query_params.get("limit"))
+        query_source = request.query_params.get("source")
+        if _wants_aggregation(query_source):
+            return _aggregated_discovery_response(
+                f"catalog:popular:agg:{limit}",
+                limit=limit,
+                fetch_for_source=lambda service, src, n: service.popular_tracks(source=src, limit=n),
+            )
+        source = _resolve_source(query_source)
         return _discovery_response(
-            f"catalog:popular:{limit}",
-            lambda: CatalogSyncService().popular_tracks(limit=limit),
+            f"catalog:popular:{source}:{limit}",
+            lambda: CatalogSyncService().popular_tracks(source=source, limit=limit),
         )
 
 
@@ -240,9 +378,17 @@ class NewReleasesView(APIView):
 
     def get(self, request) -> Response:
         limit = _parse_limit(request.query_params.get("limit"))
+        query_source = request.query_params.get("source")
+        if _wants_aggregation(query_source):
+            return _aggregated_discovery_response(
+                f"catalog:new-releases:agg:{limit}",
+                limit=limit,
+                fetch_for_source=lambda service, src, n: service.recent_tracks(source=src, limit=n),
+            )
+        source = _resolve_source(query_source)
         return _discovery_response(
-            f"catalog:new-releases:{limit}",
-            lambda: CatalogSyncService().recent_tracks(limit=limit),
+            f"catalog:new-releases:{source}:{limit}",
+            lambda: CatalogSyncService().recent_tracks(source=source, limit=limit),
         )
 
 
@@ -272,7 +418,8 @@ class GenreTrackingView(APIView):
 
     def get(self, request, slug: str) -> Response:
         limit = _parse_limit(request.query_params.get("limit"))
-        cache_key = f"catalog:genre:{slug}:{limit}"
+        source = _resolve_source(request.query_params.get("source"))
+        cache_key = f"catalog:genre:{source}:{slug}:{limit}"
         cached = cache.get(cache_key)
         if cached is not None:
             return Response({"slug": slug, "items": cached})
@@ -280,7 +427,7 @@ class GenreTrackingView(APIView):
         tracks = tracks_in_genre(slug, limit=limit)
         if not tracks:
             try:
-                tracks = CatalogSyncService().tracks_by_tag(slug, limit=limit)
+                tracks = CatalogSyncService().tracks_by_tag(slug, source=source, limit=limit)
             except ImproperlyConfigured:
                 pass
             except Exception as exc:
@@ -426,9 +573,17 @@ class RecommendationsView(APIView):
             payload = TrackSerializer(tracks, many=True).data
             return Response({"seedGenres": seed_genres, "items": payload})
 
+        query_source = request.query_params.get("source")
+        if _wants_aggregation(query_source):
+            return _aggregated_discovery_response(
+                f"catalog:popular:agg:{limit}",
+                limit=limit,
+                fetch_for_source=lambda service, src, n: service.popular_tracks(source=src, limit=n),
+            )
+        source = _resolve_source(query_source)
         return _discovery_response(
-            f"catalog:popular:{limit}",
-            lambda: CatalogSyncService().popular_tracks(limit=limit),
+            f"catalog:popular:{source}:{limit}",
+            lambda: CatalogSyncService().popular_tracks(source=source, limit=limit),
         )
 
     @staticmethod

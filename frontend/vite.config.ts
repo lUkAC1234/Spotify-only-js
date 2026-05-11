@@ -91,9 +91,9 @@ export default defineConfig({
             injectRegister: "auto",
             includeAssets: ["favicon.svg", "robots.txt"],
             manifest: {
-                name: "Spotify",
-                short_name: "Spotify",
-                description: "Spotify-style music streaming on top of Jamendo + Audius.",
+                name: "Spenzora",
+                short_name: "Spenzora",
+                description: "Spenzora — music streaming on top of Jamendo + Audius.",
                 theme_color: "#121212",
                 background_color: "#000000",
                 display: "standalone",
@@ -141,7 +141,9 @@ export default defineConfig({
                     {
                         urlPattern: ({ url }) =>
                             url.hostname.includes("usercontent.jamendo.com") ||
-                            url.hostname.includes("audius.co"),
+                            url.hostname.includes("audius.co") ||
+                            url.hostname.includes("avatars.yandex.net") ||
+                            url.hostname.includes("avatars.mds.yandex.net"),
                         handler: "CacheFirst",
                         options: {
                             cacheName: "spotify-covers",

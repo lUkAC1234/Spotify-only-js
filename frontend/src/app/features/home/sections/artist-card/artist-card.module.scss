@@ -1,5 +1,10 @@
 @use "@/assets/styles/helpers/functions";
 
+.artist-card-item {
+    list-style: none;
+    display: block;
+}
+
 .artist-card {
     display: flex;
     flex-direction: column;
@@ -8,12 +13,18 @@
     background: var(--surface-elevated);
     border-radius: var(--radius-md);
     cursor: pointer;
-    transition: background var(--motion-fast) var(--motion-ease), transform var(--motion-fast) var(--motion-ease);
-    list-style: none;
+    text-decoration: none;
     color: var(--text);
+    overflow: hidden;
+    transition:
+        background var(--motion-base) var(--motion-ease),
+        transform var(--motion-base) var(--motion-ease),
+        box-shadow var(--motion-base) var(--motion-ease);
 
     &:hover {
         background: var(--surface-highlight);
+        transform: translateY(#{functions.rem(-4)});
+        box-shadow: var(--elevation-2);
     }
 
     &:focus-visible {
@@ -26,59 +37,25 @@
         width: 100%;
         aspect-ratio: 1 / 1;
         border-radius: var(--radius-circle);
-        background: var(--surface-press);
+        background: var(--surface-highlight);
         overflow: hidden;
         margin-bottom: var(--space-3);
-
-        &[data-fallback="gradient-0"] {
-            background: var(--genre-tile-gradient-0);
-        }
-        &[data-fallback="gradient-1"] {
-            background: var(--genre-tile-gradient-1);
-        }
-        &[data-fallback="gradient-2"] {
-            background: var(--genre-tile-gradient-2);
-        }
-        &[data-fallback="gradient-3"] {
-            background: var(--genre-tile-gradient-3);
-        }
-        &[data-fallback="gradient-4"] {
-            background: var(--genre-tile-gradient-4);
-        }
-        &[data-fallback="gradient-5"] {
-            background: var(--genre-tile-gradient-5);
-        }
-
-        img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            display: block;
-        }
-    }
-
-    &__placeholder {
-        position: absolute;
-        inset: 0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: var(--type-display);
-        font-weight: var(--font-weight-bold);
-        color: var(--text);
+        box-shadow: var(--elevation-1);
     }
 
     &__name {
-        font-size: var(--type-title-3);
+        font-size: var(--type-body);
         font-weight: var(--font-weight-bold);
         color: var(--text);
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+        text-align: center;
     }
 
     &__role {
         font-size: var(--type-caption);
         color: var(--text-secondary);
+        text-align: center;
     }
 }

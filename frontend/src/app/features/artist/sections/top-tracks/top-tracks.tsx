@@ -8,6 +8,7 @@ import { PlayerService } from "@/app/core/services/player/player.service";
 import { Track } from "@/app/core/types/track";
 import { inject } from "@/app/shared/decorators/di";
 import { className } from "@/app/shared/utils/functions/className";
+import { Spinner } from "@/app/shared/ui/loaders/spinner";
 import { SVG_HeartFilled } from "@/app/shared/ui/svg/player/svg-heart-filled";
 import { SVG_Heart } from "@/app/shared/ui/svg/player/svg-heart";
 import { SVG_Pause } from "@/app/shared/ui/svg/player/svg-pause";
@@ -81,11 +82,18 @@ export class TopTracks extends Component<Props> {
                             className={className(styles["row__heart"], {
                                 [styles["row__heart--active"]]: isLiked,
                             })}
-                            onClick={() => void this.library.toggleTrackSaved(track.id)}
+                            onClick={() => void this.library.toggleTrackSaved(track.id, track)}
                             aria-label={heartLabel}
                             aria-pressed={isLiked}
+                            aria-busy={this.library.isTrackBusy(track.id)}
                         >
-                            {isLiked ? <SVG_HeartFilled /> : <SVG_Heart />}
+                            {this.library.isTrackBusy(track.id) ? (
+                                <Spinner size="sm" tone="current" />
+                            ) : isLiked ? (
+                                <SVG_HeartFilled />
+                            ) : (
+                                <SVG_Heart />
+                            )}
                         </button>
                     )}
                     <span className={styles["row__duration"]}>{formatDuration(track.durationMs)}</span>

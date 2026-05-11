@@ -20,8 +20,7 @@ export class AuthLayout extends Component {
     render(): ReactNode {
         return (
             <div className={styles["auth-layout"]}>
-                <div className={styles["auth-layout__aurora"]} aria-hidden="true" />
-                <div className={styles["auth-layout__noise"]} aria-hidden="true" />
+                <div className={styles["auth-layout__glow"]} aria-hidden="true" />
 
                 <header className={styles["auth-layout__header"]}>
                     <NavLink
@@ -48,7 +47,7 @@ export class AuthLayout extends Component {
 
                 <footer className={styles["auth-layout__footer"]}>
                     <p className={styles["auth-layout__legal-line"]}>
-                        <span>© {new Date().getFullYear()} Spotify</span>
+                        <span>© {new Date().getFullYear()} Spenzora</span>
                         <NavLink to="/privacy" baseClass={styles["auth-layout__legal-link"]}>
                             {this.locale.t("common", "sidebar.footer.privacy")}
                         </NavLink>

@@ -5,6 +5,7 @@ import { LocaleService } from "@/app/core/services/locale.service";
 import { PlaylistDetail } from "@/app/core/types/playlist";
 import { inject } from "@/app/shared/decorators/di";
 import { className } from "@/app/shared/utils/functions/className";
+import { ConfirmDialog } from "@/app/shared/ui/confirm-dialog/confirm-dialog";
 import { CreatePlaylistModalService } from "@/app/shared/ui/create-playlist-modal/create-playlist-modal.service";
 import { SVG_Play } from "@/app/shared/ui/svg/player/svg-play";
 
@@ -15,6 +16,12 @@ interface Props {
     onPlay: () => void;
     onMetaChange: (patch: { isCollaborative?: boolean }) => Promise<void> | void;
     onAfterSave: (id: number) => void;
+    onDelete: () => Promise<boolean>;
+    isDeleting: boolean;
+}
+
+interface State {
+    confirmDelete: boolean;
 }
 
 const formatDuration = (ms: number): string => {
@@ -29,9 +36,11 @@ const formatDuration = (ms: number): string => {
 };
 
 @observer
-export class PlaylistHeader extends Component<Props> {
+export class PlaylistHeader extends Component<Props, State> {
     private locale: LocaleService = inject(LocaleService);
     private editModal: CreatePlaylistModalService = inject(CreatePlaylistModalService);
+
+    state: State = { confirmDelete: false };
 
     private startEdit = (): void => {
         this.editModal.openEdit(this.props.detail, this.props.onAfterSave);
@@ -45,6 +54,20 @@ export class PlaylistHeader extends Component<Props> {
         await this.props.onMetaChange({
             isCollaborative: !this.props.detail.isCollaborative,
         });
+    };
+
+    private openDeleteConfirm = (): void => {
+        this.setState({ confirmDelete: true });
+    };
+
+    private closeDeleteConfirm = (): void => {
+        if (this.props.isDeleting) return;
+        this.setState({ confirmDelete: false });
+    };
+
+    private handleConfirmDelete = async (): Promise<void> => {
+        const ok = await this.props.onDelete();
+        if (ok) this.setState({ confirmDelete: false });
     };
 
     render(): ReactNode {
@@ -134,8 +157,32 @@ export class PlaylistHeader extends Component<Props> {
                                     : this.locale.t("common", "playlist.collaborative-off")}
                             </button>
                         )}
+                        {detail.canEdit && !detail.isSystem && (
+                            <button
+                                type="button"
+                                className={styles["playlist-header__danger"]}
+                                onClick={this.openDeleteConfirm}
+                            >
+                                {this.locale.t("common", "playlist.delete")}
+                            </button>
+                        )}
                     </div>
                 </div>
+
+                <ConfirmDialog
+                    isOpen={this.state.confirmDelete}
+                    title={this.locale.t("common", "playlist.delete-confirm-title")}
+                    description={this.locale.t("common", "playlist.delete-confirm-body", {
+                        title: detail.title,
+                    })}
+                    confirmLabel={this.locale.t("common", "playlist.delete-confirm-yes")}
+                    cancelLabel={this.locale.t("common", "playlist.delete-confirm-cancel")}
+                    busyLabel={this.locale.t("common", "playlist.deleting")}
+                    isBusy={this.props.isDeleting}
+                    danger
+                    onCancel={this.closeDeleteConfirm}
+                    onConfirm={this.handleConfirmDelete}
+                />
             </header>
         );
     }

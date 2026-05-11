@@ -3,6 +3,7 @@ import { Component, ReactNode } from "react";
 import { LocaleService } from "@/app/core/services/locale.service";
 import { Artist } from "@/app/core/types/artist";
 import { inject } from "@/app/shared/decorators/di";
+import { Avatar } from "@/app/shared/ui/avatar/avatar";
 import { Carousel } from "@/app/shared/ui/carousel/carousel";
 import { NavLink } from "@/app/shared/ui/link/nav-link";
 
@@ -31,7 +32,7 @@ export class RelatedArtists extends Component<Props> {
                             <li key={artist.id} className={styles["related__card"]}>
                                 <NavLink to={`/artist/${artist.id}`} baseClass={styles["related__link"]}>
                                     <div className={styles["related__avatar"]}>
-                                        {artist.image && <img src={artist.image} alt="" loading="lazy" />}
+                                        <Avatar name={artist.name} image={artist.image} />
                                     </div>
                                     <span className={styles["related__name"]} title={artist.name}>
                                         {artist.name}

@@ -8,6 +8,7 @@ import { AlbumDetail } from "@/app/core/types/album";
 import { inject } from "@/app/shared/decorators/di";
 import { className } from "@/app/shared/utils/functions/className";
 import { NavLink } from "@/app/shared/ui/link/nav-link";
+import { Spinner } from "@/app/shared/ui/loaders/spinner";
 import { SVG_HeartFilled } from "@/app/shared/ui/svg/player/svg-heart-filled";
 import { SVG_Heart } from "@/app/shared/ui/svg/player/svg-heart";
 import { SVG_Play } from "@/app/shared/ui/svg/player/svg-play";
@@ -36,7 +37,7 @@ export class AlbumHero extends Component<Props> {
 
     private handleSave = (): void => {
         if (!this.auth.isAuthenticated) return;
-        void this.library.toggleAlbumSaved(this.props.detail.id);
+        void this.library.toggleAlbumSaved(this.props.detail.id, this.props.detail);
     };
 
     render(): ReactNode {
@@ -106,12 +107,20 @@ export class AlbumHero extends Component<Props> {
                                     type="button"
                                     className={className(styles["hero__heart"], {
                                         [styles["hero__heart--active"]]: isSaved,
+                                        [styles["hero__heart--busy"]]: this.library.isAlbumBusy(detail.id),
                                     })}
                                     onClick={this.handleSave}
                                     aria-label={heartLabel}
                                     aria-pressed={isSaved}
+                                    aria-busy={this.library.isAlbumBusy(detail.id)}
                                 >
-                                    {isSaved ? <SVG_HeartFilled /> : <SVG_Heart />}
+                                    {this.library.isAlbumBusy(detail.id) ? (
+                                        <Spinner size="md" tone="current" />
+                                    ) : isSaved ? (
+                                        <SVG_HeartFilled />
+                                    ) : (
+                                        <SVG_Heart />
+                                    )}
                                 </button>
                             )}
                         </div>

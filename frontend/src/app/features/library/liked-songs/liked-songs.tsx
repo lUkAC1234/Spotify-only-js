@@ -1,5 +1,5 @@
 import { observer } from "mobx-react";
-import { Component, ReactNode } from "react";
+import { Component, DragEvent, ReactNode } from "react";
 
 import { AuthService } from "@/app/core/services/auth/auth.service";
 import { TitleService } from "@/app/core/services/browser/title.service";
@@ -9,7 +9,9 @@ import { PlayerService } from "@/app/core/services/player/player.service";
 import { Track } from "@/app/core/types/track";
 import { inject } from "@/app/shared/decorators/di";
 import { className } from "@/app/shared/utils/functions/className";
+import { Spinner } from "@/app/shared/ui/loaders/spinner";
 import { SVG_HeartFilled } from "@/app/shared/ui/svg/player/svg-heart-filled";
+import { SVG_Heart } from "@/app/shared/ui/svg/player/svg-heart";
 import { SVG_Pause } from "@/app/shared/ui/svg/player/svg-pause";
 import { SVG_Play } from "@/app/shared/ui/svg/player/svg-play";
 
@@ -30,6 +32,8 @@ export class LikedSongs extends Component {
     private auth: AuthService = inject(AuthService);
     private library: LibraryService = inject(LibraryService);
     private player: PlayerService = inject(PlayerService);
+
+    private dragIndex: number | null = null;
 
     componentDidMount(): void {
         this.title.construct({
@@ -67,13 +71,42 @@ export class LikedSongs extends Component {
         this.player.playTrack(track, { type: "playlist", id: "library.liked" });
     };
 
+    private handleDragStart = (event: DragEvent<HTMLLIElement>, index: number): void => {
+        this.dragIndex = index;
+        event.dataTransfer.effectAllowed = "move";
+        event.dataTransfer.setData("text/plain", String(index));
+    };
+
+    private handleDragOver = (event: DragEvent<HTMLLIElement>): void => {
+        event.preventDefault();
+        event.dataTransfer.dropEffect = "move";
+    };
+
+    private handleDrop = (event: DragEvent<HTMLLIElement>, toIndex: number): void => {
+        event.preventDefault();
+        const fromIndex =
+            this.dragIndex ?? Number(event.dataTransfer.getData("text/plain"));
+        if (Number.isFinite(fromIndex) && fromIndex !== toIndex) {
+            const track = this.tracks[fromIndex];
+            if (track) this.library.reorderSavedTrack(track.id, toIndex);
+        }
+        this.dragIndex = null;
+    };
+
+    private handleDragEnd = (): void => {
+        this.dragIndex = null;
+    };
+
     private renderRow = (track: Track, index: number): ReactNode => {
         const cover = track.cover || track.album?.cover || "";
         const isCurrent = this.player.currentTrack?.id === track.id;
         const isPlayingNow = isCurrent && this.player.isPlaying;
+        const isLiked = this.library.isTrackSaved(track.id);
+        const isBusy = this.library.isTrackBusy(track.id);
         const playLabel = isPlayingNow
             ? this.locale.t("common", "player.pause")
             : this.locale.t("common", "player.play");
+        const heartLabel = this.locale.t("common", "player.unlike");
 
         return (
             <li
@@ -81,6 +114,11 @@ export class LikedSongs extends Component {
                 className={className(styles["row"], {
                     [styles["row--current"]]: isCurrent,
                 })}
+                draggable
+                onDragStart={(event) => this.handleDragStart(event, index)}
+                onDragOver={this.handleDragOver}
+                onDrop={(event) => this.handleDrop(event, index)}
+                onDragEnd={this.handleDragEnd}
             >
                 <div className={styles["row__index"]}>
                     <span className={styles["row__index-number"]}>{index + 1}</span>
@@ -107,7 +145,28 @@ export class LikedSongs extends Component {
                 </div>
 
                 <div className={styles["row__album"]}>{track.album?.title ?? ""}</div>
-                <div className={styles["row__duration"]}>{formatDuration(track.durationMs)}</div>
+
+                <div className={styles["row__actions"]}>
+                    <button
+                        type="button"
+                        className={className(styles["row__heart"], {
+                            [styles["row__heart--active"]]: isLiked,
+                        })}
+                        onClick={() => void this.library.toggleTrackSaved(track.id, track)}
+                        aria-label={heartLabel}
+                        aria-pressed={isLiked}
+                        aria-busy={isBusy}
+                    >
+                        {isBusy ? (
+                            <Spinner size="sm" tone="current" />
+                        ) : isLiked ? (
+                            <SVG_HeartFilled />
+                        ) : (
+                            <SVG_Heart />
+                        )}
+                    </button>
+                    <span className={styles["row__duration"]}>{formatDuration(track.durationMs)}</span>
+                </div>
             </li>
         );
     };

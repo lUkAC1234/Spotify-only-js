@@ -2,6 +2,7 @@ import { action, computed, makeObservable, observable, reaction, runInAction } f
 
 import { AuthCredentials, RegisterPayload, User } from "@/app/core/types/user";
 import { injectable } from "@/app/shared/decorators/di";
+import { ActionGuard } from "@/app/shared/utils/classes/ActionGuard";
 
 import { ApiError, apiRequest, ensureCsrf } from "../http/api-client";
 
@@ -48,6 +49,8 @@ export class AuthService {
     @observable lastError: ApiError | null = null;
 
     private stopPersist: (() => void) | null = null;
+    private readonly guard: ActionGuard = new ActionGuard();
+    private fetchMePromise: Promise<User | null> | null = null;
 
     constructor() {
         makeObservable(this);
@@ -96,7 +99,23 @@ export class AuthService {
         this.lastError = error;
     }
 
+    @action.bound
+    applyMePatch(patch: Partial<User>): void {
+        if (!this.me) return;
+        this.me = { ...this.me, ...patch };
+    }
+
     async fetchMe(): Promise<User | null> {
+        if (this.fetchMePromise) return this.fetchMePromise;
+        this.fetchMePromise = this.fetchMeInternal();
+        try {
+            return await this.fetchMePromise;
+        } finally {
+            this.fetchMePromise = null;
+        }
+    }
+
+    private async fetchMeInternal(): Promise<User | null> {
         const result = await apiRequest<User>("GET", "/auth/me/");
         if (result.ok && result.data) {
             runInAction(() => {
@@ -113,116 +132,141 @@ export class AuthService {
     }
 
     async login(credentials: AuthCredentials): Promise<User | null> {
-        this.setLoading(true);
-        this.setError(null);
-        await ensureCsrf();
-        const result = await apiRequest<User>("POST", "/auth/login/", {
-            body: { identifier: credentials.identifier, password: credentials.password },
-        });
-        runInAction(() => {
-            this.isLoading = false;
-        });
-        if (!result.ok || !result.data) {
-            this.setError(result.error);
-            return null;
-        }
-        runInAction(() => {
-            this.me = result.data;
-        });
-        return result.data;
+        return (
+            (await this.guard.run("auth:login", async () => {
+                this.setLoading(true);
+                this.setError(null);
+                await ensureCsrf();
+                const result = await apiRequest<User>("POST", "/auth/login/", {
+                    body: { identifier: credentials.identifier, password: credentials.password },
+                });
+                runInAction(() => {
+                    this.isLoading = false;
+                });
+                if (!result.ok || !result.data) {
+                    this.setError(result.error);
+                    return null;
+                }
+                runInAction(() => {
+                    this.me = result.data;
+                });
+                return result.data;
+            })) ?? null
+        );
     }
 
     async register(payload: RegisterPayload): Promise<User | null> {
-        this.setLoading(true);
-        this.setError(null);
-        await ensureCsrf();
-        const result = await apiRequest<User>("POST", "/auth/register/", {
-            body: {
-                email: payload.email,
-                username: payload.username,
-                password: payload.password,
-                displayName: payload.displayName,
-            },
-        });
-        runInAction(() => {
-            this.isLoading = false;
-        });
-        if (!result.ok || !result.data) {
-            this.setError(result.error);
-            return null;
-        }
-        runInAction(() => {
-            this.me = result.data;
-        });
-        return result.data;
+        return (
+            (await this.guard.run("auth:register", async () => {
+                this.setLoading(true);
+                this.setError(null);
+                await ensureCsrf();
+                const result = await apiRequest<User>("POST", "/auth/register/", {
+                    body: {
+                        email: payload.email,
+                        username: payload.username,
+                        password: payload.password,
+                        displayName: payload.displayName,
+                    },
+                });
+                runInAction(() => {
+                    this.isLoading = false;
+                });
+                if (!result.ok || !result.data) {
+                    this.setError(result.error);
+                    return null;
+                }
+                runInAction(() => {
+                    this.me = result.data;
+                });
+                return result.data;
+            })) ?? null
+        );
     }
 
     async logout(): Promise<void> {
-        await apiRequest("POST", "/auth/logout/");
-        runInAction(() => {
-            this.me = null;
+        await this.guard.run("auth:logout", async () => {
+            await apiRequest("POST", "/auth/logout/");
+            runInAction(() => {
+                this.me = null;
+            });
         });
     }
 
     async updateProfile(payload: UpdateProfilePayload): Promise<User | null> {
-        this.setLoading(true);
-        this.setError(null);
-        const result = await apiRequest<User>("PATCH", "/auth/me/", { body: payload });
-        runInAction(() => {
-            this.isLoading = false;
-        });
-        if (!result.ok || !result.data) {
-            this.setError(result.error);
-            return null;
-        }
-        runInAction(() => {
-            this.me = result.data;
-        });
-        return result.data;
+        return (
+            (await this.guard.run("auth:update-profile", async () => {
+                this.setLoading(true);
+                this.setError(null);
+                const result = await apiRequest<User>("PATCH", "/auth/me/", { body: payload });
+                runInAction(() => {
+                    this.isLoading = false;
+                });
+                if (!result.ok || !result.data) {
+                    this.setError(result.error);
+                    return null;
+                }
+                runInAction(() => {
+                    this.me = result.data;
+                });
+                return result.data;
+            })) ?? null
+        );
     }
 
     async uploadAvatar(file: File): Promise<User | null> {
-        this.setLoading(true);
-        this.setError(null);
-        const formData = new FormData();
-        formData.append("avatar", file);
-        const result = await apiRequest<User>("POST", "/auth/me/avatar/", { body: formData });
-        runInAction(() => {
-            this.isLoading = false;
-        });
-        if (!result.ok || !result.data) {
-            this.setError(result.error);
-            return null;
-        }
-        runInAction(() => {
-            this.me = result.data;
-        });
-        return result.data;
+        return (
+            (await this.guard.run("auth:upload-avatar", async () => {
+                this.setLoading(true);
+                this.setError(null);
+                const formData = new FormData();
+                formData.append("avatar", file);
+                const result = await apiRequest<User>("POST", "/auth/me/avatar/", { body: formData });
+                runInAction(() => {
+                    this.isLoading = false;
+                });
+                if (!result.ok || !result.data) {
+                    this.setError(result.error);
+                    return null;
+                }
+                runInAction(() => {
+                    this.me = result.data;
+                });
+                return result.data;
+            })) ?? null
+        );
     }
 
     async deleteAvatar(): Promise<User | null> {
-        const result = await apiRequest<User>("DELETE", "/auth/me/avatar/");
-        if (!result.ok || !result.data) {
-            this.setError(result.error);
-            return null;
-        }
-        runInAction(() => {
-            this.me = result.data;
-        });
-        return result.data;
+        return (
+            (await this.guard.run("auth:delete-avatar", async () => {
+                const result = await apiRequest<User>("DELETE", "/auth/me/avatar/");
+                if (!result.ok || !result.data) {
+                    this.setError(result.error);
+                    return null;
+                }
+                runInAction(() => {
+                    this.me = result.data;
+                });
+                return result.data;
+            })) ?? null
+        );
     }
 
     async changePassword(payload: ChangePasswordPayload): Promise<boolean> {
-        this.setLoading(true);
-        this.setError(null);
-        const result = await apiRequest("POST", "/auth/me/password/", { body: payload });
-        runInAction(() => {
-            this.isLoading = false;
+        const outcome = await this.guard.run("auth:change-password", async () => {
+            this.setLoading(true);
+            this.setError(null);
+            const result = await apiRequest("POST", "/auth/me/password/", { body: payload });
+            runInAction(() => {
+                this.isLoading = false;
+            });
+            if (!result.ok) {
+                this.setError(result.error);
+                return false;
+            }
+            return true;
         });
-        if (!result.ok) {
-            this.setError(result.error);
-            return false;
-        }
-        return true;
+        return outcome ?? false;
     }
 }

@@ -12,3 +12,9 @@
         max-width: #{functions.rem(900)};
     }
 }
+
+@media (max-width: 640px) {
+    .greeting {
+        padding: var(--space-6) var(--content-padding-x-mobile) var(--space-4);
+    }
+}

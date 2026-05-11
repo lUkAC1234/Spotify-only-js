@@ -142,6 +142,8 @@ DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "no-reply@spotify.local")
 APP_VERSION = os.getenv("APP_VERSION", "0.1.0")
 JAMENDO_CLIENT_ID = os.getenv("JAMENDO_CLIENT_ID", "")
 AUDIUS_DISCOVERY_HOST = os.getenv("AUDIUS_DISCOVERY_HOST", "")
+YANDEX_MUSIC_TOKEN = os.getenv("YANDEX_MUSIC_TOKEN", "")
+DEFAULT_CATALOG_SOURCE = os.getenv("DEFAULT_CATALOG_SOURCE", "").strip().lower()
 
 SENTRY_DSN = os.getenv("SENTRY_DSN", "")
 SENTRY_ENVIRONMENT = os.getenv("SENTRY_ENVIRONMENT", "development")

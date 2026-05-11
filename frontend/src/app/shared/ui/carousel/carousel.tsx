@@ -16,14 +16,15 @@ interface State {
     isDragging: boolean;
 }
 
-const DRAG_THRESHOLD = 5;
+const DRAG_THRESHOLD = 6;
 const SCROLL_PAGE_RATIO = 0.85;
-const ANIM_DURATION = 360;
-const MOMENTUM_TIME_WINDOW = 120;
-const MOMENTUM_DECAY = 0.95;
-const MOMENTUM_MIN_VELOCITY = 0.05;
+const ANIM_DURATION = 380;
+const MOMENTUM_TIME_WINDOW = 100;
+const MOMENTUM_DECAY = 0.94;
+const MOMENTUM_MIN_VELOCITY = 0.04;
+const MOMENTUM_KICK_THRESHOLD = 0.18;
 
-const easeOutCubic = (t: number): number => 1 - Math.pow(1 - t, 3);
+const easeOutQuart = (t: number): number => 1 - Math.pow(1 - t, 4);
 
 export class Carousel extends Component<Props, State> {
     private locale: LocaleService = inject(LocaleService);
@@ -37,6 +38,8 @@ export class Carousel extends Component<Props, State> {
     private velocitySamples: { time: number; x: number }[] = [];
     private momentumRaf: number | null = null;
     private animateRaf: number | null = null;
+    private boundariesRaf: number | null = null;
+    private isUnmounted: boolean = false;
     private preventNextClick: boolean = false;
 
     state: State = {
@@ -46,29 +49,45 @@ export class Carousel extends Component<Props, State> {
     };
 
     componentDidMount(): void {
-        this.updateBoundaries();
+        this.scheduleBoundaries();
         const node = this.scrollRef.current;
         if (!node) return;
         node.addEventListener("scroll", this.handleScroll, { passive: true });
+        node.addEventListener("wheel", this.handleWheel, { passive: false });
         if (typeof ResizeObserver !== "undefined") {
-            this.resizeObserver = new ResizeObserver(this.updateBoundaries);
+            this.resizeObserver = new ResizeObserver(this.scheduleBoundaries);
             this.resizeObserver.observe(node);
         }
-        window.addEventListener("resize", this.updateBoundaries);
+        window.addEventListener("resize", this.scheduleBoundaries);
     }
 
     componentDidUpdate(): void {
-        this.updateBoundaries();
+        this.scheduleBoundaries();
     }
 
     componentWillUnmount(): void {
+        this.isUnmounted = true;
         const node = this.scrollRef.current;
         node?.removeEventListener("scroll", this.handleScroll);
+        node?.removeEventListener("wheel", this.handleWheel);
         this.resizeObserver?.disconnect();
-        window.removeEventListener("resize", this.updateBoundaries);
+        window.removeEventListener("resize", this.scheduleBoundaries);
         this.cancelMomentum();
         this.cancelAnimate();
+        if (this.boundariesRaf !== null) {
+            cancelAnimationFrame(this.boundariesRaf);
+            this.boundariesRaf = null;
+        }
     }
+
+    private scheduleBoundaries = (): void => {
+        if (this.boundariesRaf !== null) return;
+        this.boundariesRaf = requestAnimationFrame(() => {
+            this.boundariesRaf = null;
+            if (this.isUnmounted) return;
+            this.updateBoundaries();
+        });
+    };
 
     private updateBoundaries = (): void => {
         const node = this.scrollRef.current;
@@ -84,7 +103,18 @@ export class Carousel extends Component<Props, State> {
     };
 
     private handleScroll = (): void => {
-        this.updateBoundaries();
+        this.scheduleBoundaries();
+    };
+
+    private handleWheel = (event: WheelEvent): void => {
+        const node = this.scrollRef.current;
+        if (!node) return;
+        if (event.deltaX !== 0 && Math.abs(event.deltaX) > Math.abs(event.deltaY)) {
+            return;
+        }
+        if (!event.shiftKey) return;
+        event.preventDefault();
+        node.scrollLeft += event.deltaY;
     };
 
     private cancelMomentum = (): void => {
@@ -115,7 +145,7 @@ export class Carousel extends Component<Props, State> {
         const tick = (now: number): void => {
             const elapsed = now - startTime;
             const t = Math.min(1, elapsed / ANIM_DURATION);
-            const eased = easeOutCubic(t);
+            const eased = easeOutQuart(t);
             node.scrollLeft = start + distance * eased;
             if (t < 1) {
                 this.animateRaf = requestAnimationFrame(tick);
@@ -183,11 +213,12 @@ export class Carousel extends Component<Props, State> {
     };
 
     private handlePointerDown = (event: PointerEvent<HTMLDivElement>): void => {
+        if (event.pointerType === "touch") return;
         if (event.button !== 0 && event.pointerType === "mouse") return;
         const node = this.scrollRef.current;
         if (!node) return;
         const target = event.target as HTMLElement;
-        if (target.closest("button, a, input, select, textarea, [data-no-drag]")) {
+        if (target.closest("input, select, textarea, [data-no-drag]")) {
             return;
         }
         this.cancelAnimate();
@@ -197,7 +228,6 @@ export class Carousel extends Component<Props, State> {
         this.dragOriginScrollLeft = node.scrollLeft;
         this.dragMoved = false;
         this.velocitySamples = [{ time: performance.now(), x: event.clientX }];
-        node.setPointerCapture(event.pointerId);
     };
 
     private handlePointerMove = (event: PointerEvent<HTMLDivElement>): void => {
@@ -209,6 +239,11 @@ export class Carousel extends Component<Props, State> {
         if (!this.dragMoved) {
             this.dragMoved = true;
             this.setState({ isDragging: true });
+            try {
+                node.setPointerCapture(event.pointerId);
+            } catch {
+                // ignore — capture is best-effort
+            }
         }
         node.scrollLeft = this.dragOriginScrollLeft - dx;
         this.recordVelocity(event.clientX);
@@ -225,7 +260,7 @@ export class Carousel extends Component<Props, State> {
             const velocity = this.computeVelocity();
             this.preventNextClick = true;
             this.setState({ isDragging: false });
-            if (Math.abs(velocity) > 0.15) {
+            if (Math.abs(velocity) > MOMENTUM_KICK_THRESHOLD) {
                 this.startMomentum(velocity);
             }
         }
@@ -241,6 +276,10 @@ export class Carousel extends Component<Props, State> {
         }
     };
 
+    private handleDragStart = (event: React.DragEvent<HTMLDivElement>): void => {
+        event.preventDefault();
+    };
+
     render(): ReactNode {
         const { children } = this.props;
         const { canScrollLeft, canScrollRight, isDragging } = this.state;
@@ -248,8 +287,7 @@ export class Carousel extends Component<Props, State> {
             <div className={styles["carousel"]}>
                 <button
                     type="button"
-                    className={className(styles["carousel__nav"], {
-                        [styles["carousel__nav--prev"]]: true,
+                    className={className(styles["carousel__nav"], styles["carousel__nav--prev"], {
                         [styles["carousel__nav--visible"]]: canScrollLeft,
                     })}
                     onClick={this.handlePrev}
@@ -261,7 +299,7 @@ export class Carousel extends Component<Props, State> {
                         viewBox="0 0 16 16"
                         fill="none"
                         stroke="currentColor"
-                        strokeWidth="2"
+                        strokeWidth="2.2"
                         strokeLinecap="round"
                         strokeLinejoin="round"
                         aria-hidden="true"
@@ -279,13 +317,13 @@ export class Carousel extends Component<Props, State> {
                     onPointerUp={this.handlePointerEnd}
                     onPointerCancel={this.handlePointerEnd}
                     onClickCapture={this.handleClickCapture}
+                    onDragStart={this.handleDragStart}
                 >
                     {children}
                 </div>
                 <button
                     type="button"
-                    className={className(styles["carousel__nav"], {
-                        [styles["carousel__nav--next"]]: true,
+                    className={className(styles["carousel__nav"], styles["carousel__nav--next"], {
                         [styles["carousel__nav--visible"]]: canScrollRight,
                     })}
                     onClick={this.handleNext}
@@ -297,7 +335,7 @@ export class Carousel extends Component<Props, State> {
                         viewBox="0 0 16 16"
                         fill="none"
                         stroke="currentColor"
-                        strokeWidth="2"
+                        strokeWidth="2.2"
                         strokeLinecap="round"
                         strokeLinejoin="round"
                         aria-hidden="true"

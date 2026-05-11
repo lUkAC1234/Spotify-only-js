@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from django.core.exceptions import ImproperlyConfigured
 from django.core.management.base import BaseCommand, CommandError
 
-from apps.catalog.models import Track
+from apps.catalog.models import Source, Track
 from apps.catalog.services import CatalogSyncService
 from apps.library.services import (
     derive_playlist_cover,
@@ -17,7 +17,8 @@ class FeaturedSeed:
     description: str
     tag: str
     sort_order: int
-    track_limit: int = 18
+    track_limit: int = 24
+    source: str = Source.JAMENDO
 
 
 FEATURED_SEEDS: tuple[FeaturedSeed, ...] = (
@@ -57,6 +58,74 @@ FEATURED_SEEDS: tuple[FeaturedSeed, ...] = (
         tag="hiphop",
         sort_order=60,
     ),
+    FeaturedSeed(
+        title="Jazz After Hours",
+        description="Smoky, late-night jazz cuts.",
+        tag="jazz",
+        sort_order=70,
+    ),
+    FeaturedSeed(
+        title="Classical Focus",
+        description="Calm orchestral and piano works for deep work.",
+        tag="classical",
+        sort_order=80,
+    ),
+    FeaturedSeed(
+        title="World Sounds",
+        description="Music from across continents and traditions.",
+        tag="worldmusic",
+        sort_order=90,
+    ),
+    FeaturedSeed(
+        title="Reggae Roots",
+        description="Slow grooves, sun-drenched melodies.",
+        tag="reggae",
+        sort_order=100,
+    ),
+    FeaturedSeed(
+        title="Latin Heat",
+        description="Latin rhythms, salsa, bossa, and more.",
+        tag="latin",
+        sort_order=110,
+    ),
+    FeaturedSeed(
+        title="Ambient Drift",
+        description="Textures, drones, and slow soundscapes.",
+        tag="ambient",
+        sort_order=120,
+    ),
+    FeaturedSeed(
+        title="Dance Floor",
+        description="Energy from house, techno, and everything between.",
+        tag="dance",
+        sort_order=130,
+    ),
+    FeaturedSeed(
+        title="Metal Forge",
+        description="Riffs, blasts, and breakdowns.",
+        tag="metal",
+        sort_order=140,
+    ),
+    FeaturedSeed(
+        title="Folk Notebook",
+        description="Storytellers, banjos, and harmonies.",
+        tag="folk",
+        sort_order=150,
+    ),
+    FeaturedSeed(
+        title="Audius Trending: Electronic",
+        description="What's hot on Audius this month — electronic & beat-driven.",
+        tag="Electronic",
+        sort_order=200,
+        source=Source.AUDIUS,
+    ),
+    FeaturedSeed(
+        title="Audius Trending: Hip-Hop",
+        description="Trending hip-hop from independent Audius artists.",
+        tag="Hip-Hop/Rap",
+        sort_order=210,
+        source=Source.AUDIUS,
+    ),
 )
 
 
@@ -89,8 +158,12 @@ class Command(BaseCommand):
 
         for seed in seeds:
             limit = options.get("limit") or seed.track_limit
-            self.stdout.write(self.style.NOTICE(f"Seeding '{seed.title}' (tag={seed.tag}, limit={limit})..."))
-            tracks = self._fetch_tracks_for_tag(sync, seed.tag, limit=limit)
+            self.stdout.write(
+                self.style.NOTICE(
+                    f"Seeding '{seed.title}' (source={seed.source}, tag={seed.tag}, limit={limit})..."
+                )
+            )
+            tracks = self._fetch_tracks_for_tag(sync, seed, limit=limit)
             if not tracks:
                 self.stdout.write(self.style.WARNING(f"  no tracks for '{seed.tag}', skipping"))
                 continue
@@ -109,14 +182,15 @@ class Command(BaseCommand):
     def _fetch_tracks_for_tag(
         self,
         sync: CatalogSyncService,
-        tag: str,
+        seed: FeaturedSeed,
         *,
         limit: int,
     ) -> list[Track]:
         try:
-            return sync.tracks_by_tag(tag, limit=limit)
+            return sync.tracks_by_tag(seed.tag, source=seed.source, limit=limit)
         except ImproperlyConfigured as exc:
-            raise CommandError(str(exc)) from exc
+            self.stdout.write(self.style.WARNING(f"  {seed.source} not configured: {exc}"))
+            return []
         except Exception as exc:
             self.stdout.write(self.style.WARNING(f"  upstream call failed: {exc}"))
             return []

@@ -11,17 +11,34 @@
     }
 
     &__card {
-        display: flex;
-        flex-direction: column;
-        gap: var(--space-2);
-        padding: var(--space-4);
+        list-style: none;
         background: var(--surface-elevated);
         border-radius: var(--radius-md);
-        transition: background var(--motion-fast) var(--motion-ease), transform var(--motion-fast) var(--motion-ease);
+        overflow: hidden;
+        transition:
+            background var(--motion-fast) var(--motion-ease),
+            transform var(--motion-fast) var(--motion-ease),
+            box-shadow var(--motion-fast) var(--motion-ease);
 
         &:hover {
             background: var(--surface-highlight);
             transform: translateY(#{functions.rem(-2)});
+            box-shadow: var(--elevation-2);
+        }
+    }
+
+    &__link {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-2);
+        padding: var(--space-4);
+        text-decoration: none;
+        color: inherit;
+
+        &:focus-visible {
+            outline: #{functions.rem(2)} solid var(--accent);
+            outline-offset: #{functions.rem(-2)};
+            border-radius: var(--radius-md);
         }
     }
 
@@ -63,5 +80,18 @@
         font-size: var(--type-body);
         color: var(--text-secondary);
         padding: var(--space-7) 0;
+    }
+}
+
+@media (max-width: 640px) {
+    .albums-tab {
+        &__grid {
+            grid-template-columns: repeat(auto-fill, minmax(#{functions.rem(140)}, 1fr));
+            gap: var(--space-3);
+        }
+
+        &__link {
+            padding: var(--space-3);
+        }
     }
 }

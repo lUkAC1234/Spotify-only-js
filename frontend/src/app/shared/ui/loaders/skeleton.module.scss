@@ -1,0 +1,48 @@
+@use "@/assets/styles/helpers/functions";
+
+@keyframes skeleton-shimmer {
+    0% {
+        background-position: 200% 0;
+    }
+    100% {
+        background-position: -200% 0;
+    }
+}
+
+.skeleton {
+    display: block;
+    background: linear-gradient(
+        90deg,
+        var(--surface-elevated) 0%,
+        var(--surface-highlight) 50%,
+        var(--surface-elevated) 100%
+    );
+    background-size: 200% 100%;
+    animation: skeleton-shimmer 1400ms ease-in-out infinite;
+    border-radius: var(--skeleton-radius);
+    overflow: hidden;
+
+    &--block {
+        width: 100%;
+        height: var(--spinner-lg);
+    }
+
+    &--text {
+        width: 100%;
+        height: var(--spinner-sm);
+        border-radius: var(--spinner-xs);
+    }
+
+    &--circle {
+        width: var(--spinner-lg);
+        height: var(--spinner-lg);
+        border-radius: 50%;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .skeleton {
+        animation-duration: 0ms;
+        background-position: 0 0;
+    }
+}

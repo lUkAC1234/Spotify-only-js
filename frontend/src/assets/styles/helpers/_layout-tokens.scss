@@ -1,11 +1,11 @@
 @use "./functions";
 
 :root {
-    --sidebar-width: #{functions.rem(280)};
-    --sidebar-width-collapsed: #{functions.rem(76)};
+    --sidebar-width: #{functions.rem(340)};
+    --sidebar-width-collapsed: #{functions.rem(80)};
     --rail-width: #{functions.rem(320)};
     --player-height: #{functions.rem(90)};
-    --player-height-mobile: #{functions.rem(64)};
+    --player-height-mobile: #{functions.rem(112)};
     --topnav-height: #{functions.rem(64)};
     --shell-gap: #{functions.rem(8)};
 
@@ -30,8 +30,25 @@
     --popover-max-width: #{functions.rem(360)};
     --popover-max-height: #{functions.rem(360)};
 
+    --dialog-max-width-sm: #{functions.rem(420)};
+    --dialog-max-width-md: #{functions.rem(540)};
+    --dialog-max-width-lg: #{functions.rem(720)};
+    --dialog-padding: #{functions.rem(28)};
+    --dialog-padding-mobile: #{functions.rem(20)};
+
+    --sidebar-row-height: #{functions.rem(44)};
+    --liked-cover-icon: #{functions.rem(20)};
+
     --hero-play-size: #{functions.rem(56)};
     --hero-action-size: #{functions.rem(40)};
+
+    --spinner-xs: #{functions.rem(12)};
+    --spinner-sm: #{functions.rem(16)};
+    --spinner-md: #{functions.rem(20)};
+    --spinner-lg: #{functions.rem(28)};
+    --spinner-xl: #{functions.rem(40)};
+    --spinner-stroke: #{functions.rem(2)};
+    --skeleton-radius: #{functions.rem(6)};
 
     --content-padding-x: #{functions.rem(32)};
     --content-padding-y: #{functions.rem(32)};

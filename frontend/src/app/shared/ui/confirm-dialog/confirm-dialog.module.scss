@@ -1,0 +1,25 @@
+.confirm-dialog {
+    &__text {
+        margin: 0;
+        padding-top: var(--space-2);
+        font-size: var(--type-body);
+        color: var(--text-secondary);
+        line-height: var(--line-height-relaxed);
+    }
+
+    &__busy {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--space-2);
+    }
+
+    &__danger {
+        background: var(--danger);
+        color: var(--white);
+
+        &:hover:not(:disabled) {
+            background: var(--danger);
+            opacity: 0.92;
+        }
+    }
+}

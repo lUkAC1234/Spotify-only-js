@@ -1,0 +1,56 @@
+@use "@/assets/styles/helpers/functions";
+
+.equalizer {
+    display: inline-flex;
+    align-items: flex-end;
+    gap: #{functions.rem(3)};
+    height: #{functions.rem(28)};
+    width: auto;
+
+    &__bar {
+        display: block;
+        width: #{functions.rem(4)};
+        height: 100%;
+        border-radius: var(--radius-pill);
+        background: var(--equalizer-bar-1);
+        transform-origin: bottom center;
+        animation: equalizer-pulse 1.2s ease-in-out infinite;
+        animation-delay: calc(var(--bar-index) * -180ms);
+
+        &:nth-child(3n + 2) {
+            background: var(--equalizer-bar-2);
+            animation-duration: 1.5s;
+        }
+
+        &:nth-child(3n + 3) {
+            background: var(--equalizer-bar-3);
+            animation-duration: 0.95s;
+        }
+    }
+}
+
+@keyframes equalizer-pulse {
+    0%,
+    100% {
+        transform: scaleY(0.32);
+    }
+
+    20% {
+        transform: scaleY(0.7);
+    }
+
+    50% {
+        transform: scaleY(1);
+    }
+
+    80% {
+        transform: scaleY(0.55);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .equalizer__bar {
+        animation: none;
+        transform: scaleY(0.6);
+    }
+}

@@ -17,7 +17,7 @@ export class Home extends Component {
     private auth: AuthService = inject(AuthService);
 
     componentDidMount(): void {
-        this.title.construct({ title: "Spotify", titleNamespace: "common", titleTKey: "page-title" });
+        this.title.construct({ title: "Spenzora", titleNamespace: "common", titleTKey: "page-title" });
         this.title.init();
         void this.home.load();
     }

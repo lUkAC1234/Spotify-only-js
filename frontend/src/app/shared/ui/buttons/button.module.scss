@@ -3,23 +3,36 @@
 .button {
     --x: 50%;
     --y: 50%;
-    --ripple-color: rgba(255, 255, 255, 0.3);
+    --ripple-color: rgba(255, 255, 255, 0.18);
 
     position: relative;
     overflow: hidden;
-
-    display: flex;
+    display: inline-flex;
     align-items: center;
-    color: var(--white);
-    gap: var(--base-gap);
-    border: functions.rem(2) solid transparent;
+    justify-content: center;
+    gap: var(--space-2);
+    border: var(--border-width) solid transparent;
     cursor: pointer;
-    padding: var(--base-padding) calc(var(--base-padding) * 2);
-    border-radius: var(--inner-radius);
-    transition: 300ms ease;
-    font-weight: var(--font-weight-medium);
-    outline: none;
+    padding: var(--space-3) var(--space-6);
+    min-height: var(--control-lg);
+    border-radius: var(--radius-pill);
+    font-family: inherit;
+    font-size: var(--type-body);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: 0;
+    text-decoration: none;
     user-select: none;
+    outline: none;
+    transition:
+        background var(--motion-fast) var(--motion-ease),
+        color var(--motion-fast) var(--motion-ease),
+        border-color var(--motion-fast) var(--motion-ease),
+        transform var(--motion-fast) var(--motion-ease),
+        box-shadow var(--motion-fast) var(--motion-ease);
+
+    &:focus-visible {
+        box-shadow: inset 0 0 0 #{functions.rem(2)} var(--accent);
+    }
 
     &:not(&--no-bg-effect) {
         &::before {
@@ -30,11 +43,11 @@
             width: 300%;
             aspect-ratio: 1 / 1;
             background-color: var(--ripple-color);
-            border-radius: 50%;
+            border-radius: var(--radius-circle);
             transform: translate(-50%, -50%) scale(0);
             z-index: 0;
             pointer-events: none;
-            transition: all 400ms cubic-bezier(0.1, 0, 0.3, 1);
+            transition: transform 380ms cubic-bezier(0.1, 0, 0.3, 1);
         }
 
         &:focus::before,
@@ -46,7 +59,7 @@
     &__text {
         position: relative;
         z-index: 1;
-        display: flex;
+        display: inline-flex;
         align-items: center;
         gap: inherit;
         font-weight: inherit;
@@ -61,8 +74,10 @@
     }
 
     &:disabled {
-        background: var(--secondary-color);
-        opacity: 0.4;
+        cursor: not-allowed;
+        opacity: 0.5;
+        transform: none !important;
+
         &::before {
             display: none;
         }
@@ -73,7 +88,9 @@
     }
 
     &--small {
-        padding: var(--base-padding);
+        padding: var(--space-2) var(--space-4);
+        min-height: var(--control-md);
+        font-size: var(--type-caption);
     }
 
     &--fullwidth {
@@ -81,35 +98,48 @@
     }
 
     &--rounded {
-        border-radius: functions.rem(999);
+        border-radius: var(--radius-pill);
     }
 
     &--primary {
-        background: var(--accent-color);
-        --ripple-color: rgba(255, 255, 255, 0.25);
+        background: var(--accent);
+        color: var(--accent-on-accent);
+        --ripple-color: rgba(0, 0, 0, 0.18);
 
         &:not(:disabled):hover {
-            background: var(--hover-color);
+            background: var(--accent-hover);
+            transform: scale(1.04);
+        }
+
+        &:not(:disabled):active {
+            transform: scale(0.98);
         }
     }
 
     &--secondary {
-        background: var(--secondary-color);
-        color: var(--text-color);
-        --ripple-color: rgba(165, 165, 165, 0.2);
+        background: transparent;
+        color: var(--text);
+        border-color: var(--text-secondary);
+        --ripple-color: rgba(255, 255, 255, 0.12);
 
         &:not(:disabled):hover {
-            opacity: 0.8;
+            border-color: var(--text);
+            transform: scale(1.04);
+        }
+
+        &:not(:disabled):active {
+            transform: scale(0.98);
         }
     }
 
     &--transparent {
         background: transparent;
-        color: var(--text-color);
-        --ripple-color: rgba(165, 165, 165, 0.2);
+        color: var(--text-secondary);
+        --ripple-color: rgba(255, 255, 255, 0.08);
 
         &:not(:disabled):hover {
-            opacity: 0.8;
+            color: var(--text);
+            background: var(--surface-highlight);
         }
     }
 }

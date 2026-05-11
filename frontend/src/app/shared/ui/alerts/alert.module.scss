@@ -1,25 +1,168 @@
 @use "@/assets/styles/helpers/functions";
+@use "@/assets/styles/helpers/variables";
 
 .alerts-wrap {
     position: fixed;
-    right: functions.rem(16);
-    top: functions.rem(64);
-    z-index: 100000000;
+    right: var(--space-5);
+    top: calc(var(--topnav-height) + var(--space-3));
+    z-index: var(--z-toast);
+    width: min(#{functions.rem(380)}, calc(100% - var(--space-6)));
+    pointer-events: none;
+}
+
+.alerts-list {
     display: flex;
-    flex-flow: column;
-    gap: var(--base-gap);
-    padding: var(--base-gap);
-    height: auto;
-    width: min(functions.rem(500), calc(100% - functions.rem(16)));
+    flex-direction: column;
+    gap: var(--space-3);
+    list-style: none;
+    margin: 0;
+    padding: 0;
 }
 
 .alert {
     position: relative;
-    width: 100%;
-    min-height: functions.rem(80);
-    background: var(--secondary-color);
-    border-radius: var(--inner-radius);
-    border-bottom: functions.rem(2) solid var(--accent-color);
-    padding: functions.rem(16);
-    box-shadow: 0 0 10px -4px var(--black);
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: flex-start;
+    gap: var(--space-3);
+    padding: var(--space-3) var(--space-4);
+    background: var(--surface-elevated);
+    color: var(--text);
+    border: var(--border-width) solid var(--border);
+    border-radius: var(--radius-md);
+    box-shadow: var(--elevation-2);
+    overflow: hidden;
+    pointer-events: auto;
+    will-change: transform, opacity;
+
+    &--info {
+        --alert-accent: var(--accent);
+        --alert-tint: var(--alert-tint-info);
+    }
+
+    &--success {
+        --alert-accent: var(--success);
+        --alert-tint: var(--alert-tint-success);
+    }
+
+    &--warning {
+        --alert-accent: var(--alert-warning-fg);
+        --alert-tint: var(--alert-tint-warning);
+    }
+
+    &--error {
+        --alert-accent: var(--danger);
+        --alert-tint: var(--alert-tint-error);
+    }
+
+    &__icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: var(--icon-xl);
+        height: var(--icon-xl);
+        border-radius: var(--radius-circle);
+        background: var(--alert-tint);
+        color: var(--alert-accent);
+        flex-shrink: 0;
+
+        svg {
+            width: var(--icon-md);
+            height: var(--icon-md);
+        }
+    }
+
+    &__content {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-1);
+        min-width: 0;
+        padding-top: #{functions.rem(2)};
+    }
+
+    &__title {
+        margin: 0;
+        font-size: var(--type-body);
+        font-weight: var(--font-weight-bold);
+        color: var(--text);
+        line-height: var(--line-height-snug);
+    }
+
+    &__message {
+        margin: 0;
+        font-size: var(--type-caption);
+        color: var(--text-secondary);
+        line-height: var(--line-height-relaxed);
+        word-break: break-word;
+    }
+
+    &__close {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: var(--control-sm);
+        height: var(--control-sm);
+        background: transparent;
+        color: var(--text-tertiary);
+        border: none;
+        border-radius: var(--radius-circle);
+        cursor: pointer;
+        flex-shrink: 0;
+        transition:
+            color var(--motion-fast) var(--motion-ease),
+            background var(--motion-fast) var(--motion-ease);
+
+        svg {
+            width: var(--icon-sm);
+            height: var(--icon-sm);
+        }
+
+        &:hover {
+            color: var(--text);
+            background: var(--surface-highlight);
+        }
+
+        &:focus-visible {
+            outline: var(--border-width) solid var(--accent);
+            outline-offset: var(--space-1);
+        }
+    }
+
+    &__timer {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: #{functions.rem(2)};
+        background: var(--alert-accent);
+        transform-origin: left center;
+        animation-name: alert-timer;
+        animation-timing-function: linear;
+        animation-fill-mode: forwards;
+    }
+}
+
+@keyframes alert-timer {
+    from {
+        transform: scaleX(1);
+    }
+
+    to {
+        transform: scaleX(0);
+    }
+}
+
+@media (max-width: variables.$mobile-view) {
+    .alerts-wrap {
+        right: var(--space-3);
+        left: var(--space-3);
+        width: auto;
+        top: calc(var(--topnav-height) + var(--space-2));
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .alert__timer {
+        animation: none;
+    }
 }

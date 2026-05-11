@@ -1,9 +1,10 @@
-import { Component, ReactNode, createRef } from "react";
+import { Component, ReactNode } from "react";
 
 import { LocaleService } from "@/app/core/services/locale.service";
 import { ArtistDetail } from "@/app/core/types/artist";
 import { inject } from "@/app/shared/decorators/di";
-import { SVG_CloseIcon } from "@/app/shared/ui/svg/svg-close-icon";
+import { AppDialog } from "@/app/shared/ui/app-dialog/app-dialog";
+import { Avatar } from "@/app/shared/ui/avatar/avatar";
 
 import styles from "./artist-about-modal.module.scss";
 
@@ -21,96 +22,74 @@ const formatListeners = (count: number): string => {
 
 export class ArtistAboutModal extends Component<Props> {
     private locale: LocaleService = inject(LocaleService);
-    private panelRef = createRef<HTMLDivElement>();
-
-    componentDidMount(): void {
-        document.addEventListener("keydown", this.handleKey);
-    }
-
-    componentDidUpdate(prev: Props): void {
-        if (!prev.isOpen && this.props.isOpen && this.panelRef.current) {
-            this.panelRef.current.focus();
-        }
-    }
-
-    componentWillUnmount(): void {
-        document.removeEventListener("keydown", this.handleKey);
-    }
-
-    private handleKey = (event: KeyboardEvent): void => {
-        if (event.key === "Escape" && this.props.isOpen) {
-            event.stopPropagation();
-            this.props.onClose();
-        }
-    };
-
-    private handleBackdrop = (event: React.MouseEvent<HTMLDivElement>): void => {
-        if (event.target === event.currentTarget) this.props.onClose();
-    };
 
     render(): ReactNode {
-        if (!this.props.isOpen) return null;
-        const { detail } = this.props;
+        const { detail, isOpen, onClose } = this.props;
         const listeners = detail.monthlyListeners > 0 ? detail.monthlyListeners : detail.totalTracks * 12;
         const genres = Array.from(new Set(detail.topTracks.flatMap((t) => t.genres))).slice(0, 6);
 
         return (
-            <div className={styles["modal"]} role="dialog" aria-modal="true" onMouseDown={this.handleBackdrop}>
-                <div
-                    className={styles["modal__panel"]}
-                    ref={this.panelRef}
-                    tabIndex={-1}
-                    aria-label={this.locale.t("common", "artist-about.title")}
-                >
-                    <header className={styles["modal__header"]}>
-                        <h2 className={styles["modal__title"]}>
-                            {this.locale.t("common", "artist-about.title")}
-                        </h2>
-                        <button
-                            type="button"
-                            className={styles["modal__close"]}
-                            onClick={this.props.onClose}
-                            aria-label={this.locale.t("common", "playlist.close")}
-                        >
-                            <SVG_CloseIcon />
-                        </button>
+            <AppDialog
+                isOpen={isOpen}
+                onClose={onClose}
+                title={this.locale.t("common", "artist-about.title")}
+                size="md"
+            >
+                <div className={styles["about"]}>
+                    <header className={styles["about__hero"]}>
+                        <div className={styles["about__cover"]}>
+                            <Avatar name={detail.name} image={detail.image} />
+                        </div>
+                        <h3 className={styles["about__name"]}>{detail.name}</h3>
+                        <p className={styles["about__overline"]}>
+                            {this.locale.t("common", "artist.label")}
+                        </p>
                     </header>
 
-                    <div className={styles["modal__body"]}>
-                        {detail.image && (
-                            <div className={styles["modal__cover"]}>
-                                <img src={detail.image} alt="" loading="lazy" />
-                            </div>
-                        )}
-                        <h3 className={styles["modal__name"]}>{detail.name}</h3>
-                        <p className={styles["modal__listeners"]}>
-                            {formatListeners(listeners)} {this.locale.t("common", "artist-about.monthly-listeners")}
-                        </p>
-
+                    <dl className={styles["about__stats"]}>
+                        <div className={styles["about__stat"]}>
+                            <dt className={styles["about__stat-label"]}>
+                                {this.locale.t("common", "artist-about.monthly-listeners")}
+                            </dt>
+                            <dd className={styles["about__stat-value"]}>
+                                {formatListeners(listeners)}
+                            </dd>
+                        </div>
                         {detail.country && (
-                            <dl className={styles["modal__row"]}>
-                                <dt className={styles["modal__label"]}>
+                            <div className={styles["about__stat"]}>
+                                <dt className={styles["about__stat-label"]}>
                                     {this.locale.t("common", "artist-about.country")}
                                 </dt>
-                                <dd className={styles["modal__value"]}>{detail.country}</dd>
-                            </dl>
+                                <dd className={styles["about__stat-value"]}>{detail.country}</dd>
+                            </div>
                         )}
+                    </dl>
 
-                        {genres.length > 0 && (
-                            <dl className={styles["modal__row"]}>
-                                <dt className={styles["modal__label"]}>
-                                    {this.locale.t("common", "artist-about.genres")}
-                                </dt>
-                                <dd className={styles["modal__value"]}>{genres.join(" · ")}</dd>
-                            </dl>
-                        )}
+                    {genres.length > 0 && (
+                        <section className={styles["about__section"]}>
+                            <h4 className={styles["about__section-title"]}>
+                                {this.locale.t("common", "artist-about.genres")}
+                            </h4>
+                            <ul className={styles["about__chips"]}>
+                                {genres.map((genre) => (
+                                    <li key={genre} className={styles["about__chip"]}>
+                                        {genre}
+                                    </li>
+                                ))}
+                            </ul>
+                        </section>
+                    )}
 
-                        <p className={styles["modal__bio"]}>
+                    <section className={styles["about__section"]}>
+                        <h4 className={styles["about__section-title"]}>
+                            {this.locale.t("common", "artist-about.bio-title")}
+                        </h4>
+                        <p className={styles["about__bio"]}>
                             {detail.bio || this.locale.t("common", "artist-about.no-bio")}
                         </p>
-                    </div>
+                    </section>
                 </div>
-            </div>
+            </AppDialog>
         );
     }
 }

@@ -3,8 +3,7 @@
 .genre-tiles {
     display: flex;
     flex-direction: column;
-    gap: var(--space-4);
-    padding: 0 var(--space-6);
+    gap: var(--space-5);
 
     &__header {
         display: flex;
@@ -12,10 +11,11 @@
     }
 
     &__title {
-        font-size: var(--type-title-2);
-        font-weight: var(--font-weight-bold);
-        color: var(--text);
         margin: 0;
+        font-size: var(--type-title-1);
+        font-weight: var(--font-weight-black);
+        color: var(--text);
+        letter-spacing: -0.01em;
     }
 
     &__grid {
@@ -24,15 +24,44 @@
         padding: 0;
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(#{functions.rem(180)}, 1fr));
-        gap: var(--space-3);
+        gap: var(--space-4);
     }
 
     &__tile {
         position: relative;
-        aspect-ratio: 16 / 9;
+        aspect-ratio: 1 / 1;
         border-radius: var(--radius-md);
         overflow: hidden;
         background: var(--genre-tile-gradient, var(--genre-tile-gradient-0));
+        box-shadow: var(--elevation-1);
+        isolation: isolate;
+        transition:
+            transform var(--motion-base) var(--motion-ease),
+            box-shadow var(--motion-base) var(--motion-ease);
+
+        &::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: var(--genre-tile-glow);
+            opacity: 0;
+            transition: opacity var(--motion-base) var(--motion-ease);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        &:hover {
+            transform: translateY(#{functions.rem(-4)});
+            box-shadow: var(--elevation-2);
+
+            &::before {
+                opacity: 1;
+            }
+
+            .genre-tiles__art {
+                transform: rotate(15deg) translate(#{functions.rem(-6)}, #{functions.rem(-6)}) scale(1.06);
+            }
+        }
 
         &--v0 {
             --genre-tile-gradient: var(--genre-tile-gradient-0);
@@ -62,40 +91,74 @@
     &__btn {
         position: absolute;
         inset: 0;
-        display: flex;
-        align-items: flex-end;
+        display: block;
         padding: var(--space-4);
         border: none;
-        background: var(--genre-tile-gradient);
-        color: var(--text);
+        background: transparent;
+        color: var(--white);
         cursor: pointer;
-        transition: transform var(--motion-fast) var(--motion-ease), filter var(--motion-fast) var(--motion-ease);
-
-        &:hover {
-            transform: scale(1.02);
-            filter: brightness(1.08);
-        }
+        text-align: left;
+        z-index: 1;
 
         &:focus-visible {
-            outline: var(--border-width) solid var(--accent);
-            outline-offset: var(--space-1);
+            outline: var(--border-width) solid var(--white);
+            outline-offset: #{functions.rem(-4)};
         }
     }
 
     &__name {
-        font-size: var(--type-title-3);
-        font-weight: var(--font-weight-bold);
-        color: var(--text);
+        position: relative;
+        display: block;
+        font-size: var(--type-title-2);
+        font-weight: var(--font-weight-black);
+        color: var(--white);
+        letter-spacing: -0.01em;
+        line-height: var(--line-height-tight);
         text-transform: capitalize;
+        z-index: 2;
+        max-width: 70%;
+        word-break: break-word;
+    }
+
+    &__art {
+        position: absolute;
+        right: #{functions.rem(-12)};
+        bottom: #{functions.rem(-12)};
+        width: 45%;
+        aspect-ratio: 1 / 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transform: rotate(25deg);
+        transform-origin: center;
+        color: var(--genre-tile-illustration);
+        filter: drop-shadow(var(--genre-tile-illustration-shadow));
+        transition: transform var(--motion-base) var(--motion-ease);
+        z-index: 0;
+        pointer-events: none;
+    }
+
+    &__art-svg {
+        width: 100%;
+        height: 100%;
     }
 }
 
 @media (max-width: 640px) {
     .genre-tiles {
-        padding: 0 var(--space-4);
+        gap: var(--space-4);
+
+        &__title {
+            font-size: var(--type-title-2);
+        }
 
         &__grid {
             grid-template-columns: repeat(auto-fill, minmax(#{functions.rem(140)}, 1fr));
+            gap: var(--space-3);
+        }
+
+        &__name {
+            font-size: var(--type-title-3);
         }
     }
 }

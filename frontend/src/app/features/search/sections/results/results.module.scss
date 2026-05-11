@@ -39,8 +39,21 @@
 
 @media (max-width: 1024px) {
     .results {
+        gap: var(--space-5);
+
         &__row {
             grid-template-columns: minmax(0, 1fr);
+            gap: var(--space-4);
+        }
+    }
+}
+
+@media (max-width: 640px) {
+    .results {
+        gap: var(--space-4);
+
+        &__notice {
+            padding: var(--space-5) var(--content-padding-x-mobile);
         }
     }
 }

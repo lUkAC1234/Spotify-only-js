@@ -72,6 +72,29 @@ class AudiusProvider(MusicProvider):
     def stream_url(self, source_id: str) -> Optional[str]:
         return f"{self._client.base_url}/v1/tracks/{source_id}/stream?app_name={AUDIUS_APP_NAME}"
 
+    def popular_tracks(self, *, limit: int = 12, offset: int = 0) -> tuple[TrackDTO, ...]:
+        data = self._get(
+            "/v1/tracks/trending",
+            {"limit": limit, "offset": offset, "time": "week"},
+        )
+        return tuple(self._parse_track(item) for item in data.get("data", []) or [])
+
+    def recent_tracks(self, *, limit: int = 12, offset: int = 0) -> tuple[TrackDTO, ...]:
+        data = self._get(
+            "/v1/tracks/trending",
+            {"limit": limit, "offset": offset, "time": "month"},
+        )
+        return tuple(self._parse_track(item) for item in data.get("data", []) or [])
+
+    def tracks_by_tag(self, tag: str, *, limit: int = 12, offset: int = 0) -> tuple[TrackDTO, ...]:
+        if not tag:
+            return ()
+        data = self._get(
+            "/v1/tracks/trending",
+            {"genre": tag, "limit": limit, "offset": offset, "time": "month"},
+        )
+        return tuple(self._parse_track(item) for item in data.get("data", []) or [])
+
     def _parse_track(self, item: dict[str, Any]) -> TrackDTO:
         user = item.get("user") or {}
         artwork = item.get("artwork") or {}

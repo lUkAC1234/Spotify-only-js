@@ -4,58 +4,133 @@
     display: flex;
     flex-direction: column;
     gap: var(--space-7);
-    padding: var(--space-7) var(--content-padding-x) var(--space-8);
-    max-width: #{functions.rem(960)};
+    padding: var(--space-8) var(--content-padding-x) var(--space-8);
+    max-width: #{functions.rem(760)};
     margin: 0 auto;
     color: var(--text);
+}
 
-    &__hero {
-        display: flex;
-        flex-direction: column;
-        gap: var(--space-3);
-        padding-bottom: var(--space-5);
-        border-bottom: var(--border-width) solid var(--border);
-    }
+.legal__hero {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-4);
+    padding-bottom: var(--space-6);
+    border-bottom: var(--border-width) solid var(--border);
+}
 
-    &__overline {
-        font-size: var(--type-overline);
-        font-weight: var(--font-weight-bold);
-        letter-spacing: var(--letter-spacing-overline);
-        text-transform: uppercase;
-        color: var(--accent);
-    }
+.legal__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: #{functions.rem(72)};
+    height: #{functions.rem(72)};
+    border-radius: var(--radius-circle);
+    background: var(--surface-highlight);
+    color: var(--text);
+    flex-shrink: 0;
+}
 
-    &__title {
-        margin: 0;
-        font-size: var(--type-display);
-        font-weight: var(--font-weight-black);
-        line-height: var(--line-height-tight);
-        color: var(--text);
-    }
+.legal__icon-svg {
+    width: #{functions.rem(36)};
+    height: #{functions.rem(36)};
+}
 
-    &__updated {
-        margin: 0;
-        font-size: var(--type-caption);
-        color: var(--text-secondary);
-    }
+.legal__hero-text {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    width: 100%;
+    min-width: 0;
+}
 
-    &__content {
-        display: flex;
-        flex-direction: column;
-        gap: var(--space-4);
-    }
+.legal__title {
+    margin: 0;
+    font-size: clamp(#{functions.rem(28)}, 4vw, #{functions.rem(44)});
+    font-weight: var(--font-weight-black);
+    line-height: var(--line-height-tight);
+    color: var(--text);
+    letter-spacing: -0.02em;
+    overflow-wrap: break-word;
+    word-break: break-word;
+    hyphens: auto;
+}
 
-    &__paragraph {
-        margin: 0;
-        font-size: var(--type-body);
-        color: var(--text-secondary);
-        line-height: var(--line-height-relaxed);
+.legal__updated {
+    margin: 0;
+    font-size: var(--type-caption);
+    color: var(--text-tertiary);
+}
+
+.legal__content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+}
+
+.legal__block {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: start;
+    gap: var(--space-4);
+    padding: var(--space-5);
+    border-radius: var(--radius-md);
+    background: transparent;
+    border: var(--border-width) solid transparent;
+    transition:
+        background var(--motion-fast) var(--motion-ease),
+        border-color var(--motion-fast) var(--motion-ease);
+
+    &:hover {
+        background: var(--surface-highlight);
+        border-color: var(--border);
     }
+}
+
+.legal__block-index {
+    font-size: var(--type-overline);
+    font-weight: var(--font-weight-bold);
+    letter-spacing: var(--letter-spacing-overline);
+    color: var(--text-tertiary);
+    font-variant-numeric: tabular-nums;
+    padding-top: #{functions.rem(4)};
+}
+
+.legal__paragraph {
+    margin: 0;
+    font-size: var(--type-body);
+    color: var(--text-secondary);
+    line-height: var(--line-height-relaxed);
+    overflow-wrap: break-word;
 }
 
 @media (max-width: 720px) {
     .legal {
-        padding: var(--space-5) var(--content-padding-x-mobile) var(--space-7);
+        padding: var(--space-6) var(--content-padding-x-mobile) var(--space-7);
         gap: var(--space-5);
+    }
+
+    .legal__hero {
+        gap: var(--space-3);
+        padding-bottom: var(--space-5);
+    }
+
+    .legal__icon {
+        width: #{functions.rem(56)};
+        height: #{functions.rem(56)};
+    }
+
+    .legal__icon-svg {
+        width: #{functions.rem(28)};
+        height: #{functions.rem(28)};
+    }
+
+    .legal__title {
+        font-size: clamp(#{functions.rem(24)}, 7vw, #{functions.rem(32)});
+    }
+
+    .legal__block {
+        padding: var(--space-4);
+        gap: var(--space-3);
     }
 }

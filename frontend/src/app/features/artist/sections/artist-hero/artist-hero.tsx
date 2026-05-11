@@ -7,6 +7,8 @@ import { LocaleService } from "@/app/core/services/locale.service";
 import { ArtistDetail } from "@/app/core/types/artist";
 import { inject } from "@/app/shared/decorators/di";
 import { className } from "@/app/shared/utils/functions/className";
+import { Avatar } from "@/app/shared/ui/avatar/avatar";
+import { Spinner } from "@/app/shared/ui/loaders/spinner";
 import { SVG_More } from "@/app/shared/ui/svg/nav/svg-more";
 import { SVG_Play } from "@/app/shared/ui/svg/player/svg-play";
 
@@ -41,7 +43,7 @@ export class ArtistHero extends Component<Props, State> {
 
     private handleFollow = (): void => {
         if (!this.auth.isAuthenticated) return;
-        void this.library.toggleArtistFollowed(this.props.detail.id);
+        void this.library.toggleArtistFollowed(this.props.detail.id, this.props.detail);
     };
 
     private toggleMenu = (): void => {
@@ -82,7 +84,7 @@ export class ArtistHero extends Component<Props, State> {
                 <div className={styles["hero__shade"]} aria-hidden="true" />
                 <div className={styles["hero__inner"]}>
                     <div className={styles["hero__avatar"]}>
-                        {detail.image && <img src={detail.image} alt="" loading="lazy" />}
+                        <Avatar name={detail.name} image={detail.image} />
                     </div>
                     <div className={styles["hero__meta"]}>
                         <span className={styles["hero__overline"]}>
@@ -117,11 +119,17 @@ export class ArtistHero extends Component<Props, State> {
                                     type="button"
                                     className={className(styles["hero__follow"], {
                                         [styles["hero__follow--active"]]: isFollowing,
+                                        [styles["hero__follow--busy"]]: this.library.isArtistBusy(detail.id),
                                     })}
                                     onClick={this.handleFollow}
                                     aria-pressed={isFollowing}
+                                    aria-busy={this.library.isArtistBusy(detail.id)}
                                 >
-                                    {followLabel}
+                                    {this.library.isArtistBusy(detail.id) ? (
+                                        <Spinner size="sm" tone="current" inline />
+                                    ) : (
+                                        followLabel
+                                    )}
                                 </button>
                             )}
                             <button

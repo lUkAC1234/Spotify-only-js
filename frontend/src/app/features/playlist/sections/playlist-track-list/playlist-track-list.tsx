@@ -8,6 +8,7 @@ import { PlaylistDetail, PlaylistItem } from "@/app/core/types/playlist";
 import { Track } from "@/app/core/types/track";
 import { inject } from "@/app/shared/decorators/di";
 import { className } from "@/app/shared/utils/functions/className";
+import { Spinner } from "@/app/shared/ui/loaders/spinner";
 import { SVG_HeartFilled } from "@/app/shared/ui/svg/player/svg-heart-filled";
 import { SVG_Heart } from "@/app/shared/ui/svg/player/svg-heart";
 import { SVG_Pause } from "@/app/shared/ui/svg/player/svg-pause";
@@ -131,11 +132,18 @@ export class PlaylistTrackList extends Component<Props> {
                         className={className(styles["row__icon-btn"], {
                             [styles["row__icon-btn--active"]]: isLiked,
                         })}
-                        onClick={() => void this.library.toggleTrackSaved(track.id)}
+                        onClick={() => void this.library.toggleTrackSaved(track.id, track)}
                         aria-label={heartLabel}
                         aria-pressed={isLiked}
+                        aria-busy={this.library.isTrackBusy(track.id)}
                     >
-                        {isLiked ? <SVG_HeartFilled /> : <SVG_Heart />}
+                        {this.library.isTrackBusy(track.id) ? (
+                            <Spinner size="sm" tone="current" />
+                        ) : isLiked ? (
+                            <SVG_HeartFilled />
+                        ) : (
+                            <SVG_Heart />
+                        )}
                     </button>
                     {this.props.detail.canEdit && (
                         <button

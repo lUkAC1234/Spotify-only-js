@@ -77,3 +77,16 @@
         padding: var(--space-7) 0;
     }
 }
+
+@media (max-width: 640px) {
+    .playlists-tab {
+        &__grid {
+            grid-template-columns: repeat(auto-fill, minmax(#{functions.rem(140)}, 1fr));
+            gap: var(--space-3);
+        }
+
+        &__link {
+            padding: var(--space-3);
+        }
+    }
+}

@@ -3,9 +3,9 @@
 
 .topnav {
     display: grid;
-    grid-template-columns: auto 1fr auto;
+    grid-template-columns: auto minmax(0, 1fr) auto;
     align-items: center;
-    gap: var(--space-4);
+    gap: var(--space-3);
     padding: 0 var(--space-4);
     height: 100%;
     width: 100%;
@@ -14,8 +14,8 @@
         display: none;
         align-items: center;
         justify-content: center;
-        width: var(--control-md);
-        height: var(--control-md);
+        width: var(--control-lg);
+        height: var(--control-lg);
         padding: 0;
         background: var(--surface-elevated);
         color: var(--text);
@@ -23,7 +23,10 @@
         border-radius: var(--radius-circle);
         cursor: pointer;
         flex-shrink: 0;
-        transition: background var(--motion-fast) var(--motion-ease);
+        transition:
+            background var(--motion-fast) var(--motion-ease),
+            border-color var(--motion-fast) var(--motion-ease),
+            transform var(--motion-fast) var(--motion-ease);
 
         svg {
             width: var(--icon-md);
@@ -32,6 +35,8 @@
 
         &:hover {
             background: var(--surface-highlight);
+            border-color: var(--border-strong);
+            transform: scale(1.05);
         }
 
         &:focus-visible {
@@ -41,9 +46,10 @@
     }
 
     &__left {
-        display: inline-flex;
+        display: flex;
         align-items: center;
         gap: var(--space-2);
+        height: var(--control-lg);
     }
 
     &__home {
@@ -52,11 +58,16 @@
         justify-content: center;
         width: var(--control-lg);
         height: var(--control-lg);
-        background: var(--surface);
+        background: var(--surface-elevated);
         color: var(--text);
+        border: var(--border-width) solid var(--border);
         border-radius: var(--radius-circle);
         text-decoration: none;
-        transition: background var(--motion-fast) var(--motion-ease), transform var(--motion-fast) var(--motion-ease), color var(--motion-fast) var(--motion-ease);
+        transition:
+            background var(--motion-fast) var(--motion-ease),
+            border-color var(--motion-fast) var(--motion-ease),
+            color var(--motion-fast) var(--motion-ease),
+            transform var(--motion-fast) var(--motion-ease);
 
         svg {
             width: var(--icon-md);
@@ -65,12 +76,14 @@
 
         &:hover {
             background: var(--surface-highlight);
+            border-color: var(--border-strong);
             color: var(--text);
-            transform: scale(1.04);
+            transform: scale(1.06);
         }
 
         &--active {
             background: var(--surface-highlight);
+            border-color: var(--border-strong);
             color: var(--text);
 
             svg {
@@ -93,18 +106,23 @@
         max-width: #{functions.rem(480)};
         height: var(--control-lg);
         padding: 0;
-        background: var(--surface);
-        border: var(--border-width) solid transparent;
+        background: var(--surface-elevated);
+        border: var(--border-width) solid var(--border);
         border-radius: var(--radius-pill);
-        transition: background var(--motion-fast) var(--motion-ease), border-color var(--motion-fast) var(--motion-ease);
+        transition:
+            background var(--motion-fast) var(--motion-ease),
+            border-color var(--motion-fast) var(--motion-ease),
+            box-shadow var(--motion-fast) var(--motion-ease);
 
         &:hover {
             background: var(--surface-highlight);
+            border-color: var(--border-strong);
         }
 
         &:focus-within {
             background: var(--surface);
-            border-color: var(--text);
+            border-color: var(--search-focus-ring);
+            box-shadow: 0 0 0 var(--border-width) var(--search-focus-ring);
         }
     }
 
@@ -128,10 +146,19 @@
         border: none;
         color: var(--text);
         font-size: var(--type-body);
+        line-height: 1;
+        text-overflow: ellipsis;
         outline: none;
 
         &::placeholder {
             color: var(--text-tertiary);
+            font-size: inherit;
+            line-height: inherit;
+        }
+
+        @media (max-width: variables.$mobile-view) {
+            font-size: #{functions.rem(19)};
+            padding: 0 var(--space-3) 0 var(--space-6);
         }
     }
 
@@ -147,7 +174,10 @@
         border-radius: var(--radius-circle);
         text-decoration: none;
         position: relative;
-        transition: color var(--motion-fast) var(--motion-ease), background var(--motion-fast) var(--motion-ease);
+        transition:
+            color var(--motion-fast) var(--motion-ease),
+            background var(--motion-fast) var(--motion-ease),
+            transform var(--motion-fast) var(--motion-ease);
 
         &::before {
             content: "";
@@ -157,7 +187,7 @@
             transform: translateY(-50%);
             width: var(--border-width);
             height: var(--icon-md);
-            background: var(--border);
+            background: var(--border-strong);
         }
 
         svg {
@@ -167,6 +197,7 @@
 
         &:hover {
             color: var(--text);
+            transform: scale(1.06);
         }
 
         &:focus-visible {
@@ -176,40 +207,55 @@
     }
 
     &__right {
-        display: inline-flex;
+        display: flex;
         align-items: center;
-        gap: var(--space-3);
+        gap: var(--space-2);
         justify-self: end;
+        height: var(--control-lg);
     }
 
     &__friends-btn {
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        width: var(--control-md);
-        height: var(--control-md);
+        width: var(--control-lg);
+        height: var(--control-lg);
         padding: 0;
-        background: var(--surface);
+        background: var(--surface-elevated);
         color: var(--text-secondary);
-        border: none;
+        border: var(--border-width) solid var(--border);
         border-radius: var(--radius-circle);
         cursor: pointer;
-        transition: background var(--motion-fast) var(--motion-ease), color var(--motion-fast) var(--motion-ease), transform var(--motion-fast) var(--motion-ease);
+        flex-shrink: 0;
+        transition:
+            background var(--motion-fast) var(--motion-ease),
+            border-color var(--motion-fast) var(--motion-ease),
+            color var(--motion-fast) var(--motion-ease),
+            transform var(--motion-fast) var(--motion-ease);
 
         svg {
             width: var(--icon-md);
             height: var(--icon-md);
         }
 
-        &:hover {
+        &:hover:not([aria-pressed="true"]) {
             background: var(--surface-highlight);
+            border-color: var(--border-strong);
             color: var(--text);
-            transform: scale(1.04);
+            transform: scale(1.05);
         }
 
         &[aria-pressed="true"] {
-            background: var(--surface-highlight);
+            background: var(--accent-color-opacity);
+            border-color: var(--accent);
             color: var(--accent);
+
+            &:hover {
+                background: var(--accent-color-opacity);
+                border-color: var(--accent);
+                color: var(--accent);
+                transform: scale(1.05);
+            }
         }
 
         &:focus-visible {
@@ -221,7 +267,7 @@
     &__guest {
         display: inline-flex;
         align-items: center;
-        gap: var(--space-3);
+        gap: var(--space-2);
     }
 
     &__signup {
@@ -229,9 +275,12 @@
         text-decoration: none;
         font-size: var(--type-body);
         font-weight: var(--font-weight-bold);
-        transition: color var(--motion-fast) var(--motion-ease), transform var(--motion-fast) var(--motion-ease);
+        transition:
+            color var(--motion-fast) var(--motion-ease),
+            transform var(--motion-fast) var(--motion-ease);
         white-space: nowrap;
-        padding: var(--space-2) var(--space-3);
+        padding: var(--space-2) var(--space-4);
+        border-radius: var(--radius-pill);
 
         &:hover {
             color: var(--text);
@@ -241,7 +290,6 @@
         &:focus-visible {
             outline: var(--border-width) solid var(--accent);
             outline-offset: var(--space-1);
-            border-radius: var(--radius-sm);
         }
     }
 
@@ -263,6 +311,10 @@
             transform: scale(1.04);
         }
 
+        &:active {
+            transform: scale(0.98);
+        }
+
         &:focus-visible {
             outline: var(--border-width) solid var(--accent);
             outline-offset: var(--space-1);
@@ -270,17 +322,82 @@
     }
 }
 
+@media (max-width: variables.$ipad-view) {
+    .topnav {
+        gap: var(--space-2);
+
+        &__search {
+            max-width: none;
+        }
+
+        &__friends-btn {
+            width: var(--control-md);
+            height: var(--control-md);
+        }
+
+        &__home {
+            width: var(--control-md);
+            height: var(--control-md);
+        }
+    }
+}
+
 @media (max-width: variables.$mobile-view) {
     .topnav {
-        grid-template-columns: auto 1fr auto;
-        padding: 0 var(--space-3);
+        grid-template-columns: auto minmax(0, 1fr) auto;
+        padding: 0 var(--space-2);
         gap: var(--space-2);
+        height: 100%;
+        align-items: center;
 
         &__menu-btn {
             display: inline-flex;
+            width: var(--control-md);
+            height: var(--control-md);
+
+            svg {
+                width: var(--icon-md);
+                height: var(--icon-md);
+            }
         }
 
         &__left {
+            display: none;
+        }
+
+        &__search {
+            height: var(--control-md);
+            align-self: center;
+        }
+
+        &__search-icon {
+            left: var(--space-3);
+            width: var(--icon-sm);
+            height: var(--icon-sm);
+        }
+
+        &__search-browse {
+            width: var(--control-md);
+            height: var(--control-md);
+            margin-right: #{functions.rem(2)};
+
+            svg {
+                width: var(--icon-sm);
+                height: var(--icon-sm);
+            }
+
+            &::before {
+                height: var(--icon-sm);
+            }
+        }
+
+        &__right {
+            gap: var(--space-1);
+            height: var(--control-md);
+            align-self: center;
+        }
+
+        &__friends-btn {
             display: none;
         }
 
@@ -290,6 +407,7 @@
 
         &__signin {
             padding: var(--space-2) var(--space-4);
+            font-size: var(--type-caption);
         }
     }
 }

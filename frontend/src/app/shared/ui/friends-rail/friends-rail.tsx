@@ -5,6 +5,7 @@ import { AuthService } from "@/app/core/services/auth/auth.service";
 import { LocaleService } from "@/app/core/services/locale.service";
 import { SocialService } from "@/app/core/services/social/social.service";
 import { inject } from "@/app/shared/decorators/di";
+import { Avatar } from "@/app/shared/ui/avatar/avatar";
 import { NavLink } from "@/app/shared/ui/link/nav-link";
 import { SidePanel } from "@/app/shared/ui/side-panel/side-panel";
 
@@ -44,9 +45,10 @@ export class FriendsRail extends Component {
                                     onClick={this.panel.close}
                                 >
                                     <div className={styles["rail__avatar"]}>
-                                        {entry.user.avatar && (
-                                            <img src={entry.user.avatar} alt="" loading="lazy" />
-                                        )}
+                                        <Avatar
+                                            name={entry.user.displayName || entry.user.username || "?"}
+                                            image={entry.user.avatar}
+                                        />
                                     </div>
                                     <div className={styles["rail__meta"]}>
                                         <span className={styles["rail__name"]}>

@@ -1,17 +1,20 @@
+@use "@/assets/styles/helpers/functions";
+
 .skeleton-card {
     pointer-events: none;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
 
     &__line {
-        height: var(--type-body);
-        width: 70%;
-        background: var(--surface-highlight);
-        border-radius: var(--radius-sm);
+        height: #{functions.rem(14)};
+        width: 78%;
+        border-radius: var(--radius-pill);
     }
 
     &__line-sm {
-        height: var(--type-caption);
-        width: 45%;
-        background: var(--surface-highlight);
-        border-radius: var(--radius-sm);
+        height: #{functions.rem(12)};
+        width: 52%;
+        border-radius: var(--radius-pill);
     }
 }

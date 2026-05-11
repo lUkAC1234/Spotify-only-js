@@ -3,6 +3,7 @@ import { Component, createRef, ReactNode, RefObject } from "react";
 
 import { LocaleService } from "@/app/core/services/locale.service";
 import { inject } from "@/app/shared/decorators/di";
+import { Popover } from "@/app/shared/ui/popover/popover";
 import { className } from "@/app/shared/utils/functions/className";
 
 import { Country } from "./countries";
@@ -21,34 +22,15 @@ interface PhoneInputProps {
 export class PhoneInput extends Component<PhoneInputProps> {
     locale: LocaleService = inject(LocaleService);
     service: PhoneInputService = inject(PhoneInputService);
-    wrapRef: RefObject<HTMLDivElement | null> = createRef();
+    selectorRef: RefObject<HTMLButtonElement | null> = createRef();
     inputRef: RefObject<HTMLInputElement | null> = createRef();
     private isFocused: boolean = false;
 
     componentDidMount(): void {
-        document.addEventListener("mousedown", this.handleOutsideClick);
-        document.addEventListener("keydown", this.handleKeyDown);
         if (this.props.defaultValue) {
             this.service.restoreFromFullPhone(this.props.defaultValue);
         }
     }
-
-    componentWillUnmount(): void {
-        document.removeEventListener("mousedown", this.handleOutsideClick);
-        document.removeEventListener("keydown", this.handleKeyDown);
-    }
-
-    handleOutsideClick = (e: MouseEvent): void => {
-        if (!this.wrapRef.current?.contains(e.target as Node) && this.service.isDropdownOpen) {
-            this.service.closeDropdown();
-        }
-    };
-
-    handleKeyDown = (e: KeyboardEvent): void => {
-        if (e.key === "Escape" && this.service.isDropdownOpen) {
-            this.service.closeDropdown();
-        }
-    };
 
     private get expectedDigits(): number {
         return getMaxDigits(this.service.selectedCountry.format);
@@ -67,6 +49,10 @@ export class PhoneInput extends Component<PhoneInputProps> {
 
     handleSelectorClick = (): void => {
         this.service.toggleDropdown();
+    };
+
+    handlePopoverClose = (): void => {
+        this.service.closeDropdown();
     };
 
     handleFocus = (): void => {
@@ -92,11 +78,14 @@ export class PhoneInput extends Component<PhoneInputProps> {
         });
 
         return (
-            <div className={wrapClass} ref={this.wrapRef}>
+            <div className={wrapClass}>
                 <button
                     type="button"
+                    ref={this.selectorRef}
                     className={styles["selector"]}
                     onClick={this.handleSelectorClick}
+                    aria-haspopup="listbox"
+                    aria-expanded={this.service.isDropdownOpen}
                 >
                     <span className={styles["flag"]}>{this.service.selectedCountry.flag}</span>
                     <span className={styles["dial-code"]}>{this.service.selectedCountry.dialCode}</span>
@@ -114,11 +103,20 @@ export class PhoneInput extends Component<PhoneInputProps> {
                     onFocus={this.handleFocus}
                     onBlur={this.handleBlur}
                 />
-                <CountryDropdown
-                    service={this.service}
-                    searchPlaceholder={this.locale.t("common", "country-search")}
-                    onSelect={this.handleCountrySelect}
-                />
+                <Popover
+                    isOpen={this.service.isDropdownOpen}
+                    anchorRef={this.selectorRef}
+                    placement="bottom-start"
+                    onClose={this.handlePopoverClose}
+                    matchAnchorWidth={false}
+                    label={this.locale.t("common", "country-search")}
+                >
+                    <CountryDropdown
+                        service={this.service}
+                        searchPlaceholder={this.locale.t("common", "country-search")}
+                        onSelect={this.handleCountrySelect}
+                    />
+                </Popover>
             </div>
         );
     }

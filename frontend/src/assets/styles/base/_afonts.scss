@@ -1,8 +1,8 @@
 @use "sass:map";
 
-$font-name: "Lora";
-$landing-font-name: "Lora";
-$landing-font-path: "@/assets/fonts/lora/";
+$font-name: "Manrope";
+$landing-font-name: "Manrope";
+$landing-font-path: "@/assets/fonts/manrope/";
 
 $unicode-ranges: (
     "cyrillic-ext": "U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F",
@@ -20,16 +20,16 @@ $weights: (
 );
 
 $landing-fonts-latin: (
-    "regular": "Lora-Regular.ttf",
-    "medium": "Lora-Medium.ttf",
-    "bold": "Lora-Bold.ttf",
+    "regular": "Manrope-Regular.woff2",
+    "medium": "Manrope-Medium.woff2",
+    "bold": "Manrope-Bold.woff2",
 );
 
-// $landing-fonts-cyrillic: (
-//     "regular": "Lora-Regular-Cyrillic.woff2",
-//     "medium": "Lora-Medium-Cyrillic.woff2",
-//     "bold": "Lora-Bold-Cyrillic.woff2",
-// );
+$landing-fonts-cyrillic: (
+    "regular": "Manrope-Regular-Cyrillic.woff2",
+    "medium": "Manrope-Medium-Cyrillic.woff2",
+    "bold": "Manrope-Bold-Cyrillic.woff2",
+);
 
 @each $variant, $file in $landing-fonts-latin {
     $weight: map.get($weights, $variant);
@@ -39,20 +39,20 @@ $landing-fonts-latin: (
         font-style: normal;
         font-weight: $weight;
         font-display: swap;
-        src: url(#{$landing-font-path}#{$file}) format("ttf");
+        src: url(#{$landing-font-path}#{$file}) format("woff2");
         unicode-range: map.get($unicode-ranges, "latin"), map.get($unicode-ranges, "latin-ext");
     }
 }
 
-// @each $variant, $file in $landing-fonts-cyrillic {
-//     $weight: map.get($weights, $variant);
+@each $variant, $file in $landing-fonts-cyrillic {
+    $weight: map.get($weights, $variant);
 
-//     @font-face {
-//         font-family: $font-name;
-//         font-style: normal;
-//         font-weight: $weight;
-//         font-display: swap;
-//         src: url(#{$landing-font-path}#{$file}) format("woff2");
-//         unicode-range: map.get($unicode-ranges, "cyrillic"), map.get($unicode-ranges, "cyrillic-ext");
-//     }
-// }
+    @font-face {
+        font-family: $font-name;
+        font-style: normal;
+        font-weight: $weight;
+        font-display: swap;
+        src: url(#{$landing-font-path}#{$file}) format("woff2");
+        unicode-range: map.get($unicode-ranges, "cyrillic"), map.get($unicode-ranges, "cyrillic-ext");
+    }
+}

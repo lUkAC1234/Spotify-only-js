@@ -55,6 +55,11 @@
         color: var(--danger);
     }
 
+    &--selected {
+        color: var(--accent);
+        font-weight: var(--font-weight-bold);
+    }
+
     &--open {
         background: var(--popover-item-hover-bg);
     }
@@ -79,6 +84,21 @@
         overflow: hidden;
         white-space: nowrap;
         text-overflow: ellipsis;
+    }
+
+    &__trailing {
+        flex-shrink: 0;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--accent);
+        width: var(--icon-sm);
+        height: var(--icon-sm);
+
+        svg {
+            width: var(--icon-sm);
+            height: var(--icon-sm);
+        }
     }
 
     &__chevron {

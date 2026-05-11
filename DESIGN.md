@@ -40,6 +40,15 @@ All colors are defined once, themed via `data-theme="dark|light"`. Default theme
 | `--shadow` | `0 12px 40px rgba(0,0,0,0.45)` | Elevation shadow on cards/dropdowns |
 | `--danger` | `#E22134` | Destructive actions |
 | `--success` | `#1DB954` | Same as accent — Spotify uses one green |
+| `--sidebar-divider` | `rgba(255,255,255,0.06)` | Hairline between sidebar regions (header → body) |
+| `--sidebar-row-bg-hover` | `rgba(255,255,255,0.06)` | Hover state on sidebar rows (Liked Songs, playlists, brand) |
+| `--sidebar-row-bg-active` | `rgba(255,255,255,0.1)` | Active route background on sidebar rows |
+| `--sidebar-card-bg-hover` | `#2a2a2a` | Hover state on logged-out sidebar marketing cards |
+| `--liked-cover-gradient` | `linear-gradient(135deg, #4f3ce5 0%, #8c67ff 50%, #c4efd9 100%)` | Spotify-style violet→pale-green gradient on Liked Songs cover |
+| `--liked-cover-fg` | `#FFFFFF` | Foreground colour for the heart icon inside Liked Songs cover |
+| `--dialog-overlay` | `rgba(0,0,0,0.72)` | Backdrop colour for `<AppDialog>` (stronger than the generic `--overlay`) |
+| `--dialog-blur` | `rem(24)` | Backdrop-filter blur for `<AppDialog>` |
+| `--search-focus-ring` | `rgba(255,255,255,0.85)` | Focus-within ring on the top-nav search pill |
 
 ### Light theme
 
@@ -60,6 +69,15 @@ All colors are defined once, themed via `data-theme="dark|light"`. Default theme
 | `--border-strong` | `rgba(0,0,0,0.18)` (focus rings, dividers) |
 | `--overlay` | `rgba(0,0,0,0.32)` |
 | `--shadow` | `0 12px 40px rgba(0,0,0,0.10)` |
+| `--sidebar-divider` | `rgba(0,0,0,0.08)` |
+| `--sidebar-row-bg-hover` | `rgba(0,0,0,0.05)` |
+| `--sidebar-row-bg-active` | `rgba(0,0,0,0.08)` |
+| `--sidebar-card-bg-hover` | `#E6E6E6` |
+| `--liked-cover-gradient` | unchanged (works on both themes) |
+| `--liked-cover-fg` | `#FFFFFF` |
+| `--dialog-overlay` | `rgba(0,0,0,0.5)` |
+| `--dialog-blur` | `rem(20)` |
+| `--search-focus-ring` | `rgba(0,0,0,0.55)` |
 
 ### Hard rule
 
@@ -242,11 +260,39 @@ Album / playlist / artist card. Vertical layout: 1:1 cover on top, title below, 
 - Radius: `--radius-pill` for search; `--radius-sm` for forms.
 - Placeholder: `--text-tertiary`.
 
-### Modals
+### Modals & menus — shared primitives (canonical)
 
-- Backdrop: `--overlay` + `backdrop-filter: blur(8px)`.
-- Container: `--surface-elevated`, radius `--radius-md`, max-width `560px`, padding `--space-7`.
-- Enter animation: scale `0.96 → 1` + opacity `0 → 1` over `--motion-slow` with `--motion-ease-out`.
+There are exactly **two** primitives for floating UI on this app. New surfaces must use these — never hand-roll a `position: fixed` panel with bespoke escape / click-outside logic.
+
+#### `<AppDialog>` — content modal
+
+Single primitive for every content modal across the app (artist about, future track-info, queue-detail, etc.). Lives at `app/shared/ui/app-dialog/`.
+
+- Props: `isOpen`, `onClose`, `title?`, `ariaLabel?`, `size?: "sm" | "md" | "lg"`, `footer?`, `hideClose?`, `hideHeader?`, `closeOnBackdrop?`, `closeOnEscape?`, `panelClassName?`.
+- Renders into a portal at `document.body`. Body scroll is locked while open via `hide-scrollbar`.
+- Backdrop: `--dialog-overlay` + `backdrop-filter: blur(var(--dialog-blur))`.
+- Panel: `--surface-elevated`, `1px var(--border)`, radius `--radius-lg`, shadow `--elevation-2`. Max-widths via `--dialog-max-width-{sm,md,lg}` (rem(420) / rem(560) / rem(720)).
+- Padding: `--dialog-padding` desktop / `--dialog-padding-mobile` ≤ 640px.
+- Header: optional title (type-title-2, weight-bold) + close button (circle, `--control-md`, hover scale 1.06).
+- Footer slot: bordered top, right-aligned, `--space-3` gap.
+- Mobile (≤ 640px): docks to bottom (`align-items: flex-end`) with rounded top corners — Spotify-style sheet.
+- Animation: backdrop fade `--motion-base` + panel spring (stiffness 380, damping 32, mass 0.85). Exit: backdrop fade + panel `duration 180ms ease-in`. Built on `<AnimatePresence>` so unmount waits for exit.
+- Focus: panel auto-focused on open; previous active element restored on close.
+
+`<CreatePlaylistModal>` is the legacy domain modal (predates `AppDialog`) and continues to ship as-is, but every **new** dialog must use `<AppDialog>`.
+
+#### `<Popover>` + `<Menu>` family — anchored floating panel
+
+Single primitive for every menu / dropdown / context menu / select panel across the app (profile menu, lang select, country picker, artist context menu). Lives at `app/shared/ui/popover/`.
+
+- `<Popover>` — portal-rendered, anchored to `anchorRef`, supports `bottom-start | bottom-end | top-start | top-end | right-start | left-start` with viewport-flip fallback. Click-outside + Escape close. Built on `<AnimatePresence>` (smooth enter + exit).
+- Animation: enter spring (stiffness 520, damping 38) with directional offset based on placement; exit `duration 160ms ease-in`.
+- `<Menu>` — semantic `role="menu"` list with arrow-key + Home/End navigation; auto-focuses first item on open.
+- `<MenuItem>` — label + optional `icon` (leading) + optional `trailingIcon` (e.g. accent check for active option) + variants (`disabled`, `danger`, `selected`, `hasSubmenu`, `href` for external links).
+- `<MenuSubmenu>` — opens nested Popover at `right-start` with chevron affordance; `closeAll` propagates to all child items.
+- `<MenuDivider>` — `role="separator"` hairline with `--popover-divider` colour.
+
+Hard rule: do not import `position: absolute|fixed` + manual `mousedown`/`keydown` handlers in any new component. If you need a floating panel, use `<Popover>` + `<Menu>`.
 
 ### Bottom player
 

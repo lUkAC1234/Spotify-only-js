@@ -1,0 +1,22 @@
+@use "@/assets/styles/helpers/functions";
+
+.source-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: var(--space-0) var(--space-2);
+    height: var(--space-5);
+    font-size: var(--type-caption);
+    font-weight: var(--font-weight-medium);
+    color: var(--text-secondary);
+    background: var(--surface-elevated);
+    border: var(--border-width) solid var(--border);
+    border-radius: var(--radius-pill);
+    line-height: var(--space-5);
+    white-space: nowrap;
+    user-select: none;
+
+    &--yandex {
+        color: var(--accent);
+        border-color: var(--accent);
+    }
+}

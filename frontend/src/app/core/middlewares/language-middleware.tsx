@@ -46,11 +46,12 @@ export const LanguageMiddleware = (): ReactNode => {
                 else appRoute.path = "/:lang";
 
                 if (currentPrefix !== expectedPrefix) {
-                    const target = isDefault
+                    const basePath = isDefault
                         ? cleanPath === "/"
                             ? "/"
                             : cleanPath
                         : `${expectedPrefix}${cleanPath === "/" ? "" : cleanPath}`;
+                    const target = `${basePath}${location.search}${location.hash}`;
 
                     navigate(target, { replace: true });
                 }
@@ -58,7 +59,7 @@ export const LanguageMiddleware = (): ReactNode => {
         );
 
         return () => dispose();
-    }, [location.pathname]);
+    }, [location.pathname, location.search, location.hash]);
 
     useEffect(() => {
         const locale: LocaleService = inject(LocaleService);

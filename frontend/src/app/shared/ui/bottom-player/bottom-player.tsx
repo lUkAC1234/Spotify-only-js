@@ -8,6 +8,8 @@ import { PlayerService } from "@/app/core/services/player/player.service";
 import { inject } from "@/app/shared/decorators/di";
 import { className } from "@/app/shared/utils/functions/className";
 
+import { Spinner } from "../loaders/spinner";
+import { SVG_CloseIcon } from "../svg/svg-close-icon";
 import { SVG_Devices } from "../svg/player/svg-devices";
 import { SVG_HeartFilled } from "../svg/player/svg-heart-filled";
 import { SVG_Heart } from "../svg/player/svg-heart";
@@ -49,7 +51,7 @@ export class BottomPlayer extends Component {
     private handleHeart = (): void => {
         const track = this.player.currentTrack;
         if (!track || !this.auth.isAuthenticated) return;
-        void this.library.toggleTrackSaved(track.id);
+        void this.library.toggleTrackSaved(track.id, track);
     };
 
     private renderRepeatIcon(): ReactNode {
@@ -66,6 +68,11 @@ export class BottomPlayer extends Component {
             ? this.locale.t("common", "player.pause")
             : this.locale.t("common", "player.play");
 
+        const seekProgress = duration > 0 ? Math.max(0, Math.min(1, position / duration)) : 0;
+        const seekStyle = { "--slider-progress": `${seekProgress * 100}%` } as React.CSSProperties;
+        const volumeValue = isMuted ? 0 : this.player.volume;
+        const volumeStyle = { "--slider-progress": `${volumeValue * 100}%` } as React.CSSProperties;
+
         const playButtonClass = className(`${styles["bottom-player__btn"]} ${styles["bottom-player__btn--play"]}`, {
             [styles["bottom-player__btn--disabled"]]: !track,
         });
@@ -78,7 +85,13 @@ export class BottomPlayer extends Component {
             >
                 <div className={styles["bottom-player__left"]}>
                     <div className={styles["bottom-player__cover"]} aria-hidden={!track}>
-                        {track?.cover && <img src={track.cover} alt="" loading="lazy" />}
+                        {track?.cover ? (
+                            <img src={track.cover} alt="" loading="lazy" draggable={false} />
+                        ) : (
+                            <span className={styles["bottom-player__cover-fallback"]}>
+                                {(track?.title ?? "?").slice(0, 1).toUpperCase()}
+                            </span>
+                        )}
                     </div>
                     <div className={styles["bottom-player__meta"]}>
                         <span className={styles["bottom-player__title"]}>
@@ -103,8 +116,15 @@ export class BottomPlayer extends Component {
                                     : this.locale.t("common", "player.like")
                             }
                             aria-pressed={this.library.isTrackSaved(track.id)}
+                            aria-busy={this.library.isTrackBusy(track.id)}
                         >
-                            {this.library.isTrackSaved(track.id) ? <SVG_HeartFilled /> : <SVG_Heart />}
+                            {this.library.isTrackBusy(track.id) ? (
+                                <Spinner size="sm" tone="current" />
+                            ) : this.library.isTrackSaved(track.id) ? (
+                                <SVG_HeartFilled />
+                            ) : (
+                                <SVG_Heart />
+                            )}
                         </button>
                     )}
                 </div>
@@ -173,6 +193,7 @@ export class BottomPlayer extends Component {
                             onChange={this.handleSeek}
                             aria-label={this.locale.t("common", "player.seek")}
                             disabled={!track}
+                            style={seekStyle}
                         />
                         <span className={styles["bottom-player__time"]}>{formatMs(duration)}</span>
                     </div>
@@ -212,11 +233,21 @@ export class BottomPlayer extends Component {
                             min={0}
                             max={1}
                             step={0.01}
-                            value={isMuted ? 0 : this.player.volume}
+                            value={volumeValue}
                             onChange={this.handleVolume}
                             aria-label={this.locale.t("common", "player.volume-level")}
+                            style={volumeStyle}
                         />
                     </div>
+                    <button
+                        type="button"
+                        className={`${styles["bottom-player__btn"]} ${styles["bottom-player__close"]}`}
+                        onClick={this.player.clearTrack}
+                        aria-label={this.locale.t("common", "player.close")}
+                        title={this.locale.t("common", "player.close")}
+                    >
+                        <SVG_CloseIcon />
+                    </button>
                 </div>
             </section>
         );

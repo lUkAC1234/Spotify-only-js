@@ -8,20 +8,20 @@ const languages = {
     en: {
         lang: "en",
         locale: "en_US",
-        title: "Spotify",
-        description: "Spotify",
+        title: "Spenzora",
+        description: "Spenzora",
     },
     ru: {
         lang: "ru",
         locale: "ru_RU",
-        title: "Spotify",
-        description: "Spotify",
+        title: "Spenzora",
+        description: "Spenzora",
     },
     uz: {
         lang: "uz",
         locale: "uz_UZ",
-        title: "Spotify",
-        description: "Spotify",
+        title: "Spenzora",
+        description: "Spenzora",
     },
 };
 

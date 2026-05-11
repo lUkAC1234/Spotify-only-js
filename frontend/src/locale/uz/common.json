@@ -2,14 +2,21 @@
     "no-internet": "Internet aloqasi yo'q",
     "error": "Xatolik yuz berdi, keyinroq urinib ko'ring",
     "loading": "Yuklanmoqda",
-    "page-title": "Spotify",
+    "page-title": "Spenzora",
     "country-search": "Davlatni qidirish...",
     "common": {
         "load-more": "Yana yuklash",
-        "loading-more": "Yuklanmoqda..."
+        "loading-more": "Yuklanmoqda...",
+        "close": "Yopish"
+    },
+    "source": {
+        "aria-label": "Manba: {name}",
+        "jamendo": "Jamendo",
+        "audius": "Audius",
+        "yandex": "Yandex Music"
     },
     "app": {
-        "name": "Spotify"
+        "name": "Spenzora"
     },
     "nav": {
         "home": "Bosh sahifa",
@@ -29,9 +36,19 @@
         "sign-in-cta": "Kirish",
         "welcome-title": "Xush kelibsiz",
         "signup-title": "Tinglashni boshlash uchun roʻyxatdan oʻting",
+        "brand-mark-aria": "Audio ekvalayzer",
+        "tagline-line-1": "Sening ovozing.",
+        "tagline-line-2": "Sening kayfiyating.",
+        "tagline-sub": "Millionlab treklar har doim qo'l ostingda. Sening ovoziga monand pleylist tuz.",
         "sign-out": "Chiqish",
         "signing-in": "Kirilmoqda...",
         "signing-up": "Hisob yaratilmoqda...",
+        "signing-out": "Chiqilmoqda...",
+        "logout-confirm-title": "Hisobdan chiqasizmi?",
+        "logout-confirm-body": "Bu sahifani ochish uchun avval joriy hisobdan chiqishingiz kerak.",
+        "logout-confirm-prompt": "Spenzora hisobidan chiqib, mehmon rejimiga qaytasiz.",
+        "logout-confirm-yes": "Ha, chiqish",
+        "logout-confirm-cancel": "Bekor qilish",
         "welcome-back": "Xush kelibsiz. Tinglashni davom ettirish uchun kiring.",
         "create-prompt": "Treklarni saqlash va pleylist yaratish uchun hisob yarating.",
         "no-account": "Bu yerda yangimisiz?",
@@ -61,9 +78,13 @@
         "subtitle": "Profil, avatar va parolingizni yangilang.",
         "profile": "Profil",
         "password": "Parol",
+        "password-hint": "Kamida 8 belgidan iborat parol kiriting.",
         "privacy": "Maxfiylik",
+        "privacy-hint": "Profilingizda boshqa tinglovchilar nimani ko'rishini tanlang.",
         "session": "Seans",
+        "session-hint": "Joriy qurilmadagi seansni tugating.",
         "save": "Saqlash",
+        "saving": "Saqlanmoqda...",
         "profile-saved": "Profil yangilandi.",
         "avatar-saved": "Avatar yangilandi.",
         "avatar-removed": "Avatar olib tashlandi.",
@@ -116,6 +137,13 @@
         "cover-aria": "Pleylist muqovasini o'zgartirish",
         "choose-cover": "Rasm tanlash",
         "cover-too-large": "Fayl 5 MB dan kichik bo'lishi kerak.",
+        "cover-error": "Muqovani yuklab bo'lmadi. Qayta urinib ko'ring.",
+        "delete": "O'chirish",
+        "deleting": "O'chirilmoqda...",
+        "delete-confirm-title": "Pleylist o'chirilsinmi?",
+        "delete-confirm-body": "«{title}» pleylisti butunlay o'chiriladi. Qo'shilgan treklar medialibrangizdan yo'qoladi.",
+        "delete-confirm-yes": "O'chirish",
+        "delete-confirm-cancel": "Bekor qilish",
         "edit-cover": "Muqovani o'zgartirish",
         "name-label": "Nomi",
         "description-label": "Tavsif",
@@ -123,7 +151,7 @@
         "description-placeholder": "Tavsif qo'shish (ixtiyoriy)",
         "title-required": "Pleylist nomini kiriting.",
         "label": "Pleylist",
-        "system": "Spotify tanlovi",
+        "system": "Spenzora tanlovi",
         "edit": "Tahrirlash",
         "save": "Saqlash",
         "cancel": "Bekor qilish",
@@ -160,7 +188,8 @@
         "volume-level": "Ovoz balandligi",
         "seek": "O'tkazish",
         "like": "Kutubxonangizga qo'shish",
-        "unlike": "Kutubxonadan olib tashlash"
+        "unlike": "Kutubxonadan olib tashlash",
+        "close": "Pleyerni yopish va ijroni to'xtatish"
     },
     "home": {
         "greeting": {
@@ -249,7 +278,7 @@
         "next": "O'ngga aylantirish"
     },
     "topnav": {
-        "brand-aria": "Spotify — bosh sahifaga",
+        "brand-aria": "Spenzora — bosh sahifaga",
         "home-aria": "Bosh sahifa",
         "browse-aria": "Ko'rib chiqish",
         "premium": "Premium",
@@ -258,13 +287,15 @@
         "install-app": "Ilovani o'rnatish"
     },
     "marketing": {
-        "title": "Spotify — oldindan ko'rish",
+        "title": "Spenzora — oldindan ko'rish",
         "subtitle": "Cheksiz musiqa va podkastlarni tinglash uchun ro'yxatdan o'ting. Ba'zan reklamani ko'rsatamiz, ammo siz xizmatdan bepul foydalanasiz!",
         "cta": "Ro'yxatdan o'tish"
     },
     "sidebar": {
         "library-title": "Mening kutubxonam",
         "create-aria": "Pleylist yoki podkast yaratish",
+        "collapse": "Yon panelni yig'ish",
+        "expand": "Yon panelni kengaytirish",
         "guest": {
             "playlist-title": "Birinchi pleylistingizni yarating",
             "playlist-sub": "Bu juda oson! Biz yordam beramiz.",
@@ -304,17 +335,18 @@
     },
     "artist-about": {
         "title": "Ijrochi haqida",
-        "monthly-listeners": "oylik tinglovchi",
+        "monthly-listeners": "Oylik tinglovchilar",
         "country": "Mamlakat",
         "genres": "Janrlar",
+        "bio-title": "Biografiya",
         "no-bio": "Biografiya mavjud emas."
     },
     "legal": {
-        "overline": "Spotify",
+        "overline": "Spenzora",
         "updated": "Yangilangan: {date}",
         "body": {
-            "intro": "Spotify millionlab foydalanuvchilarga yangi treklar, ijrochilar va podkastlarni topishga yordam beradigan musiqa platformasidir. Ushbu hujjat xizmatdan foydalanish shartlarini bayon qiladi.",
-            "terms": "Akkaunt yaratish yoki Spotify’dan foydalanish orqali siz hamjamiyat qoidalarini, bepul akkaunt cheklovlarini va kontent tarqatish shartlarini qabul qilgan bo‘lasiz.",
+            "intro": "Spenzora millionlab foydalanuvchilarga yangi treklar, ijrochilar va podkastlarni topishga yordam beradigan musiqa platformasidir. Ushbu hujjat xizmatdan foydalanish shartlarini bayon qiladi.",
+            "terms": "Akkaunt yaratish yoki Spenzora’dan foydalanish orqali siz hamjamiyat qoidalarini, bepul akkaunt cheklovlarini va kontent tarqatish shartlarini qabul qilgan bo‘lasiz.",
             "contact": "Savollar bo‘lsa, profil sozlamalaridagi “Yordam” bo‘limi orqali bog‘laning. Biz uch ish kuni ichida javob berishga harakat qilamiz."
         },
         "safety": {
@@ -328,7 +360,7 @@
             "rights": "Ma’lumotlaringizni eksport qilish yoki o‘chirib tashlashni sozlamalar orqali so‘rashingiz mumkin. So‘rov 30 kun ichida ko‘rib chiqiladi."
         },
         "cookies": {
-            "intro": "Spotify sizni tizimda saqlash, til va mavzu sozlamalarini eslab qolish uchun cookie fayllaridan foydalanadi.",
+            "intro": "Spenzora sizni tizimda saqlash, til va mavzu sozlamalarini eslab qolish uchun cookie fayllaridan foydalanadi.",
             "types": "Cookie uch toifaga bo‘linadi: texnik (majburiy), funksional (sozlamalarni eslaydi) va analitik (xizmatni yaxshilashga yordam beradi).",
             "manage": "Cookie fayllarini istalgan vaqt brauzer sozlamalari orqali tozalashingiz mumkin. Texnik cookie keyingi kirishda tiklanadi."
         },
@@ -337,9 +369,9 @@
             "choices": "Premium obunachilar reklamasiz tinglashadi va to‘liq oflayn kirishga ega bo‘lishadi. Obunani istalgan vaqt yoqish yoki o‘chirish mumkin."
         },
         "accessibility": {
-            "intro": "Spotify hamma uchun qulay bo‘lishga intiladi: har bir interaktiv element klaviatura orqali ishlaydi va ekran o‘qigichlar tomonidan o‘qiladi.",
+            "intro": "Spenzora hamma uchun qulay bo‘lishga intiladi: har bir interaktiv element klaviatura orqali ishlaydi va ekran o‘qigichlar tomonidan o‘qiladi.",
             "standards": "Interfeys WCAG 2.1 AA standartiga muvofiq: fokus halqalari, matn kontrasti va `prefers-reduced-motion` qo‘llab-quvvatlanadi.",
-            "feedback": "Agar biror narsa kutganingizdek ishlamasa, bizga xabar bering — Spotify barcha tinglovchilar uchun qulay bo‘lib qolishi kerak."
+            "feedback": "Agar biror narsa kutganingizdek ishlamasa, bizga xabar bering — Spenzora barcha tinglovchilar uchun qulay bo‘lib qolishi kerak."
         }
     }
 }

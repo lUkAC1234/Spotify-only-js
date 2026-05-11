@@ -216,7 +216,24 @@
       "Bash(PYTHONIOENCODING=utf-8 ./myenv/Scripts/python.exe -X utf8 manage.py runserver 127.0.0.1:8000)",
       "Bash(curl -s \"http://127.0.0.1:8000/api/v1/catalog/playlist/1/\")",
       "Bash(PYTHONIOENCODING=utf-8 ./myenv/Scripts/python.exe -X utf8 manage.py seed_featured_playlists --limit 12)",
-      "PowerShell(Stop-Process -Name \"python\" -Force -ErrorAction SilentlyContinue)"
+      "PowerShell(Stop-Process -Name \"python\" -Force -ErrorAction SilentlyContinue)",
+      "WebSearch",
+      "Bash(Get-ChildItem -Path \"c:\\\\Users\\\\User\\\\Documents\\\\GitHub\\\\Spotify-only-js\\\\frontend\\\\src\\\\app\\\\shared\\\\ui\" -Directory)",
+      "Bash(./myenv/Scripts/python.exe -c \"import yandex_music; print\\('yandex-music', yandex_music.__version__ if hasattr\\(yandex_music, '__version__'\\) else 'installed'\\)\")",
+      "Bash(./myenv/Scripts/python.exe -c \"import yandex_music; print\\('OK'\\)\")",
+      "Bash(./myenv/Scripts/python.exe -c ' *)",
+      "Bash(./myenv/Scripts/python.exe manage.py makemigrations --dry-run --check)",
+      "Bash(npx eslint *)",
+      "Bash(./myenv/Scripts/python.exe manage.py makemigrations --dry-run --check apps.catalog)",
+      "Bash(./myenv/Scripts/python.exe manage.py makemigrations --dry-run --check catalog)",
+      "PowerShell(npx tsc --noEmit)",
+      "PowerShell(if \\($?\\) { \"tsc OK\" } else { \"tsc FAILED\" })",
+      "PowerShell(npx eslint --max-warnings 0 src 2>&1)",
+      "PowerShell(if \\($?\\) { \"eslint OK\" } else { \"eslint FAILED\" })",
+      "PowerShell(npx vite build 2>&1)",
+      "PowerShell(if \\($?\\) { \"build OK\" } else { \"build FAILED\" })",
+      "Bash(echo \"EXIT: $?\")",
+      "Bash(node -e 'const fs=require\\('\\\\''fs'\\\\''\\);const p='\\\\''__TRACKED_VAR__'\\\\'';let c=fs.readFileSync\\(p,'\\\\''utf8'\\\\''\\);c=c.replace\\(/Spotify/g,'\\\\''Spenzora'\\\\''\\);fs.writeFileSync\\(p,c\\);')"
     ]
   }
 }

@@ -3,7 +3,7 @@
 $grid-columns: #{functions.rem(40)} minmax(0, 2.4fr) minmax(0, 1.4fr) #{functions.rem(140)} #{functions.rem(160)};
 
 .track-list {
-    padding: 0 var(--space-6) var(--space-7);
+    padding: 0 var(--content-padding-x) var(--space-7);
 
     &__header {
         display: grid;
@@ -225,25 +225,59 @@ $grid-columns: #{functions.rem(40)} minmax(0, 2.4fr) minmax(0, 1.4fr) #{function
     color: var(--text-secondary);
 }
 
-@media (max-width: 720px) {
+@media (max-width: 1023px) {
     .track-list {
-        padding: 0 var(--space-4) var(--space-7);
-
         &__header {
-            grid-template-columns: #{functions.rem(32)} minmax(0, 1fr) #{functions.rem(120)};
-            > :nth-child(3),
-            > :nth-child(4) {
+            grid-template-columns: #{functions.rem(40)} minmax(0, 2.4fr) #{functions.rem(140)} #{functions.rem(120)};
+            > :nth-child(3) {
                 display: none;
             }
         }
     }
 
     .row {
-        grid-template-columns: #{functions.rem(32)} minmax(0, 1fr) #{functions.rem(120)};
+        grid-template-columns: #{functions.rem(40)} minmax(0, 2.4fr) #{functions.rem(140)} #{functions.rem(120)};
+
+        &__album {
+            display: none;
+        }
+    }
+}
+
+@media (max-width: 640px) {
+    .track-list {
+        padding: 0 var(--content-padding-x-mobile) var(--space-6);
+
+        &__header {
+            grid-template-columns: #{functions.rem(32)} minmax(0, 1fr) #{functions.rem(80)};
+            gap: var(--space-2);
+            padding: var(--space-2);
+
+            > :nth-child(3),
+            > :nth-child(4) {
+                display: none;
+            }
+        }
+
+        &__rows {
+            padding: var(--space-2) 0;
+        }
+    }
+
+    .row {
+        grid-template-columns: #{functions.rem(32)} minmax(0, 1fr) #{functions.rem(80)};
+        gap: var(--space-2);
+        padding: var(--space-2);
 
         &__album,
         &__added {
             display: none;
+        }
+
+        &__cover {
+            width: var(--icon-xl);
+            height: var(--icon-xl);
+            flex: 0 0 var(--icon-xl);
         }
     }
 }

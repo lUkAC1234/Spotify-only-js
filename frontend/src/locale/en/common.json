@@ -2,14 +2,21 @@
     "no-internet": "No internet connection",
     "error": "Something went wrong, please try again later",
     "loading": "Loading",
-    "page-title": "Spotify",
+    "page-title": "Spenzora",
     "country-search": "Search country...",
     "common": {
         "load-more": "Load more",
-        "loading-more": "Loading..."
+        "loading-more": "Loading...",
+        "close": "Close"
+    },
+    "source": {
+        "aria-label": "Source: {name}",
+        "jamendo": "Jamendo",
+        "audius": "Audius",
+        "yandex": "Yandex Music"
     },
     "app": {
-        "name": "Spotify"
+        "name": "Spenzora"
     },
     "nav": {
         "home": "Home",
@@ -29,9 +36,19 @@
         "sign-in-cta": "Sign in",
         "welcome-title": "Welcome back",
         "signup-title": "Sign up to start listening",
+        "brand-mark-aria": "Audio waveform mark",
+        "tagline-line-1": "Your sound.",
+        "tagline-line-2": "Your moment.",
+        "tagline-sub": "Stream millions of tracks. Build the playlist that follows you.",
         "sign-out": "Sign out",
         "signing-in": "Signing in...",
         "signing-up": "Creating your account...",
+        "signing-out": "Signing out...",
+        "logout-confirm-title": "Sign out of your account?",
+        "logout-confirm-body": "To open this page, you need to sign out of your current account.",
+        "logout-confirm-prompt": "You will be signed out of Spenzora and switched back to guest mode.",
+        "logout-confirm-yes": "Yes, sign out",
+        "logout-confirm-cancel": "Cancel",
         "welcome-back": "Welcome back. Sign in to keep listening.",
         "create-prompt": "Create an account to save tracks and build playlists.",
         "no-account": "New here?",
@@ -61,9 +78,13 @@
         "subtitle": "Update your profile, avatar and password.",
         "profile": "Profile",
         "password": "Password",
+        "password-hint": "Use a password with at least 8 characters.",
         "privacy": "Privacy",
+        "privacy-hint": "Choose what other listeners can see on your profile.",
         "session": "Session",
+        "session-hint": "End the current session on this device.",
         "save": "Save changes",
+        "saving": "Saving...",
         "profile-saved": "Profile updated.",
         "avatar-saved": "Avatar updated.",
         "avatar-removed": "Avatar removed.",
@@ -116,6 +137,13 @@
         "cover-aria": "Change playlist cover",
         "choose-cover": "Choose photo",
         "cover-too-large": "File must be smaller than 5 MB.",
+        "cover-error": "Could not upload the cover image. Try again.",
+        "delete": "Delete",
+        "deleting": "Deleting...",
+        "delete-confirm-title": "Delete this playlist?",
+        "delete-confirm-body": "“{title}” will be permanently deleted. Added tracks will disappear from your library.",
+        "delete-confirm-yes": "Delete",
+        "delete-confirm-cancel": "Cancel",
         "edit-cover": "Change cover",
         "name-label": "Name",
         "description-label": "Description",
@@ -123,7 +151,7 @@
         "description-placeholder": "Add an optional description",
         "title-required": "Give your playlist a name.",
         "label": "Playlist",
-        "system": "Curated by Spotify",
+        "system": "Curated by Spenzora",
         "edit": "Edit details",
         "save": "Save",
         "cancel": "Cancel",
@@ -160,7 +188,8 @@
         "volume-level": "Volume",
         "seek": "Seek",
         "like": "Save to your library",
-        "unlike": "Remove from your library"
+        "unlike": "Remove from your library",
+        "close": "Close player and stop playback"
     },
     "home": {
         "greeting": {
@@ -249,7 +278,7 @@
         "next": "Scroll right"
     },
     "topnav": {
-        "brand-aria": "Spotify — go to home",
+        "brand-aria": "Spenzora — go to home",
         "home-aria": "Home",
         "browse-aria": "Browse",
         "premium": "Premium",
@@ -258,13 +287,15 @@
         "install-app": "Install app"
     },
     "marketing": {
-        "title": "Preview of Spotify",
+        "title": "Preview of Spenzora",
         "subtitle": "Sign up to enjoy unlimited music and podcasts. We'll show you the occasional ad — but you'll keep using the service for free!",
         "cta": "Sign up free"
     },
     "sidebar": {
         "library-title": "Your Library",
         "create-aria": "Create playlist or podcast",
+        "collapse": "Collapse sidebar",
+        "expand": "Expand sidebar",
         "guest": {
             "playlist-title": "Create your first playlist",
             "playlist-sub": "It's easy, we'll help you.",
@@ -304,17 +335,18 @@
     },
     "artist-about": {
         "title": "About artist",
-        "monthly-listeners": "monthly listeners",
+        "monthly-listeners": "Monthly listeners",
         "country": "Country",
         "genres": "Genres",
+        "bio-title": "Biography",
         "no-bio": "Biography unavailable."
     },
     "legal": {
-        "overline": "Spotify",
+        "overline": "Spenzora",
         "updated": "Updated: {date}",
         "body": {
-            "intro": "Spotify is a music platform that helps millions of listeners discover tracks, artists and podcasts. This page outlines the terms that apply to all accounts.",
-            "terms": "By creating an account or using Spotify, you agree to our community guidelines, free-tier policy, and content distribution limits. The full text is published here as it evolves.",
+            "intro": "Spenzora is a music platform that helps millions of listeners discover tracks, artists and podcasts. This page outlines the terms that apply to all accounts.",
+            "terms": "By creating an account or using Spenzora, you agree to our community guidelines, free-tier policy, and content distribution limits. The full text is published here as it evolves.",
             "contact": "Have a question? Reach the support team via the Help section in your profile settings. We aim to respond within three business days."
         },
         "safety": {
@@ -328,7 +360,7 @@
             "rights": "You can request an export or deletion of your data through the settings. Requests are processed within 30 days."
         },
         "cookies": {
-            "intro": "Spotify uses cookies to keep you signed in, remember your language and theme preferences.",
+            "intro": "Spenzora uses cookies to keep you signed in, remember your language and theme preferences.",
             "types": "Cookies fall into three groups: essential (required to run), functional (remember preferences), and analytical (help us improve the service).",
             "manage": "You can clear cookies any time through your browser. Essential cookies will be re-created on your next visit."
         },
@@ -337,9 +369,9 @@
             "choices": "Premium subscribers enjoy ad-free playback and full offline access. You can subscribe or cancel any time from the account page."
         },
         "accessibility": {
-            "intro": "Spotify is built to be accessible to everyone: every interactive element is keyboard-friendly and announced by screen readers.",
+            "intro": "Spenzora is built to be accessible to everyone: every interactive element is keyboard-friendly and announced by screen readers.",
             "standards": "The interface follows WCAG 2.1 AA: visible focus rings, sufficient contrast, and `prefers-reduced-motion` support are part of the design system.",
-            "feedback": "If something does not work the way you expect, let us know — we want Spotify to remain comfortable for every listener."
+            "feedback": "If something does not work the way you expect, let us know — we want Spenzora to remain comfortable for every listener."
         }
     }
 }

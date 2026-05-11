@@ -23,28 +23,26 @@ export class CountryDropdown extends Component<CountryDropdownProps> {
         });
     }
 
-    componentDidUpdate(_prevProps: CountryDropdownProps): void {
-        if (this.props.service.isDropdownOpen && this.searchRef.current) {
-            this.searchRef.current.focus();
-        }
-    }
-
     getItemClass(country: Country): string {
         return className(styles["item"], {
             [styles["item--active"]]: country.code === this.props.service.selectedCountry.code,
         });
     }
 
+    handleSelect = (country: Country): void => {
+        if (this.props.onSelect) {
+            this.props.onSelect(country);
+        } else {
+            this.props.service.selectCountry(country);
+        }
+    };
+
     render(): ReactNode {
         const { service, searchPlaceholder } = this.props;
         const filtered: Country[] = service.filteredCountries;
 
-        const dropdownClass: string = className(styles["dropdown"], {
-            [styles["dropdown--active"]]: service.isDropdownOpen,
-        });
-
         return (
-            <div className={dropdownClass}>
+            <div className={styles["panel"]}>
                 <div className={styles["search-wrap"]}>
                     <input
                         ref={this.searchRef}
@@ -53,7 +51,6 @@ export class CountryDropdown extends Component<CountryDropdownProps> {
                         placeholder={searchPlaceholder}
                         value={service.searchQuery}
                         onChange={(e) => service.setSearchQuery(e.target.value)}
-                        onClick={(e) => e.stopPropagation()}
                     />
                 </div>
                 {filtered.length > 0 ? (
@@ -63,14 +60,7 @@ export class CountryDropdown extends Component<CountryDropdownProps> {
                                 <button
                                     type="button"
                                     className={this.getItemClass(country)}
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        if (this.props.onSelect) {
-                                            this.props.onSelect(country);
-                                        } else {
-                                            service.selectCountry(country);
-                                        }
-                                    }}
+                                    onClick={() => this.handleSelect(country)}
                                 >
                                     <span className={styles["item-flag"]}>{country.flag}</span>
                                     <span className={styles["item-name"]}>{country.name}</span>

@@ -62,10 +62,10 @@
     &__list {
         list-style: none;
         margin: 0;
-        padding: 0 0 var(--space-2);
+        padding: 0 0 var(--space-3);
         display: grid;
         grid-auto-flow: column;
-        grid-auto-columns: minmax(#{functions.rem(160)}, #{functions.rem(180)});
+        grid-auto-columns: minmax(#{functions.rem(190)}, #{functions.rem(210)});
         gap: var(--space-4);
         scroll-snap-type: x proximity;
     }
@@ -76,7 +76,7 @@
         padding: 0 var(--content-padding-x-mobile);
 
         &__list {
-            grid-auto-columns: minmax(#{functions.rem(140)}, #{functions.rem(150)});
+            grid-auto-columns: minmax(#{functions.rem(150)}, #{functions.rem(170)});
         }
     }
 }

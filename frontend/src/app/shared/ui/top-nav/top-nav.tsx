@@ -14,6 +14,7 @@ import { ProfileMenu } from "@/app/shared/ui/profile-menu/profile-menu";
 import { SVG_Friends } from "@/app/shared/ui/svg/nav/svg-friends";
 import { SVG_GridBrowse } from "@/app/shared/ui/svg/nav/svg-grid-browse";
 import { SVG_Home } from "@/app/shared/ui/svg/nav/svg-home";
+import { SVG_Library } from "@/app/shared/ui/svg/nav/svg-library";
 import { SVG_Search } from "@/app/shared/ui/svg/nav/svg-search";
 
 import styles from "./top-nav.module.scss";
@@ -90,6 +91,16 @@ export class TopNav extends Component {
                     >
                         <SVG_Home />
                     </NavLink>
+                    {isAuthed && (
+                        <NavLink
+                            to="/library"
+                            baseClass={styles["topnav__home"]}
+                            activeClass={styles["topnav__home--active"]}
+                            aria-label={this.locale.t("common", "nav.library")}
+                        >
+                            <SVG_Library />
+                        </NavLink>
+                    )}
                 </div>
 
                 <form className={styles["topnav__search"]} onSubmit={this.handleSubmit} role="search">

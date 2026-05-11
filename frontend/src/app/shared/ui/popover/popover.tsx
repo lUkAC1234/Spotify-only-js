@@ -1,3 +1,4 @@
+import { AnimatePresence, motion, type Transition } from "framer-motion";
 import { Component, ReactNode, RefObject, createRef } from "react";
 import { createPortal } from "react-dom";
 
@@ -24,6 +25,27 @@ interface State {
     resolvedPlacement: PopoverPlacement;
 }
 
+const ENTER_TRANSITION: Transition = {
+    type: "spring",
+    stiffness: 520,
+    damping: 38,
+    mass: 0.7,
+};
+
+const EXIT_TRANSITION: Transition = {
+    duration: 0.22,
+    ease: [0.32, 0, 0.67, 0],
+};
+
+const placementOrigin: Record<PopoverPlacement, { x: number; y: number }> = {
+    "bottom-start": { x: 0, y: -10 },
+    "bottom-end": { x: 0, y: -10 },
+    "top-start": { x: 0, y: 10 },
+    "top-end": { x: 0, y: 10 },
+    "right-start": { x: -10, y: 0 },
+    "left-start": { x: 10, y: 0 },
+};
+
 export class Popover extends Component<Props, State> {
     static defaultProps = {
         placement: "bottom-start" as PopoverPlacement,
@@ -36,7 +58,7 @@ export class Popover extends Component<Props, State> {
         resolvedPlacement: "bottom-start",
     };
 
-    private panelRef: RefObject<HTMLDivElement | null> = createRef();
+    private wrapperRef: RefObject<HTMLDivElement | null> = createRef();
     private rafId: number | null = null;
 
     componentDidMount(): void {
@@ -53,7 +75,6 @@ export class Popover extends Component<Props, State> {
                 this.scheduleReposition();
             } else {
                 this.detachListeners();
-                this.setState({ coords: null });
             }
         }
     }
@@ -80,9 +101,9 @@ export class Popover extends Component<Props, State> {
     private handlePointer = (event: MouseEvent): void => {
         const target = event.target as Node;
         const anchor = this.props.anchorRef.current;
-        const panel = this.panelRef.current;
+        const wrapper = this.wrapperRef.current;
         if (anchor && anchor.contains(target)) return;
-        if (panel && panel.contains(target)) {
+        if (wrapper && wrapper.contains(target)) {
             if (this.props.closeOnContentClick) this.props.onClose();
             return;
         }
@@ -106,11 +127,12 @@ export class Popover extends Component<Props, State> {
     private reposition = (): void => {
         this.rafId = null;
         const anchor = this.props.anchorRef.current;
-        const panel = this.panelRef.current;
-        if (!anchor || !panel) return;
+        const wrapper = this.wrapperRef.current;
+        if (!anchor || !wrapper) return;
 
         const aRect = anchor.getBoundingClientRect();
-        const pRect = panel.getBoundingClientRect();
+        const pWidth = wrapper.offsetWidth;
+        const pHeight = wrapper.offsetHeight;
         const offset = this.props.offset ?? 8;
         const margin = 8;
         const vw = window.innerWidth;
@@ -125,21 +147,21 @@ export class Popover extends Component<Props, State> {
             case "bottom-start":
                 top = aRect.bottom + offset;
                 left = aRect.left;
-                if (top + pRect.height > vh - margin) {
-                    top = aRect.top - pRect.height - offset;
+                if (top + pHeight > vh - margin) {
+                    top = aRect.top - pHeight - offset;
                     resolved = "top-start";
                 }
                 break;
             case "bottom-end":
                 top = aRect.bottom + offset;
-                left = aRect.right - pRect.width;
-                if (top + pRect.height > vh - margin) {
-                    top = aRect.top - pRect.height - offset;
+                left = aRect.right - pWidth;
+                if (top + pHeight > vh - margin) {
+                    top = aRect.top - pHeight - offset;
                     resolved = "top-end";
                 }
                 break;
             case "top-start":
-                top = aRect.top - pRect.height - offset;
+                top = aRect.top - pHeight - offset;
                 left = aRect.left;
                 if (top < margin) {
                     top = aRect.bottom + offset;
@@ -147,8 +169,8 @@ export class Popover extends Component<Props, State> {
                 }
                 break;
             case "top-end":
-                top = aRect.top - pRect.height - offset;
-                left = aRect.right - pRect.width;
+                top = aRect.top - pHeight - offset;
+                left = aRect.right - pWidth;
                 if (top < margin) {
                     top = aRect.bottom + offset;
                     resolved = "bottom-end";
@@ -157,14 +179,14 @@ export class Popover extends Component<Props, State> {
             case "right-start":
                 top = aRect.top;
                 left = aRect.right + offset;
-                if (left + pRect.width > vw - margin) {
-                    left = aRect.left - pRect.width - offset;
+                if (left + pWidth > vw - margin) {
+                    left = aRect.left - pWidth - offset;
                     resolved = "left-start";
                 }
                 break;
             case "left-start":
                 top = aRect.top;
-                left = aRect.left - pRect.width - offset;
+                left = aRect.left - pWidth - offset;
                 if (left < margin) {
                     left = aRect.right + offset;
                     resolved = "right-start";
@@ -172,38 +194,72 @@ export class Popover extends Component<Props, State> {
                 break;
         }
 
-        if (left + pRect.width > vw - margin) left = vw - pRect.width - margin;
+        if (left + pWidth > vw - margin) left = vw - pWidth - margin;
         if (left < margin) left = margin;
-        if (top + pRect.height > vh - margin) top = vh - pRect.height - margin;
+        if (top + pHeight > vh - margin) top = vh - pHeight - margin;
         if (top < margin) top = margin;
 
         const width = aRect.width;
         this.setState({ coords: { top, left, width }, resolvedPlacement: resolved });
     };
 
+    private handleEnterComplete = (): void => {
+        this.scheduleReposition();
+    };
+
     render(): ReactNode {
-        if (!this.props.isOpen) return null;
+        const { isOpen, matchAnchorWidth, label } = this.props;
         const { coords, resolvedPlacement } = this.state;
-        const style: React.CSSProperties = {
-            top: coords ? `${coords.top}px` : "-9999px",
-            left: coords ? `${coords.left}px` : "-9999px",
+        const origin = placementOrigin[resolvedPlacement];
+
+        const wrapperStyle: React.CSSProperties = {
+            top: coords ? `${coords.top}px` : "0px",
+            left: coords ? `${coords.left}px` : "0px",
             visibility: coords ? "visible" : "hidden",
         };
-        if (this.props.matchAnchorWidth && coords) style.width = `${coords.width}px`;
+        if (matchAnchorWidth && coords) wrapperStyle.width = `${coords.width}px`;
+
+        const variants = {
+            initial: { opacity: 0, scale: 0.94, x: origin.x, y: origin.y },
+            animate: {
+                opacity: 1,
+                scale: 1,
+                x: 0,
+                y: 0,
+                transition: ENTER_TRANSITION,
+            },
+            exit: {
+                opacity: 0,
+                scale: 0.92,
+                x: origin.x,
+                y: origin.y,
+                transition: EXIT_TRANSITION,
+            },
+        };
 
         return createPortal(
-            <div
-                ref={this.panelRef}
-                className={className(styles["popover"], {
-                    [styles[`popover--${resolvedPlacement}`]]: true,
-                })}
-                style={style}
-                role="presentation"
-                aria-label={this.props.label}
-                data-placement={resolvedPlacement}
-            >
-                {this.props.children}
-            </div>,
+            <AnimatePresence onExitComplete={this.detachListeners}>
+                {isOpen && (
+                    <motion.div
+                        ref={this.wrapperRef}
+                        key="popover"
+                        className={className(styles["popover"], {
+                            [styles[`popover--${resolvedPlacement}`]]: true,
+                        })}
+                        style={wrapperStyle}
+                        role="presentation"
+                        aria-label={label}
+                        data-placement={resolvedPlacement}
+                        initial="initial"
+                        animate="animate"
+                        exit="exit"
+                        variants={variants}
+                        onAnimationComplete={this.handleEnterComplete}
+                    >
+                        {this.props.children}
+                    </motion.div>
+                )}
+            </AnimatePresence>,
             document.body,
         );
     }

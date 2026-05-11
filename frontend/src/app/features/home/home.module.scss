@@ -14,3 +14,14 @@
         gap: var(--space-7);
     }
 }
+
+@media (max-width: 640px) {
+    .home {
+        gap: var(--space-5);
+        padding-bottom: var(--space-5);
+
+        &__sections {
+            gap: var(--space-5);
+        }
+    }
+}

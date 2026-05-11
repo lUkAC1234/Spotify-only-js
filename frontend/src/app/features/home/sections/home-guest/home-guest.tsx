@@ -53,8 +53,8 @@ export class HomeGuest extends Component {
                 >
                     {popularArtists.length === 0
                         ? this.renderSkeletons()
-                        : popularArtists.map((artist, idx) => (
-                              <ArtistCard key={`artist-${artist.id}`} artist={artist} fallbackIndex={idx} />
+                        : popularArtists.map((artist) => (
+                              <ArtistCard key={`artist-${artist.id}`} artist={artist} />
                           ))}
                 </SectionRow>
             </div>

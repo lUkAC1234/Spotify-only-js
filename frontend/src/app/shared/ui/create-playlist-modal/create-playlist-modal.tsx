@@ -5,6 +5,7 @@ import { LibraryService } from "@/app/core/services/library/library.service";
 import { LocaleService } from "@/app/core/services/locale.service";
 import { NavigateService } from "@/app/core/services/navigate.service";
 import { inject } from "@/app/shared/decorators/di";
+import { Spinner } from "@/app/shared/ui/loaders/spinner";
 import { SVG_Camera } from "@/app/shared/ui/svg/nav/svg-camera";
 import { SVG_MusicNote } from "@/app/shared/ui/svg/nav/svg-music-note";
 import { SVG_Pencil } from "@/app/shared/ui/svg/nav/svg-pencil";
@@ -21,6 +22,7 @@ interface State {
     isSubmitting: boolean;
     error: string;
     isMounted: boolean;
+    backdropArmed: boolean;
 }
 
 const INITIAL_STATE: State = {
@@ -31,6 +33,7 @@ const INITIAL_STATE: State = {
     isSubmitting: false,
     error: "",
     isMounted: false,
+    backdropArmed: false,
 };
 
 @observer
@@ -112,8 +115,14 @@ export class CreatePlaylistModal extends Component<object, State> {
         this.modal.close();
     };
 
-    private handleBackdrop = (event: React.MouseEvent<HTMLDivElement>): void => {
-        if (event.target === event.currentTarget) {
+    private handleBackdropMouseDown = (event: React.MouseEvent<HTMLDivElement>): void => {
+        this.setState({ backdropArmed: event.target === event.currentTarget });
+    };
+
+    private handleBackdropClick = (event: React.MouseEvent<HTMLDivElement>): void => {
+        const armed = this.state.backdropArmed;
+        this.setState({ backdropArmed: false });
+        if (armed && event.target === event.currentTarget) {
             this.handleClose();
         }
     };
@@ -137,7 +146,14 @@ export class CreatePlaylistModal extends Component<object, State> {
                     return;
                 }
                 if (this.state.coverFile) {
-                    await this.library.uploadPlaylistCover(editing.id, this.state.coverFile);
+                    const coverResult = await this.library.uploadPlaylistCover(editing.id, this.state.coverFile);
+                    if (!coverResult) {
+                        this.setState({
+                            error: this.locale.t("common", "playlist.cover-error"),
+                            isSubmitting: false,
+                        });
+                        return;
+                    }
                 }
                 this.setState({ isSubmitting: false });
                 this.modal.notifySaved(editing.id);
@@ -151,7 +167,14 @@ export class CreatePlaylistModal extends Component<object, State> {
                 return;
             }
             if (this.state.coverFile) {
-                await this.library.uploadPlaylistCover(created.id, this.state.coverFile);
+                const coverResult = await this.library.uploadPlaylistCover(created.id, this.state.coverFile);
+                if (!coverResult) {
+                    this.setState({
+                        error: this.locale.t("common", "playlist.cover-error"),
+                        isSubmitting: false,
+                    });
+                    return;
+                }
             }
             this.setState({ isSubmitting: false });
             this.modal.close();
@@ -176,7 +199,13 @@ export class CreatePlaylistModal extends Component<object, State> {
             : this.locale.t("common", "playlist.creating");
 
         return (
-            <div className={styles["modal"]} onClick={this.handleBackdrop} role="dialog" aria-modal="true">
+            <div
+                className={styles["modal"]}
+                onMouseDown={this.handleBackdropMouseDown}
+                onClick={this.handleBackdropClick}
+                role="dialog"
+                aria-modal="true"
+            >
                 <div className={styles["modal__panel"]}>
                     <header className={styles["modal__header"]}>
                         <h2 className={styles["modal__title"]}>{titleLabel}</h2>
@@ -271,8 +300,20 @@ export class CreatePlaylistModal extends Component<object, State> {
                             >
                                 {this.locale.t("common", "playlist.cancel")}
                             </button>
-                            <button type="submit" className={styles["modal__submit"]} disabled={isSubmitting}>
-                                {isSubmitting ? submittingLabel : submitLabel}
+                            <button
+                                type="submit"
+                                className={styles["modal__submit"]}
+                                disabled={isSubmitting}
+                                aria-busy={isSubmitting}
+                            >
+                                {isSubmitting ? (
+                                    <span className={styles["modal__submit-busy"]}>
+                                        <Spinner size="sm" tone="current" inline />
+                                        <span>{submittingLabel}</span>
+                                    </span>
+                                ) : (
+                                    submitLabel
+                                )}
                             </button>
                         </footer>
                     </form>

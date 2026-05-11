@@ -5,9 +5,11 @@ import { Album, AlbumDetail } from "@/app/core/types/album";
 import { Artist, ArtistDetail } from "@/app/core/types/artist";
 import { FeaturedPlaylist, Genre, PlaylistDetail } from "@/app/core/types/playlist";
 import { Track } from "@/app/core/types/track";
-import { injectable } from "@/app/shared/decorators/di";
+import { inject, injectable } from "@/app/shared/decorators/di";
+import { ActionGuard } from "@/app/shared/utils/classes/ActionGuard";
 
 import { apiRequest, apiUrl } from "../http/api-client";
+import { SearchCacheEntry, SearchCacheService } from "./search-cache.service";
 
 export type SearchKind = "track" | "artist" | "album" | "playlist";
 
@@ -27,7 +29,15 @@ interface SearchEnvelope {
     limit?: number;
 }
 
+interface SearchOutcome {
+    result: SearchResult;
+    totalTracks: number;
+    hasMore: boolean;
+    fromCache: boolean;
+}
+
 const EMPTY_RESULT: SearchResult = { tracks: [], artists: [], albums: [] };
+const DEFAULT_KINDS: SearchKind[] = ["track", "artist", "album"];
 
 @injectable()
 export class CatalogService {
@@ -39,7 +49,10 @@ export class CatalogService {
     @observable searchTotalTracks: number = 0;
     @observable searchHasMore: boolean = false;
 
+    private readonly cacheStore: SearchCacheService = inject(SearchCacheService);
+    private readonly guard: ActionGuard = new ActionGuard();
     private activeRequest: AbortController | null = null;
+    private inflightSearches: Map<string, Promise<SearchOutcome>> = new Map();
 
     constructor() {
         makeObservable(this);
@@ -65,45 +78,159 @@ export class CatalogService {
         this.lastError = message;
     }
 
-    async search(query: string, kinds: SearchKind[] = ["track", "artist", "album"]): Promise<SearchResult> {
+    async search(query: string, kinds: SearchKind[] = DEFAULT_KINDS): Promise<SearchResult> {
         const trimmed = query.trim();
         if (!trimmed) {
-            this.setResult(EMPTY_RESULT);
-            this.setError("");
-            runInAction(() => {
-                this.searchTotalTracks = 0;
-                this.searchHasMore = false;
-            });
+            this.resetSearchState();
             return EMPTY_RESULT;
+        }
+
+        const limit = config.CATALOG_PAGE_SIZE;
+        const offset = 0;
+        const cacheKey = SearchCacheService.buildKey({ query: trimmed, kinds, limit, offset });
+
+        this.setQuery(trimmed);
+        this.setError("");
+
+        const cached = this.cacheStore.get(cacheKey);
+        if (cached) {
+            this.applySearchEntry(cached);
+            return { tracks: cached.tracks, artists: cached.artists, albums: cached.albums };
+        }
+
+        const inflight = this.inflightSearches.get(cacheKey);
+        if (inflight) {
+            this.setSearching(true);
+            const outcome = await inflight;
+            return outcome.result;
         }
 
         this.activeRequest?.abort();
         const controller = new AbortController();
         this.activeRequest = controller;
-
-        this.setQuery(trimmed);
         this.setSearching(true);
-        this.setError("");
+
+        const promise = this.fetchSearch({ query: trimmed, kinds, limit, offset, signal: controller.signal });
+        this.inflightSearches.set(cacheKey, promise);
+
+        let outcome: SearchOutcome;
+        try {
+            outcome = await promise;
+        } finally {
+            this.inflightSearches.delete(cacheKey);
+            if (this.activeRequest === controller) this.activeRequest = null;
+        }
+
+        if (controller.signal.aborted) return EMPTY_RESULT;
+
+        if (!outcome.fromCache) {
+            this.cacheStore.set(cacheKey, {
+                tracks: outcome.result.tracks,
+                artists: outcome.result.artists,
+                albums: outcome.result.albums,
+                totalTracks: outcome.totalTracks,
+                hasMore: outcome.hasMore,
+                offset,
+                limit,
+            });
+        }
+        return outcome.result;
+    }
+
+    async loadMoreSearchTracks(): Promise<void> {
+        if (this.isLoadingMore || !this.searchHasMore || !this.lastQuery) return;
+        const limit = config.CATALOG_PAGE_SIZE;
+        const offset = this.lastResult.tracks.length;
+        const cacheKey = SearchCacheService.buildKey({
+            query: this.lastQuery,
+            kinds: ["track"],
+            limit,
+            offset,
+        });
+
+        runInAction(() => {
+            this.isLoadingMore = true;
+        });
+
+        const cached = this.cacheStore.get(cacheKey);
+        if (cached) {
+            this.appendMoreTracks(cached.tracks, cached.totalTracks, cached.hasMore);
+            runInAction(() => {
+                this.isLoadingMore = false;
+            });
+            return;
+        }
 
         const result = await apiRequest<SearchEnvelope>("GET", "/catalog/search/", {
             params: {
-                q: trimmed,
-                type: kinds.join(","),
-                limit: config.CATALOG_PAGE_SIZE,
-                offset: 0,
+                q: this.lastQuery,
+                type: "track",
+                limit,
+                offset,
             },
-            signal: controller.signal,
         });
 
-        if (this.activeRequest === controller) this.activeRequest = null;
+        runInAction(() => {
+            this.isLoadingMore = false;
+        });
+
+        if (!result.ok || !result.data) return;
+
+        const incoming = result.data.tracks ?? [];
+        const totalTracks = result.data.totalTracks ?? this.lastResult.tracks.length + incoming.length;
+        const hasMore = !!result.data.hasMore;
+
+        this.cacheStore.set(cacheKey, {
+            tracks: incoming,
+            artists: [],
+            albums: [],
+            totalTracks,
+            hasMore,
+            offset,
+            limit,
+        });
+        this.appendMoreTracks(incoming, totalTracks, hasMore);
+    }
+
+    invalidateSearchCache(query?: string): void {
+        if (!query) {
+            this.cacheStore.clear();
+            return;
+        }
+        this.cacheStore.invalidatePrefix(`${query.trim().toLowerCase()}|`);
+    }
+
+    private async fetchSearch(input: {
+        query: string;
+        kinds: SearchKind[];
+        limit: number;
+        offset: number;
+        signal: AbortSignal;
+    }): Promise<SearchOutcome> {
+        const result = await apiRequest<SearchEnvelope>("GET", "/catalog/search/", {
+            params: {
+                q: input.query,
+                type: input.kinds.join(","),
+                limit: input.limit,
+                offset: input.offset,
+            },
+            signal: input.signal,
+        });
+
+        if (input.signal.aborted) {
+            runInAction(() => {
+                this.isSearching = false;
+            });
+            return { result: EMPTY_RESULT, totalTracks: 0, hasMore: false, fromCache: false };
+        }
 
         if (!result.ok || !result.data) {
-            const aborted = result.status === 0 && controller.signal.aborted;
+            const aborted = result.status === 0 && input.signal.aborted;
             if (aborted) {
                 runInAction(() => {
                     this.isSearching = false;
                 });
-                return EMPTY_RESULT;
+                return { result: EMPTY_RESULT, totalTracks: 0, hasMore: false, fromCache: false };
             }
             runInAction(() => {
                 this.lastError = result.error?.message ?? "Search failed";
@@ -111,7 +238,7 @@ export class CatalogService {
                 this.searchTotalTracks = 0;
                 this.searchHasMore = false;
             });
-            return EMPTY_RESULT;
+            return { result: EMPTY_RESULT, totalTracks: 0, hasMore: false, fromCache: false };
         }
 
         const next: SearchResult = {
@@ -119,39 +246,52 @@ export class CatalogService {
             artists: result.data.artists ?? [],
             albums: result.data.albums ?? [],
         };
+        const totalTracks = result.data.totalTracks ?? next.tracks.length;
+        const hasMore = !!result.data.hasMore;
 
         runInAction(() => {
             this.lastResult = next;
             this.isSearching = false;
-            this.searchTotalTracks = result.data?.totalTracks ?? next.tracks.length;
-            this.searchHasMore = !!result.data?.hasMore;
+            this.searchTotalTracks = totalTracks;
+            this.searchHasMore = hasMore;
         });
-        return next;
+
+        return { result: next, totalTracks, hasMore, fromCache: false };
     }
 
-    async loadMoreSearchTracks(): Promise<void> {
-        if (this.isLoadingMore || !this.searchHasMore || !this.lastQuery) return;
+    private applySearchEntry(entry: SearchCacheEntry): void {
         runInAction(() => {
-            this.isLoadingMore = true;
+            this.lastResult = {
+                tracks: entry.tracks,
+                artists: entry.artists,
+                albums: entry.albums,
+            };
+            this.searchTotalTracks = entry.totalTracks;
+            this.searchHasMore = entry.hasMore;
+            this.isSearching = false;
+            this.lastError = "";
         });
-        const offset = this.lastResult.tracks.length;
-        const result = await apiRequest<SearchEnvelope>("GET", "/catalog/search/", {
-            params: {
-                q: this.lastQuery,
-                type: "track",
-                limit: config.CATALOG_PAGE_SIZE,
-                offset,
-            },
-        });
+    }
+
+    private appendMoreTracks(incoming: Track[], totalTracks: number, hasMore: boolean): void {
         runInAction(() => {
-            this.isLoadingMore = false;
-            if (!result.ok || !result.data) return;
-            const incoming = result.data.tracks ?? [];
             const knownIds = new Set(this.lastResult.tracks.map((t) => t.id));
             const merged = [...this.lastResult.tracks, ...incoming.filter((t) => !knownIds.has(t.id))];
             this.lastResult = { ...this.lastResult, tracks: merged };
-            this.searchTotalTracks = result.data.totalTracks ?? merged.length;
-            this.searchHasMore = !!result.data.hasMore;
+            this.searchTotalTracks = totalTracks;
+            this.searchHasMore = hasMore;
+        });
+    }
+
+    private resetSearchState(): void {
+        this.activeRequest?.abort();
+        this.activeRequest = null;
+        runInAction(() => {
+            this.lastResult = EMPTY_RESULT;
+            this.lastError = "";
+            this.searchTotalTracks = 0;
+            this.searchHasMore = false;
+            this.isSearching = false;
         });
     }
 
@@ -248,20 +388,30 @@ export class CatalogService {
     async pushRecentSearch(query: string): Promise<RecentSearchEntry | null> {
         const trimmed = query.trim();
         if (!trimmed) return null;
-        const result = await apiRequest<RecentSearchEntry>("POST", "/catalog/recent-searches/", {
-            body: { query: trimmed },
-        });
-        return result.ok ? result.data : null;
+        return (
+            (await this.guard.run(`catalog:recent-push:${trimmed.toLowerCase()}`, async () => {
+                const result = await apiRequest<RecentSearchEntry>("POST", "/catalog/recent-searches/", {
+                    body: { query: trimmed },
+                });
+                return result.ok ? result.data : null;
+            })) ?? null
+        );
     }
 
     async removeRecentSearch(entryId: number): Promise<boolean> {
-        const result = await apiRequest("DELETE", `/catalog/recent-searches/${entryId}/`);
-        return result.ok;
+        const outcome = await this.guard.run(`catalog:recent-remove:${entryId}`, async () => {
+            const result = await apiRequest("DELETE", `/catalog/recent-searches/${entryId}/`);
+            return result.ok;
+        });
+        return outcome ?? false;
     }
 
     async clearRecentSearches(): Promise<boolean> {
-        const result = await apiRequest("DELETE", "/catalog/recent-searches/");
-        return result.ok;
+        const outcome = await this.guard.run("catalog:recent-clear", async () => {
+            const result = await apiRequest("DELETE", "/catalog/recent-searches/");
+            return result.ok;
+        });
+        return outcome ?? false;
     }
 
     streamUrl(trackId: number | string): string {

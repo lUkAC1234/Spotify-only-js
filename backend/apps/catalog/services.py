@@ -3,9 +3,15 @@ from dataclasses import dataclass
 from datetime import timedelta
 from typing import Iterable, Optional
 
-from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector
+from django.contrib.postgres.search import (
+    SearchQuery,
+    SearchRank,
+    SearchVector,
+    TrigramSimilarity,
+)
 from django.db import transaction
-from django.db.models import F, Q, Value
+from django.db.models import F, FloatField, Q, Value
+from django.db.models.functions import Coalesce, Greatest
 from django.utils import timezone
 
 from .models import Album, Artist, Genre, Source, Track, TrackGenre
@@ -17,12 +23,14 @@ from .providers import (
     MusicProvider,
     SearchResultDTO,
     TrackDTO,
+    YandexMusicProvider,
 )
 
 logger = logging.getLogger(__name__)
 
 METADATA_TTL = timedelta(hours=24)
 AUDIO_URL_TTL = timedelta(hours=1)
+SHORT_LIVED_AUDIO_SOURCES: frozenset[str] = frozenset({Source.YANDEX})
 
 
 @dataclass(frozen=True)
@@ -44,6 +52,9 @@ class CatalogSyncService:
             return self._providers[source]
         if source == Source.AUDIUS:
             self._providers = {**(self._providers or {}), source: AudiusProvider()}
+            return self._providers[source]
+        if source == Source.YANDEX:
+            self._providers = {**(self._providers or {}), source: YandexMusicProvider()}
             return self._providers[source]
         raise ValueError(f"Unknown source: {source}")
 
@@ -213,8 +224,11 @@ class CatalogSyncService:
     def resolve_stream_url(self, track: Track) -> Optional[str]:
         if track.is_unavailable:
             return None
+
+        is_short_lived = track.source in SHORT_LIVED_AUDIO_SOURCES
         if (
-            track.audio_url_cached
+            not is_short_lived
+            and track.audio_url_cached
             and track.audio_url_cached_at
             and timezone.now() - track.audio_url_cached_at < AUDIO_URL_TTL
         ):
@@ -226,6 +240,9 @@ class CatalogSyncService:
             track.is_unavailable = True
             track.save(update_fields=["is_unavailable", "updated_at"])
             return None
+
+        if is_short_lived:
+            return url
 
         track.audio_url_cached = url
         track.audio_url_cached_at = timezone.now()
@@ -318,38 +335,79 @@ def rebuild_all_track_search_vectors() -> int:
     return len(rows)
 
 
+TRIGRAM_FLOOR = 0.18
+TRIGRAM_FLOOR_LOOSE = 0.12
+
+
+def normalize_search_query(query: str) -> str:
+    cleaned = " ".join((query or "").split()).strip()
+    return cleaned[:120]
+
+
 def search_tracks_local(
     query: str, *, limit: int = 24, offset: int = 0
 ) -> tuple[list[Track], int]:
-    if not query:
+    cleaned = normalize_search_query(query)
+    if not cleaned:
         return [], 0
-    fts_query = SearchQuery(query, config="simple", search_type="websearch")
+
+    fts_query = SearchQuery(cleaned, config="simple", search_type="websearch")
+    title_sim = TrigramSimilarity("title", cleaned)
+    artist_sim = TrigramSimilarity("artist__name", cleaned)
+    album_sim = TrigramSimilarity("album__title", cleaned)
+
     qs = (
         Track.objects.select_related("artist", "album__artist")
-        .annotate(rank=SearchRank(F("search_vector"), fts_query))
-        .filter(Q(search_vector=fts_query) | Q(title__icontains=query) | Q(artist__name__icontains=query))
-        .order_by("-rank", "-popularity", "title")
+        .annotate(
+            rank=Coalesce(SearchRank(F("search_vector"), fts_query), Value(0.0), output_field=FloatField()),
+            title_sim=title_sim,
+            artist_sim=artist_sim,
+            album_sim=album_sim,
+            similarity=Greatest(title_sim, artist_sim, album_sim),
+        )
+        .filter(
+            Q(search_vector=fts_query)
+            | Q(title_sim__gte=TRIGRAM_FLOOR)
+            | Q(artist_sim__gte=TRIGRAM_FLOOR)
+            | Q(album_sim__gte=TRIGRAM_FLOOR_LOOSE)
+        )
+        .order_by("-rank", "-similarity", "-popularity", "title")
     )
     total = qs.count()
     return list(qs[offset : offset + limit]), total
 
 
 def search_artists_local(query: str, *, limit: int = 12) -> list[Artist]:
-    if not query:
+    cleaned = normalize_search_query(query)
+    if not cleaned:
         return []
     qs = (
-        Artist.objects.filter(name__icontains=query)
-        .order_by("-monthly_listeners", "name")
+        Artist.objects.annotate(similarity=TrigramSimilarity("name", cleaned))
+        .filter(Q(name__icontains=cleaned) | Q(similarity__gte=TRIGRAM_FLOOR))
+        .order_by("-similarity", "-monthly_listeners", "name")
     )
     return list(qs[:limit])
 
 
 def search_albums_local(query: str, *, limit: int = 12) -> list[Album]:
-    if not query:
+    cleaned = normalize_search_query(query)
+    if not cleaned:
         return []
+    title_sim = TrigramSimilarity("title", cleaned)
+    artist_sim = TrigramSimilarity("artist__name", cleaned)
     qs = (
         Album.objects.select_related("artist")
-        .filter(Q(title__icontains=query) | Q(artist__name__icontains=query))
-        .order_by("-release_date", "title")
+        .annotate(
+            title_sim=title_sim,
+            artist_sim=artist_sim,
+            similarity=Greatest(title_sim, artist_sim),
+        )
+        .filter(
+            Q(title__icontains=cleaned)
+            | Q(artist__name__icontains=cleaned)
+            | Q(title_sim__gte=TRIGRAM_FLOOR)
+            | Q(artist_sim__gte=TRIGRAM_FLOOR)
+        )
+        .order_by("-similarity", "-release_date", "title")
     )
     return list(qs[:limit])

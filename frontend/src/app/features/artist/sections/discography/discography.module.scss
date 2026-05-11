@@ -4,7 +4,7 @@
     display: flex;
     flex-direction: column;
     gap: var(--space-4);
-    padding: 0 var(--space-6);
+    padding: 0 var(--content-padding-x);
 
     &__header {
         display: flex;
@@ -39,7 +39,7 @@
         transition: color var(--motion-fast) var(--motion-ease), background var(--motion-fast) var(--motion-ease),
             border-color var(--motion-fast) var(--motion-ease);
 
-        &:hover {
+        &:hover:not(&--active) {
             color: var(--text);
             border-color: var(--text-secondary);
         }
@@ -48,6 +48,12 @@
             background: var(--text);
             color: var(--bg);
             border-color: var(--text);
+
+            &:hover {
+                background: var(--text);
+                color: var(--bg);
+                border-color: var(--text);
+            }
         }
 
         &:focus-visible {
@@ -124,8 +130,18 @@
     }
 }
 
-@media (max-width: 720px) {
+@media (max-width: 640px) {
     .discography {
-        padding: 0 var(--space-4);
+        padding: 0 var(--content-padding-x-mobile);
+        gap: var(--space-3);
+
+        &__grid {
+            grid-template-columns: repeat(auto-fill, minmax(#{functions.rem(140)}, 1fr));
+            gap: var(--space-3);
+        }
+
+        &__link {
+            padding: var(--space-3);
+        }
     }
 }

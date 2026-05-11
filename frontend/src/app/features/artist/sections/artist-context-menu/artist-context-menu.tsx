@@ -51,7 +51,7 @@ export class ArtistContextMenu extends Component<Props> {
         }
         const top = this.props.detail.topTracks[0];
         if (!top) return;
-        await this.library.toggleTrackSaved(top.id);
+        await this.library.toggleTrackSaved(top.id, top);
     };
 
     private handlePlayRadio = (): void => {
@@ -75,15 +75,9 @@ export class ArtistContextMenu extends Component<Props> {
     private handleCopyLink = async (): Promise<void> => {
         try {
             await navigator.clipboard.writeText(this.artistUrl);
-            this.alert.pushAlert({
-                message: this.locale.t("common", "artist-menu.copied"),
-                delay: 2400,
-            });
+            this.alert.success(this.locale.t("common", "artist-menu.copied"), { delay: 2400 });
         } catch {
-            this.alert.pushAlert({
-                message: this.locale.t("common", "error"),
-                delay: 2400,
-            });
+            this.alert.error(this.locale.t("common", "error"), { delay: 2400 });
         }
     };
 

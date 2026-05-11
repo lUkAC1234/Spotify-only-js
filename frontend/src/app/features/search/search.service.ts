@@ -19,10 +19,16 @@ export class SearchService {
     @observable genres: Genre[] = [];
     @observable recentSearches: RecentSearchEntry[] = [];
     @observable isLoadingDiscovery: boolean = false;
+    @observable hasLoadedGenres: boolean = false;
+    @observable hasLoadedRecents: boolean = false;
 
-    private debouncedFetch = debounce((query: string) => {
-        void this.runSearch(query);
-    }, config.SEARCH_DEBOUNCE_MS);
+    private debouncedFetch = debounce(
+        (query: string) => {
+            void this.runSearch(query);
+        },
+        config.SEARCH_DEBOUNCE_MS,
+        { leading: false, trailing: true },
+    );
 
     constructor() {
         makeObservable(this);
@@ -34,8 +40,9 @@ export class SearchService {
             reaction(
                 () => this.queryFromUrl,
                 (query) => {
-                    if (!query) {
-                        this.catalog.setQuery("");
+                    if (!query || query.length < config.SEARCH_MIN_QUERY_LENGTH) {
+                        this.debouncedFetch.cancel();
+                        this.catalog.setQuery(query ?? "");
                         this.catalog.setResult({ tracks: [], artists: [], albums: [] });
                         return;
                     }
@@ -51,6 +58,9 @@ export class SearchService {
             reaction(
                 () => this.auth.isAuthenticated,
                 () => {
+                    runInAction(() => {
+                        this.hasLoadedRecents = false;
+                    });
                     void this.loadDiscovery();
                 },
                 { fireImmediately: true },
@@ -94,15 +104,26 @@ export class SearchService {
 
     async loadDiscovery(): Promise<void> {
         if (this.isLoadingDiscovery) return;
+        const needsGenres = !this.hasLoadedGenres;
+        const needsRecents = this.auth.isAuthenticated && !this.hasLoadedRecents;
+        if (!needsGenres && !needsRecents) return;
         this.setLoadingDiscovery(true);
         try {
-            const tasks: [Promise<Genre[]>, Promise<RecentSearchEntry[]>] = [
-                this.catalog.getGenres(),
-                this.auth.isAuthenticated ? this.catalog.getRecentSearches() : Promise.resolve<RecentSearchEntry[]>([]),
+            const tasks: [Promise<Genre[] | null>, Promise<RecentSearchEntry[] | null>] = [
+                needsGenres ? this.catalog.getGenres() : Promise.resolve(null),
+                needsRecents ? this.catalog.getRecentSearches() : Promise.resolve(null),
             ];
             const [genres, recents] = await Promise.all(tasks);
-            this.setGenres(genres);
-            this.setRecentSearches(recents);
+            runInAction(() => {
+                if (genres !== null) {
+                    this.genres = genres;
+                    this.hasLoadedGenres = true;
+                }
+                if (recents !== null) {
+                    this.recentSearches = recents;
+                    this.hasLoadedRecents = true;
+                }
+            });
         } finally {
             this.setLoadingDiscovery(false);
         }

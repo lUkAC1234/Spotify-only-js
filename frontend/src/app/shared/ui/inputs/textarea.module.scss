@@ -30,7 +30,13 @@
     }
 
     &::placeholder {
-        font-size: functions.rem(16);
+        font-size: functions.rem(15);
+    }
+
+    @media screen and (max-width: 639px) {
+        &::placeholder {
+            font-size: functions.rem(18);
+        }
     }
 }
 

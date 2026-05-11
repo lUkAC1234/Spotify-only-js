@@ -1,0 +1,80 @@
+@use "@/assets/styles/helpers/functions";
+
+@keyframes spinner-rotate {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.spinner {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--spinner-md);
+    height: var(--spinner-md);
+    color: currentColor;
+    flex-shrink: 0;
+
+    &--xs {
+        width: var(--spinner-xs);
+        height: var(--spinner-xs);
+    }
+
+    &--sm {
+        width: var(--spinner-sm);
+        height: var(--spinner-sm);
+    }
+
+    &--md {
+        width: var(--spinner-md);
+        height: var(--spinner-md);
+    }
+
+    &--lg {
+        width: var(--spinner-lg);
+        height: var(--spinner-lg);
+    }
+
+    &--xl {
+        width: var(--spinner-xl);
+        height: var(--spinner-xl);
+    }
+
+    &--current {
+        color: currentColor;
+    }
+
+    &--accent {
+        color: var(--accent);
+    }
+
+    &--muted {
+        color: var(--text-secondary);
+    }
+
+    &--inline {
+        display: inline-flex;
+        vertical-align: middle;
+    }
+
+    &__ring {
+        display: block;
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        border: var(--spinner-stroke) solid currentColor;
+        border-right-color: transparent;
+        border-bottom-color: transparent;
+        opacity: 0.85;
+        animation: spinner-rotate 720ms linear infinite;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .spinner__ring {
+        animation-duration: 1800ms;
+    }
+}

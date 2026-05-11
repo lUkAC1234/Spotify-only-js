@@ -8,6 +8,7 @@ from django.utils.text import slugify
 class Source(models.TextChoices):
     JAMENDO = "jamendo", "Jamendo"
     AUDIUS = "audius", "Audius"
+    YANDEX = "yandex", "Yandex Music (unofficial)"
 
 
 class AlbumType(models.TextChoices):
@@ -49,6 +50,11 @@ class Artist(models.Model):
         indexes = [
             models.Index(fields=["source", "source_id"]),
             models.Index(fields=["name"]),
+            GinIndex(
+                fields=["name"],
+                name="catalog_artist_name_trgm",
+                opclasses=["gin_trgm_ops"],
+            ),
         ]
         ordering = ["name"]
 
@@ -82,6 +88,11 @@ class Album(models.Model):
             models.Index(fields=["source", "source_id"]),
             models.Index(fields=["title"]),
             models.Index(fields=["artist", "release_date"]),
+            GinIndex(
+                fields=["title"],
+                name="catalog_album_title_trgm",
+                opclasses=["gin_trgm_ops"],
+            ),
         ]
         ordering = ["-release_date", "title"]
 
@@ -144,6 +155,11 @@ class Track(models.Model):
             models.Index(fields=["album", "track_number"]),
             models.Index(fields=["popularity"]),
             GinIndex(fields=["search_vector"], name="catalog_track_fts_idx"),
+            GinIndex(
+                fields=["title"],
+                name="catalog_track_title_trgm",
+                opclasses=["gin_trgm_ops"],
+            ),
         ]
         ordering = ["-popularity", "title"]
 

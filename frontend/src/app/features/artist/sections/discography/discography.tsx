@@ -2,6 +2,8 @@ import { observer } from "mobx-react";
 import { Component, ReactNode } from "react";
 
 import { LocaleService } from "@/app/core/services/locale.service";
+import { LocationService } from "@/app/core/services/location.service";
+import { NavigateService } from "@/app/core/services/navigate.service";
 import { Album } from "@/app/core/types/album";
 import { inject } from "@/app/shared/decorators/di";
 import { className } from "@/app/shared/utils/functions/className";
@@ -15,16 +17,19 @@ interface Props {
     albums: Album[];
 }
 
-interface State {
-    filter: FilterKey;
-}
-
 const FILTERS = [
     { key: "all" as FilterKey, labelKey: "artist.discography-all" },
     { key: "albums" as FilterKey, labelKey: "artist.discography-albums" },
     { key: "singles" as FilterKey, labelKey: "artist.discography-singles" },
     { key: "compilations" as FilterKey, labelKey: "artist.discography-compilations" },
 ] as const;
+
+const VALID_FILTERS: readonly FilterKey[] = ["all", "albums", "singles", "compilations"];
+const DEFAULT_FILTER: FilterKey = "all";
+const TAB_PARAM = "tab";
+
+const isFilterKey = (value: string | null): value is FilterKey =>
+    value !== null && (VALID_FILTERS as readonly string[]).includes(value);
 
 const matchesFilter = (album: Album, filter: FilterKey): boolean => {
     if (filter === "all") return true;
@@ -35,19 +40,36 @@ const matchesFilter = (album: Album, filter: FilterKey): boolean => {
 };
 
 @observer
-export class Discography extends Component<Props, State> {
+export class Discography extends Component<Props> {
     private locale: LocaleService = inject(LocaleService);
+    private location: LocationService = inject(LocationService);
+    private navigate: NavigateService = inject(NavigateService);
 
-    state: State = { filter: "all" };
+    private get currentFilter(): FilterKey {
+        const params = new URLSearchParams(this.location.location.search);
+        const value = params.get(TAB_PARAM);
+        return isFilterKey(value) ? value : DEFAULT_FILTER;
+    }
 
     private setFilter = (filter: FilterKey): void => {
-        this.setState({ filter });
+        if (this.currentFilter === filter) return;
+        const current = this.location.location;
+        const params = new URLSearchParams(current.search);
+        if (filter === DEFAULT_FILTER) {
+            params.delete(TAB_PARAM);
+        } else {
+            params.set(TAB_PARAM, filter);
+        }
+        const query = params.toString();
+        const target = query ? `${current.pathname}?${query}` : current.pathname;
+        this.navigate.navigate(target, { replace: true });
     };
 
     render(): ReactNode {
         const { albums } = this.props;
         if (albums.length === 0) return null;
-        const visible = albums.filter((album) => matchesFilter(album, this.state.filter));
+        const filter = this.currentFilter;
+        const visible = albums.filter((album) => matchesFilter(album, filter));
 
         return (
             <section className={styles["discography"]}>
@@ -64,7 +86,7 @@ export class Discography extends Component<Props, State> {
                                 key={key}
                                 type="button"
                                 className={className(styles["discography__filter"], {
-                                    [styles["discography__filter--active"]]: this.state.filter === key,
+                                    [styles["discography__filter--active"]]: filter === key,
                                 })}
                                 onClick={() => this.setFilter(key)}
                             >

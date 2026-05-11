@@ -20,10 +20,18 @@ Output code without any inline or block comments. Code must be completely self-d
 Before generating an output, conduct a rigorous internal review. Guarantee that the solution is free of bugs, syntax errors, and type issues. Additions must integrate seamlessly without breaking or regressing any existing functionality.
 
 ### 4. No Audio in the Database
-**Postgres stores metadata only.** Audio bytes never enter the database — not as `BinaryField`, not as `FileField` pointing to a local file, not as a base64 column. Audio is streamed from the upstream provider (Jamendo / Audius) through the backend's range-proxy view at `/api/v1/stream/<track_id>`. Track records in `catalog_track` reference upstream by `(source, source_id)` — the upstream URL is resolved on demand and never returned to the browser.
+**Postgres stores metadata only.** Audio bytes never enter the database — not as `BinaryField`, not as `FileField` pointing to a local file, not as a base64 column. Audio is streamed from the upstream provider (Jamendo / Audius / Yandex Music) through the backend's range-proxy view at `/api/v1/stream/<track_id>`. Track records in `catalog_track` reference upstream by `(source, source_id)` — the upstream URL is resolved on demand and never returned to the browser.
 
 ### 5. Upstream Secrets Stay on the Server
-Upstream API keys (`JAMENDO_CLIENT_ID`, etc.) are read from environment variables in Django settings only. They must never be referenced from `frontend/`, never appear in a JSON response, never be inlined into a Vite bundle. The browser only sees backend-relative URLs.
+Upstream API keys and tokens (`JAMENDO_CLIENT_ID`, `YANDEX_MUSIC_TOKEN`, etc.) are read from environment variables in Django settings only. They must never be referenced from `frontend/`, never appear in a JSON response, never be inlined into a Vite bundle. The browser only sees backend-relative URLs.
+
+### 5a. Unofficial Provider Honesty Rule
+For any provider that talks to a service whose ToS we don't strictly meet, the implementation **must** be honest about it:
+- File name carries the `_unofficial` suffix (e.g. `yandex_music_unofficial.py`).
+- Module docstring states "Personal/educational use only. Violates <service> ToS — do not deploy publicly multi-tenant."
+- Env var name and `.env.example` comment label the variable as *unofficial / personal-use only*.
+- The `source` field on every Track this provider returns flows unchanged to the frontend so UI can show provenance.
+- Never disguise the provider as a legal/official one (no rebranding the class, no hiding it behind a generic name like "RuMusicProvider"). A future reviewer must be able to grep one filename and immediately see what's going on.
 
 ### 6. Spotify-Minimalism Visual Language
 The visual design is codified in `DESIGN.md`. Colour tokens, typography scale, spacing grid, radius / shadow / motion tokens, and component specs are *the* source of truth. A `.module.scss` file may not introduce a new colour, font-size, spacing, or radius literal — it must reference an existing token, or the token must be added to `DESIGN.md` and `colors.scss` / `_typography.scss` first.

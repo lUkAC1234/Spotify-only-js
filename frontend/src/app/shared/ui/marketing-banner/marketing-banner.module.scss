@@ -2,10 +2,6 @@
 @use "@/assets/styles/helpers/variables";
 
 .banner {
-    position: sticky;
-    bottom: 0;
-    left: 0;
-    right: 0;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -14,8 +10,8 @@
     min-height: var(--marketing-banner-height);
     background: var(--marketing-banner-gradient);
     color: var(--marketing-banner-fg);
-    z-index: var(--z-layout);
-    box-shadow: var(--elevation-2);
+    border-radius: var(--radius-md);
+    box-shadow: var(--elevation-1);
 
     &__copy {
         display: flex;
@@ -80,6 +76,7 @@
         gap: var(--space-3);
         padding: var(--space-3) var(--space-4);
         min-height: var(--marketing-banner-height-mobile);
+        border-radius: 0;
 
         &__cta {
             align-self: center;

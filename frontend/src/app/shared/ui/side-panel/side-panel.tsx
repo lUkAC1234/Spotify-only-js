@@ -1,10 +1,10 @@
+import { AnimatePresence, motion, type Transition } from "framer-motion";
 import { observer } from "mobx-react";
-import { Component, MouseEvent, ReactNode } from "react";
+import { Component, ReactNode } from "react";
 
 import { LocaleService } from "@/app/core/services/locale.service";
 import { inject } from "@/app/shared/decorators/di";
 import { SVG_CloseIcon } from "@/app/shared/ui/svg/svg-close-icon";
-import { className } from "@/app/shared/utils/functions/className";
 
 import styles from "./side-panel.module.scss";
 
@@ -18,8 +18,41 @@ interface Props {
     showBackdrop?: boolean;
 }
 
+const PANEL_ENTER: Transition = {
+    type: "spring",
+    stiffness: 360,
+    damping: 36,
+    mass: 0.9,
+};
+
+const PANEL_EXIT: Transition = {
+    duration: 0.24,
+    ease: [0.4, 0, 0.2, 1],
+};
+
+const SCRIM_TRANSITION: Transition = {
+    duration: 0.24,
+    ease: [0.22, 1, 0.36, 1],
+};
+
+const panelVariants = {
+    initial: { x: "calc(100% + 24px)", opacity: 0 },
+    animate: { x: 0, opacity: 1, transition: PANEL_ENTER },
+    exit: { x: "calc(100% + 24px)", opacity: 0, transition: PANEL_EXIT },
+};
+
+const scrimVariants = {
+    initial: { opacity: 0 },
+    animate: { opacity: 1, transition: SCRIM_TRANSITION },
+    exit: { opacity: 0, transition: SCRIM_TRANSITION },
+};
+
 @observer
 export class SidePanel extends Component<Props> {
+    static defaultProps: Partial<Props> = {
+        showBackdrop: true,
+    };
+
     private locale: LocaleService = inject(LocaleService);
 
     componentDidMount(): void {
@@ -37,8 +70,7 @@ export class SidePanel extends Component<Props> {
         }
     };
 
-    private handleBackdropClick = (event: MouseEvent<HTMLButtonElement>): void => {
-        event.stopPropagation();
+    private handleScrimClick = (): void => {
         this.props.onClose();
     };
 
@@ -48,38 +80,50 @@ export class SidePanel extends Component<Props> {
 
         return (
             <>
-                {showBackdrop && (
-                    <button
-                        type="button"
-                        className={className(styles["panel-backdrop"], {
-                            [styles["panel-backdrop--visible"]]: isOpen,
-                        })}
-                        onClick={this.handleBackdropClick}
-                        aria-hidden={!isOpen}
-                        tabIndex={-1}
-                    />
-                )}
-                <aside
-                    className={className(styles["panel"], {
-                        [styles["panel--open"]]: isOpen,
-                    })}
-                    role="dialog"
-                    aria-hidden={!isOpen}
-                    aria-label={ariaLabel ?? title}
-                >
-                    <header className={styles["panel__header"]}>
-                        <h2 className={styles["panel__title"]}>{title}</h2>
-                        <button
+                <AnimatePresence>
+                    {isOpen && showBackdrop !== false && (
+                        <motion.button
+                            key="scrim"
                             type="button"
-                            className={styles["panel__close"]}
-                            onClick={onClose}
+                            className={styles["panel-scrim"]}
+                            onClick={this.handleScrimClick}
                             aria-label={closeLabel}
+                            tabIndex={-1}
+                            initial="initial"
+                            animate="animate"
+                            exit="exit"
+                            variants={scrimVariants}
+                        />
+                    )}
+                </AnimatePresence>
+                <AnimatePresence>
+                    {isOpen && (
+                        <motion.aside
+                            key="panel"
+                            className={styles["panel"]}
+                            role="dialog"
+                            aria-modal="false"
+                            aria-label={ariaLabel ?? title}
+                            initial="initial"
+                            animate="animate"
+                            exit="exit"
+                            variants={panelVariants}
                         >
-                            <SVG_CloseIcon />
-                        </button>
-                    </header>
-                    <div className={styles["panel__body"]}>{children}</div>
-                </aside>
+                            <header className={styles["panel__header"]}>
+                                <h2 className={styles["panel__title"]}>{title}</h2>
+                                <button
+                                    type="button"
+                                    className={styles["panel__close"]}
+                                    onClick={onClose}
+                                    aria-label={closeLabel}
+                                >
+                                    <SVG_CloseIcon />
+                                </button>
+                            </header>
+                            <div className={styles["panel__body"]}>{children}</div>
+                        </motion.aside>
+                    )}
+                </AnimatePresence>
             </>
         );
     }

@@ -9,6 +9,8 @@ import { Track } from "@/app/core/types/track";
 import { inject } from "@/app/shared/decorators/di";
 import { className } from "@/app/shared/utils/functions/className";
 
+import { Spinner } from "../loaders/spinner";
+import { SourceBadge } from "../source-badge/source-badge";
 import { SVG_HeartFilled } from "../svg/player/svg-heart-filled";
 import { SVG_Heart } from "../svg/player/svg-heart";
 import { SVG_Pause } from "../svg/player/svg-pause";
@@ -50,7 +52,7 @@ export class TrackRow extends Component<Props> {
 
     private handleHeart = (): void => {
         if (!this.auth.isAuthenticated) return;
-        void this.library.toggleTrackSaved(this.props.track.id);
+        void this.library.toggleTrackSaved(this.props.track.id, this.props.track);
     };
 
     render(): ReactNode {
@@ -90,7 +92,15 @@ export class TrackRow extends Component<Props> {
                     </div>
                     <div className={styles["track-row__meta"]}>
                         <span className={styles["track-row__title"]}>{track.title}</span>
-                        <span className={styles["track-row__artist"]}>{track.artist?.name ?? ""}</span>
+                        <span className={styles["track-row__artist"]}>
+                            {track.artist?.name ?? ""}
+                            {track.source && (
+                                <SourceBadge
+                                    source={track.source}
+                                    className={styles["track-row__source"]}
+                                />
+                            )}
+                        </span>
                     </div>
                 </div>
 
@@ -102,12 +112,20 @@ export class TrackRow extends Component<Props> {
                             type="button"
                             className={className(styles["track-row__heart"], {
                                 [styles["track-row__heart--active"]]: isLiked,
+                                [styles["track-row__heart--busy"]]: this.library.isTrackBusy(track.id),
                             })}
                             onClick={this.handleHeart}
                             aria-label={heartLabel}
                             aria-pressed={isLiked}
+                            aria-busy={this.library.isTrackBusy(track.id)}
                         >
-                            {isLiked ? <SVG_HeartFilled /> : <SVG_Heart />}
+                            {this.library.isTrackBusy(track.id) ? (
+                                <Spinner size="sm" tone="current" />
+                            ) : isLiked ? (
+                                <SVG_HeartFilled />
+                            ) : (
+                                <SVG_Heart />
+                            )}
                         </button>
                     )}
                     <span className={styles["track-row__duration"]}>
